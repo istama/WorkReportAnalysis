@@ -171,7 +171,7 @@ Partial Class RecordTableForm
     Me.tblSubTItles.Location = New System.Drawing.Point(0, 27)
     Me.tblSubTItles.Name = "tblSubTItles"
     Me.tblSubTItles.RowCount = 1
-    Me.tblSubTItles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 39.0!))
+    Me.tblSubTItles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40.0!))
     Me.tblSubTItles.Size = New System.Drawing.Size(1193, 32)
     Me.tblSubTItles.TabIndex = 27
     '
@@ -186,10 +186,12 @@ Partial Class RecordTableForm
     '
     'Label19
     '
+    Me.Label19.BackColor = System.Drawing.Color.Transparent
+    Me.Label19.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label19.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label19.Location = New System.Drawing.Point(91, 7)
+    Me.Label19.Location = New System.Drawing.Point(0, 0)
     Me.Label19.Name = "Label19"
-    Me.Label19.Size = New System.Drawing.Size(38, 12)
+    Me.Label19.Size = New System.Drawing.Size(220, 27)
     Me.Label19.TabIndex = 2
     Me.Label19.Text = "備考"
     Me.Label19.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -205,13 +207,15 @@ Partial Class RecordTableForm
     '
     'Label18
     '
+    Me.Label18.BackColor = System.Drawing.Color.Transparent
+    Me.Label18.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label18.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label18.Location = New System.Drawing.Point(1, 7)
+    Me.Label18.Location = New System.Drawing.Point(0, 0)
     Me.Label18.Name = "Label18"
-    Me.Label18.Size = New System.Drawing.Size(38, 12)
+    Me.Label18.Size = New System.Drawing.Size(41, 27)
     Me.Label18.TabIndex = 2
     Me.Label18.Text = "生産性"
-    Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+    Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
     '
     'Panel29
     '
@@ -224,10 +228,12 @@ Partial Class RecordTableForm
     '
     'Label12
     '
+    Me.Label12.BackColor = System.Drawing.Color.Transparent
+    Me.Label12.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label12.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label12.Location = New System.Drawing.Point(1, 7)
+    Me.Label12.Location = New System.Drawing.Point(0, 0)
     Me.Label12.Name = "Label12"
-    Me.Label12.Size = New System.Drawing.Size(38, 12)
+    Me.Label12.Size = New System.Drawing.Size(41, 27)
     Me.Label12.TabIndex = 2
     Me.Label12.Text = "時間"
     Me.Label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -243,10 +249,12 @@ Partial Class RecordTableForm
     '
     'Label6
     '
+    Me.Label6.BackColor = System.Drawing.Color.Transparent
+    Me.Label6.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label6.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label6.Location = New System.Drawing.Point(1, 7)
+    Me.Label6.Location = New System.Drawing.Point(0, 0)
     Me.Label6.Name = "Label6"
-    Me.Label6.Size = New System.Drawing.Size(38, 12)
+    Me.Label6.Size = New System.Drawing.Size(41, 27)
     Me.Label6.TabIndex = 2
     Me.Label6.Text = "件数"
     Me.Label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -262,13 +270,15 @@ Partial Class RecordTableForm
     '
     'Label17
     '
+    Me.Label17.BackColor = System.Drawing.Color.Transparent
+    Me.Label17.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label17.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label17.Location = New System.Drawing.Point(1, 7)
+    Me.Label17.Location = New System.Drawing.Point(0, 0)
     Me.Label17.Name = "Label17"
-    Me.Label17.Size = New System.Drawing.Size(38, 12)
+    Me.Label17.Size = New System.Drawing.Size(41, 27)
     Me.Label17.TabIndex = 2
     Me.Label17.Text = "生産性"
-    Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+    Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
     '
     'Panel26
     '
@@ -281,10 +291,12 @@ Partial Class RecordTableForm
     '
     'Label11
     '
+    Me.Label11.BackColor = System.Drawing.Color.Transparent
+    Me.Label11.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label11.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label11.Location = New System.Drawing.Point(1, 7)
+    Me.Label11.Location = New System.Drawing.Point(0, 0)
     Me.Label11.Name = "Label11"
-    Me.Label11.Size = New System.Drawing.Size(38, 12)
+    Me.Label11.Size = New System.Drawing.Size(41, 27)
     Me.Label11.TabIndex = 2
     Me.Label11.Text = "時間"
     Me.Label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -300,10 +312,12 @@ Partial Class RecordTableForm
     '
     'Label5
     '
+    Me.Label5.BackColor = System.Drawing.Color.Transparent
+    Me.Label5.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label5.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label5.Location = New System.Drawing.Point(1, 7)
+    Me.Label5.Location = New System.Drawing.Point(0, 0)
     Me.Label5.Name = "Label5"
-    Me.Label5.Size = New System.Drawing.Size(38, 12)
+    Me.Label5.Size = New System.Drawing.Size(41, 27)
     Me.Label5.TabIndex = 2
     Me.Label5.Text = "件数"
     Me.Label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -319,13 +333,15 @@ Partial Class RecordTableForm
     '
     'Label16
     '
+    Me.Label16.BackColor = System.Drawing.Color.Transparent
+    Me.Label16.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label16.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label16.Location = New System.Drawing.Point(1, 7)
+    Me.Label16.Location = New System.Drawing.Point(0, 0)
     Me.Label16.Name = "Label16"
-    Me.Label16.Size = New System.Drawing.Size(38, 12)
+    Me.Label16.Size = New System.Drawing.Size(41, 27)
     Me.Label16.TabIndex = 2
     Me.Label16.Text = "生産性"
-    Me.Label16.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+    Me.Label16.TextAlign = System.Drawing.ContentAlignment.MiddleRight
     '
     'Panel23
     '
@@ -338,10 +354,12 @@ Partial Class RecordTableForm
     '
     'Label10
     '
+    Me.Label10.BackColor = System.Drawing.Color.Transparent
+    Me.Label10.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label10.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label10.Location = New System.Drawing.Point(1, 7)
+    Me.Label10.Location = New System.Drawing.Point(0, 0)
     Me.Label10.Name = "Label10"
-    Me.Label10.Size = New System.Drawing.Size(38, 12)
+    Me.Label10.Size = New System.Drawing.Size(41, 27)
     Me.Label10.TabIndex = 2
     Me.Label10.Text = "時間"
     Me.Label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -357,10 +375,12 @@ Partial Class RecordTableForm
     '
     'Label4
     '
+    Me.Label4.BackColor = System.Drawing.Color.Transparent
+    Me.Label4.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label4.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label4.Location = New System.Drawing.Point(1, 7)
+    Me.Label4.Location = New System.Drawing.Point(0, 0)
     Me.Label4.Name = "Label4"
-    Me.Label4.Size = New System.Drawing.Size(38, 12)
+    Me.Label4.Size = New System.Drawing.Size(41, 27)
     Me.Label4.TabIndex = 2
     Me.Label4.Text = "件数"
     Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -376,13 +396,15 @@ Partial Class RecordTableForm
     '
     'Label15
     '
+    Me.Label15.BackColor = System.Drawing.Color.Transparent
+    Me.Label15.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label15.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label15.Location = New System.Drawing.Point(1, 7)
+    Me.Label15.Location = New System.Drawing.Point(0, 0)
     Me.Label15.Name = "Label15"
-    Me.Label15.Size = New System.Drawing.Size(38, 12)
+    Me.Label15.Size = New System.Drawing.Size(41, 27)
     Me.Label15.TabIndex = 2
     Me.Label15.Text = "生産性"
-    Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+    Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight
     '
     'Panel20
     '
@@ -395,10 +417,12 @@ Partial Class RecordTableForm
     '
     'Label9
     '
+    Me.Label9.BackColor = System.Drawing.Color.Transparent
+    Me.Label9.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label9.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label9.Location = New System.Drawing.Point(1, 7)
+    Me.Label9.Location = New System.Drawing.Point(0, 0)
     Me.Label9.Name = "Label9"
-    Me.Label9.Size = New System.Drawing.Size(38, 12)
+    Me.Label9.Size = New System.Drawing.Size(41, 27)
     Me.Label9.TabIndex = 2
     Me.Label9.Text = "時間"
     Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -414,10 +438,12 @@ Partial Class RecordTableForm
     '
     'Label3
     '
+    Me.Label3.BackColor = System.Drawing.Color.Transparent
+    Me.Label3.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label3.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label3.Location = New System.Drawing.Point(1, 7)
+    Me.Label3.Location = New System.Drawing.Point(0, 0)
     Me.Label3.Name = "Label3"
-    Me.Label3.Size = New System.Drawing.Size(38, 12)
+    Me.Label3.Size = New System.Drawing.Size(41, 27)
     Me.Label3.TabIndex = 2
     Me.Label3.Text = "件数"
     Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -433,13 +459,15 @@ Partial Class RecordTableForm
     '
     'Label14
     '
+    Me.Label14.BackColor = System.Drawing.Color.Transparent
+    Me.Label14.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label14.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label14.Location = New System.Drawing.Point(1, 7)
+    Me.Label14.Location = New System.Drawing.Point(0, 0)
     Me.Label14.Name = "Label14"
-    Me.Label14.Size = New System.Drawing.Size(38, 12)
+    Me.Label14.Size = New System.Drawing.Size(41, 27)
     Me.Label14.TabIndex = 2
     Me.Label14.Text = "生産性"
-    Me.Label14.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+    Me.Label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight
     '
     'Panel17
     '
@@ -452,10 +480,12 @@ Partial Class RecordTableForm
     '
     'Label8
     '
+    Me.Label8.BackColor = System.Drawing.Color.Transparent
+    Me.Label8.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label8.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label8.Location = New System.Drawing.Point(1, 7)
+    Me.Label8.Location = New System.Drawing.Point(0, 0)
     Me.Label8.Name = "Label8"
-    Me.Label8.Size = New System.Drawing.Size(38, 12)
+    Me.Label8.Size = New System.Drawing.Size(41, 27)
     Me.Label8.TabIndex = 2
     Me.Label8.Text = "時間"
     Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -471,10 +501,12 @@ Partial Class RecordTableForm
     '
     'Label2
     '
+    Me.Label2.BackColor = System.Drawing.Color.Transparent
+    Me.Label2.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label2.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label2.Location = New System.Drawing.Point(1, 7)
+    Me.Label2.Location = New System.Drawing.Point(0, 0)
     Me.Label2.Name = "Label2"
-    Me.Label2.Size = New System.Drawing.Size(38, 12)
+    Me.Label2.Size = New System.Drawing.Size(41, 27)
     Me.Label2.TabIndex = 2
     Me.Label2.Text = "件数"
     Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -490,13 +522,15 @@ Partial Class RecordTableForm
     '
     'Label13
     '
+    Me.Label13.BackColor = System.Drawing.Color.Transparent
+    Me.Label13.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label13.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label13.Location = New System.Drawing.Point(1, 7)
+    Me.Label13.Location = New System.Drawing.Point(0, 0)
     Me.Label13.Name = "Label13"
-    Me.Label13.Size = New System.Drawing.Size(38, 12)
+    Me.Label13.Size = New System.Drawing.Size(41, 27)
     Me.Label13.TabIndex = 2
     Me.Label13.Text = "生産性"
-    Me.Label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+    Me.Label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight
     '
     'Panel14
     '
@@ -509,10 +543,12 @@ Partial Class RecordTableForm
     '
     'Label7
     '
+    Me.Label7.BackColor = System.Drawing.Color.Transparent
+    Me.Label7.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label7.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label7.Location = New System.Drawing.Point(1, 7)
+    Me.Label7.Location = New System.Drawing.Point(0, 0)
     Me.Label7.Name = "Label7"
-    Me.Label7.Size = New System.Drawing.Size(38, 12)
+    Me.Label7.Size = New System.Drawing.Size(41, 27)
     Me.Label7.TabIndex = 2
     Me.Label7.Text = "時間"
     Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -528,10 +564,12 @@ Partial Class RecordTableForm
     '
     'Label1
     '
+    Me.Label1.BackColor = System.Drawing.Color.Transparent
+    Me.Label1.Dock = System.Windows.Forms.DockStyle.Fill
     Me.Label1.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label1.Location = New System.Drawing.Point(1, 7)
+    Me.Label1.Location = New System.Drawing.Point(0, 0)
     Me.Label1.Name = "Label1"
-    Me.Label1.Size = New System.Drawing.Size(38, 12)
+    Me.Label1.Size = New System.Drawing.Size(41, 27)
     Me.Label1.TabIndex = 2
     Me.Label1.Text = "件数"
     Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -547,13 +585,15 @@ Partial Class RecordTableForm
     '
     'lblCol3InItem1
     '
+    Me.lblCol3InItem1.BackColor = System.Drawing.Color.Transparent
+    Me.lblCol3InItem1.Dock = System.Windows.Forms.DockStyle.Fill
     Me.lblCol3InItem1.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.lblCol3InItem1.Location = New System.Drawing.Point(1, 7)
+    Me.lblCol3InItem1.Location = New System.Drawing.Point(0, 0)
     Me.lblCol3InItem1.Name = "lblCol3InItem1"
-    Me.lblCol3InItem1.Size = New System.Drawing.Size(38, 12)
+    Me.lblCol3InItem1.Size = New System.Drawing.Size(41, 27)
     Me.lblCol3InItem1.TabIndex = 1
     Me.lblCol3InItem1.Text = "生産性"
-    Me.lblCol3InItem1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+    Me.lblCol3InItem1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
     '
     'Panel11
     '
@@ -566,10 +606,12 @@ Partial Class RecordTableForm
     '
     'lblCol2InItem1
     '
+    Me.lblCol2InItem1.BackColor = System.Drawing.Color.Transparent
+    Me.lblCol2InItem1.Dock = System.Windows.Forms.DockStyle.Fill
     Me.lblCol2InItem1.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.lblCol2InItem1.Location = New System.Drawing.Point(1, 7)
+    Me.lblCol2InItem1.Location = New System.Drawing.Point(0, 0)
     Me.lblCol2InItem1.Name = "lblCol2InItem1"
-    Me.lblCol2InItem1.Size = New System.Drawing.Size(38, 12)
+    Me.lblCol2InItem1.Size = New System.Drawing.Size(41, 27)
     Me.lblCol2InItem1.TabIndex = 1
     Me.lblCol2InItem1.Text = "時間"
     Me.lblCol2InItem1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -586,10 +628,11 @@ Partial Class RecordTableForm
     '
     'lblCol1InItem1
     '
+    Me.lblCol1InItem1.Dock = System.Windows.Forms.DockStyle.Fill
     Me.lblCol1InItem1.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.lblCol1InItem1.Location = New System.Drawing.Point(1, 7)
+    Me.lblCol1InItem1.Location = New System.Drawing.Point(0, 0)
     Me.lblCol1InItem1.Name = "lblCol1InItem1"
-    Me.lblCol1InItem1.Size = New System.Drawing.Size(38, 12)
+    Me.lblCol1InItem1.Size = New System.Drawing.Size(41, 27)
     Me.lblCol1InItem1.TabIndex = 1
     Me.lblCol1InItem1.Text = "件数"
     Me.lblCol1InItem1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -634,10 +677,10 @@ Partial Class RecordTableForm
     '
     'lblItem7
     '
-    Me.lblItem7.AutoSize = True
-    Me.lblItem7.Location = New System.Drawing.Point(45, 5)
+    Me.lblItem7.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.lblItem7.Location = New System.Drawing.Point(0, 0)
     Me.lblItem7.Name = "lblItem7"
-    Me.lblItem7.Size = New System.Drawing.Size(38, 12)
+    Me.lblItem7.Size = New System.Drawing.Size(129, 24)
     Me.lblItem7.TabIndex = 1
     Me.lblItem7.Text = "Label7"
     Me.lblItem7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -654,10 +697,10 @@ Partial Class RecordTableForm
     '
     'lblItem6
     '
-    Me.lblItem6.AutoSize = True
-    Me.lblItem6.Location = New System.Drawing.Point(45, 5)
+    Me.lblItem6.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.lblItem6.Location = New System.Drawing.Point(0, 0)
     Me.lblItem6.Name = "lblItem6"
-    Me.lblItem6.Size = New System.Drawing.Size(38, 12)
+    Me.lblItem6.Size = New System.Drawing.Size(129, 24)
     Me.lblItem6.TabIndex = 1
     Me.lblItem6.Text = "Label6"
     Me.lblItem6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -674,10 +717,10 @@ Partial Class RecordTableForm
     '
     'lblItem5
     '
-    Me.lblItem5.AutoSize = True
-    Me.lblItem5.Location = New System.Drawing.Point(45, 5)
+    Me.lblItem5.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.lblItem5.Location = New System.Drawing.Point(0, 0)
     Me.lblItem5.Name = "lblItem5"
-    Me.lblItem5.Size = New System.Drawing.Size(38, 12)
+    Me.lblItem5.Size = New System.Drawing.Size(129, 24)
     Me.lblItem5.TabIndex = 1
     Me.lblItem5.Text = "Label5"
     Me.lblItem5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -694,10 +737,10 @@ Partial Class RecordTableForm
     '
     'lblItem4
     '
-    Me.lblItem4.AutoSize = True
-    Me.lblItem4.Location = New System.Drawing.Point(45, 5)
+    Me.lblItem4.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.lblItem4.Location = New System.Drawing.Point(0, 0)
     Me.lblItem4.Name = "lblItem4"
-    Me.lblItem4.Size = New System.Drawing.Size(38, 12)
+    Me.lblItem4.Size = New System.Drawing.Size(129, 24)
     Me.lblItem4.TabIndex = 1
     Me.lblItem4.Text = "Label4"
     Me.lblItem4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -714,10 +757,10 @@ Partial Class RecordTableForm
     '
     'lblItem3
     '
-    Me.lblItem3.AutoSize = True
-    Me.lblItem3.Location = New System.Drawing.Point(45, 5)
+    Me.lblItem3.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.lblItem3.Location = New System.Drawing.Point(0, 0)
     Me.lblItem3.Name = "lblItem3"
-    Me.lblItem3.Size = New System.Drawing.Size(38, 12)
+    Me.lblItem3.Size = New System.Drawing.Size(129, 24)
     Me.lblItem3.TabIndex = 1
     Me.lblItem3.Text = "Label3"
     Me.lblItem3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -734,10 +777,10 @@ Partial Class RecordTableForm
     '
     'lblItem2
     '
-    Me.lblItem2.AutoSize = True
-    Me.lblItem2.Location = New System.Drawing.Point(45, 5)
+    Me.lblItem2.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.lblItem2.Location = New System.Drawing.Point(0, 0)
     Me.lblItem2.Name = "lblItem2"
-    Me.lblItem2.Size = New System.Drawing.Size(38, 12)
+    Me.lblItem2.Size = New System.Drawing.Size(129, 24)
     Me.lblItem2.TabIndex = 1
     Me.lblItem2.Text = "Label2"
     Me.lblItem2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -754,10 +797,10 @@ Partial Class RecordTableForm
     '
     'lblItem1
     '
-    Me.lblItem1.AutoSize = True
-    Me.lblItem1.Location = New System.Drawing.Point(45, 5)
+    Me.lblItem1.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.lblItem1.Location = New System.Drawing.Point(0, 0)
     Me.lblItem1.Name = "lblItem1"
-    Me.lblItem1.Size = New System.Drawing.Size(38, 12)
+    Me.lblItem1.Size = New System.Drawing.Size(129, 24)
     Me.lblItem1.TabIndex = 1
     Me.lblItem1.Text = "Label1"
     Me.lblItem1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -873,19 +916,12 @@ Partial Class RecordTableForm
     Me.Panel9.ResumeLayout(False)
     Me.tblTitles.ResumeLayout(False)
     Me.Panel8.ResumeLayout(False)
-    Me.Panel8.PerformLayout()
     Me.Panel7.ResumeLayout(False)
-    Me.Panel7.PerformLayout()
     Me.Panel6.ResumeLayout(False)
-    Me.Panel6.PerformLayout()
     Me.Panel5.ResumeLayout(False)
-    Me.Panel5.PerformLayout()
     Me.Panel4.ResumeLayout(False)
-    Me.Panel4.PerformLayout()
     Me.Panel3.ResumeLayout(False)
-    Me.Panel3.PerformLayout()
     Me.Panel1.ResumeLayout(False)
-    Me.Panel1.PerformLayout()
     Me.pnlForTable.ResumeLayout(False)
     Me.ResumeLayout(False)
 

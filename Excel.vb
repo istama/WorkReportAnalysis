@@ -72,7 +72,11 @@ Namespace Office
 
     Public Function Read(sheetName As String, cells As List(Of Cell)) As List(Of String)
       'Return Access(OpMode.READ, sheetName, cells, Nothing)
-      Return Access2(Function(sheet, cell) ((cell.Row + 1) * cell.Col).ToString, 'Return GetTextFromExcel(sheet, cell),
+      Return Access2(Function(sheet, cell)
+                       'MessageBox.Show("row: " & cell.Row & " col " & cell.Col)
+                       Return ((cell.Row + 1) * cell.Col).ToString
+                       'Return GetTextFromExcel(sheet, cell),
+                     End Function,
                      sheetName,
                      cells)
     End Function
@@ -109,6 +113,7 @@ Namespace Office
     End Sub
 
     Private Function Access2(access As Func(Of Object, Cell, Object), sheetName As String, cells As List(Of Cell)) As List(Of String)
+      '本番はコメントアウトをはずす
       'If isInit = False Then
       '  Throw New Exception("初期処理が実行されていません。")
       'End If
@@ -118,17 +123,19 @@ Namespace Office
       Dim values As New List(Of Object)
 
       Try
+        '本番はコメントアウトをはずす
         'worksheets = Book.Worksheets
         'sheet = GetSheet(sheetName, worksheets)
 
         'cells.ForEach(Sub(cell) values.Add(access(sheet, cell)))
         cells.ForEach(Sub(cell) values.Add(access(Nothing, cell)))
 
-        'For Each cell As Cell In cells
-        '  'values.Add(access(sheet, cell))
-        '  values.Add(access(Nothing, cell))
-        'Next
+        ''For Each cell As Cell In cells
+        ''  'values.Add(access(sheet, cell))
+        ''  values.Add(access(Nothing, cell))
+        ''Next
 
+        '本番はコメントアウトする
         Return ToStringList(values)
       Catch ex As Exception
         Throw New Exception(ex.Message & vbCrLf & ex.StackTrace)

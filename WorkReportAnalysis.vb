@@ -1,6 +1,10 @@
 ﻿
 Imports MP.Utils.Model
 
+Imports MP.Utils.MyCollection.Immutable
+Imports RowRecord = MP.Utils.MyCollection.Immutable.MyLinkedList(Of String)
+Imports SheetRecord = MP.Utils.MyCollection.Immutable.MyLinkedList(Of MP.Utils.MyCollection.Immutable.MyLinkedList(Of String))
+
 Namespace WorkReportAnalysis
   Namespace App
     Public Class WorkReportAnalysisProperties
@@ -11,9 +15,9 @@ Namespace WorkReportAnalysis
       Public Shared KEY_EXCEL_FILE_DIR = "ExcelFileDir"
       Public Shared KEY_EXCEL_FILE_NAME_FORMAT = "ExcelFileNameFormat"
       Public Shared KEY_SHEET_NAME_FORMAT = "SheetNameFormat"
-      Public Shared KEY_SHEET_NAME_FORMAT2 = "SheetNameFormat2"
+      Public Shared KEY_SUM_SHEET_NAME_FORMAT = "SheetNameFormat2"
       Public Shared KEY_FIRST_DAY_OF_A_MONTH_ROW = "FirstDayOfAMonthRow"
-      Public Shared KEY_FIRST_ROW2 = "FirstRow2"
+      Public Shared KEY_FIRST_MONTH_OF_SUM_SHEET_ROW = "FirstRow2"
 
       Public Shared KEY_ITEM_NAME1 = "ItemName1"
       Public Shared KEY_COL1_OF_ITEM1 = "Col1OfItem1"
@@ -45,6 +49,7 @@ Namespace WorkReportAnalysis
       Public Shared KEY_COL3_OF_ITEM7 = "Col3OfItem7"
 
       Public Shared KEY_NOTE_COL = "NoteCol"
+      Public Shared KEY_WORKDAY_COL = "WorkdayCol"
 
       Public Shared MANAGER = New MP.Utils.Common.PropertyManager(SETTING_FILE_NAME, DefaultSettingProperties(), True)
 
@@ -84,10 +89,10 @@ Namespace WorkReportAnalysis
         dict(KEY_EXCEL_FILE_DIR) = MP.Details.Sys.App.GetCurrentDirectory()
         dict(KEY_EXCEL_FILE_NAME_FORMAT) = "件数報告書-{0}.xls"
         dict(KEY_SHEET_NAME_FORMAT) = "{0}月分"
-        dict(KEY_SHEET_NAME_FORMAT2) = "集計"
+        dict(KEY_SUM_SHEET_NAME_FORMAT) = "集計"
 
         dict(KEY_FIRST_DAY_OF_A_MONTH_ROW) = 7
-        dict(KEY_FIRST_ROW2) = 12
+        dict(KEY_FIRST_MONTH_OF_SUM_SHEET_ROW) = 12
 
         dict(KEY_ITEM_NAME1) = "郵政"
         dict(KEY_COL1_OF_ITEM1) = "C"
@@ -119,6 +124,7 @@ Namespace WorkReportAnalysis
         dict(KEY_COL3_OF_ITEM7) = "W"
 
         dict(KEY_NOTE_COL) = "X"
+        dict(KEY_WORKDAY_COL) = "Y"
 
         Return dict
       End Function
@@ -147,12 +153,12 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Shared Function GetSheetName2() As String
-        Return m.GetValue(App.WorkReportAnalysisProperties.KEY_SHEET_NAME_FORMAT2)
+        Return m.GetValue(App.WorkReportAnalysisProperties.KEY_SUM_SHEET_NAME_FORMAT)
       End Function
 
       Public Shared Function GetFirstDayOfAMonthRow() As Integer
         Dim row As String = m.GetValue(App.WorkReportAnalysisProperties.KEY_FIRST_DAY_OF_A_MONTH_ROW)
-        If Char.IsDigit(row) Then
+        If MP.Utils.General.MyChar.IsInteger(row) Then
           Return Integer.Parse(row)
         Else
           Throw New Exception("プロパティ<" & App.WorkReportAnalysisProperties.KEY_FIRST_DAY_OF_A_MONTH_ROW & ">の値が不正です。")
@@ -164,21 +170,26 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Shared Function GetFirstRow2() As Integer
-        Return GetIntger(App.WorkReportAnalysisProperties.KEY_FIRST_ROW2)
+        Return GetIntger(App.WorkReportAnalysisProperties.KEY_FIRST_MONTH_OF_SUM_SHEET_ROW)
       End Function
 
       Private Shared Function GetIntger(key As String) As Integer
         Dim value As String = m.GetValue(key)
-        If Char.IsDigit(value) Then
+        If MP.Utils.General.MyChar.IsInteger(value) Then
           Return Integer.Parse(value)
         Else
           Throw New Exception("プロパティ<" & key & ">の値が不正です。")
         End If
       End Function
 
-      Public Shared Function GetItemCols() As List(Of String)
+      Public Shared Function GetItemCols(ParamArray excludedItemKeys As String()) As List(Of String)
         Return App.WorkReportAnalysisProperties.ItemKeys().ToList.
-          ConvertAll(Function(k) If(Char.IsLetter(k), m.GetValue(k), ""))
+          FindAll(Function(k) Not excludedItemKeys.Contains(k)).
+          ConvertAll(
+            Function(k)
+              Dim col As String = m.GetValue(k)
+              Return If(Char.IsLetter(col), col, "")
+            End Function)
       End Function
 
       Public Shared Function GetYear() As Integer
@@ -187,103 +198,448 @@ Namespace WorkReportAnalysis
     End Class
   End Namespace
 
-  Namespace Table
-    Public Class RecordArranger
+  Namespace Control
+    Public Class UserRecordLoader
+      Private _UserRecordManager As UserRecordManager
+      Public ReadOnly Property UserRecordManager As UserRecordManager
+        Get
+          Return _UserRecordManager
+        End Get
+      End Property
 
-      Public Shared Function InsertEmpty(record As List(Of Model.RowRecord), setHeader As Boolean, ParamArray rows As Integer()) As List(Of Model.RowRecord)
-        Dim newRecord As New List(Of Model.RowRecord)
+      Private Excel As Excel.ExcelAccessor
+      Private AccessPropList As List(Of Excel.AccessProperties)
 
-        For idx As Integer = 0 To (record.Count - 1)
-          If rows.Contains(idx) Then
-            newRecord.Add(EmptyRowRecord(record.First.List.Count, setHeader))
-          End If
-          newRecord.Add(record(idx))
-        Next
+      Public Sub New(excel As Excel.ExcelAccessor, manager As UserRecordManager)
+        _UserRecordManager = manager
+        Me.Excel = excel
+        AccessPropList = New List(Of Excel.AccessProperties)
 
-        Return newRecord
-      End Function
+        Init()
+      End Sub
 
-      Public Shared Function PadTailWithEmpty(record As List(Of Model.RowRecord), setHeader As Boolean, size As Integer) As List(Of Model.RowRecord)
-        Dim newRecord As New List(Of Model.RowRecord)
+      Private Sub Init()
+        AccessPropList.Clear()
 
-        For idx As Integer = 0 To size - 1
-          If idx < record.Count Then
-            newRecord.Add(record(idx))
-          Else
-            newRecord.Add(EmptyRowRecord(record.First.List.Count, setHeader))
-          End If
-        Next
+        Dim term As MyLinkedList(Of Tuple(Of Integer, Integer)) =
+          _UserRecordManager.GetReadRecordTerm.GetTermList()
 
-        Return newRecord
-      End Function
+        term.ForEach(
+          Sub(e)
+            Dim p As Excel.AccessProperties
+            With p
+              .RecordKey = UserRecordManager.GetSheetName(e.Item2)
+              .SheetName = UserRecordManager.GetSheetName(e.Item2)
+              .Cols = App.FileFormat.GetItemCols()
+              .FirstRow = App.FileFormat.GetFirstDayOfAMonthRow()
+              .RowSize = Date.DaysInMonth(e.Item1, e.Item2) + 1
+            End With
+            AccessPropList.Add(p)
+          End Sub)
 
-      Private Shared Function EmptyRowRecord(cnt As Integer, setHeader As Boolean) As Model.RowRecord
-        Dim r As Model.RowRecord
-        With r
-          Dim l As New List(Of String)
-          l.Add(If(setHeader, Excel.ExcelAccessor.ROW_RECORD_HEADER, ""))
-          For i As Integer = 2 To cnt
-            l.Add("")
-          Next
-          .List = l
+        Dim sum As Excel.AccessProperties
+        With sum
+          .RecordKey = UserRecordManager.GetSumSheetName
+          .SheetName = UserRecordManager.GetSumSheetName
+          .Cols = App.FileFormat.GetItemCols(App.WorkReportAnalysisProperties.KEY_NOTE_COL)
+          .FirstRow = App.FileFormat.GetFirstRow2()
+          .RowSize = 6 * term.Count + 1
         End With
-        Return r
+        AccessPropList.Add(sum)
+      End Sub
+
+      Public Sub LoadUserRecord()
+
+        For Each info As Model.ExpandedUserInfo In _UserRecordManager.GetUserInfoList
+          Dim fileName As String = ""
+          Try
+            If Not _UserRecordManager.ContainsRecord(info.GetIdNum) Then
+              fileName = App.FileFormat.GetFilePath(info.GetIdNum())
+              Load(info)
+            End If
+          Catch ex As Exception
+            Dim res As DialogResult =
+              MessageBox.Show(
+              "ファイル:" & fileName & "の読み込みに失敗しました。 / id: " & vbCrLf &
+              "読み込みを続けますか？" & vbCrLf & vbCrLf & ex.Message,
+              "Error!", MessageBoxButtons.YesNo, MessageBoxIcon.Error)
+            If res = DialogResult.No Then
+              Exit For
+            End If
+          End Try
+        Next
+
+      End Sub
+
+      Public Sub Load(userInfo As Model.ExpandedUserInfo)
+        If Not _UserRecordManager.ContainsRecord(userInfo.GetIdNum) Then
+          Dim fileName As String = App.FileFormat.GetFilePath(userInfo.GetIdNum())
+          Dim userRecord As New Model.UserRecord(userInfo)
+
+          Excel.Read(fileName, AccessPropList).
+              ForEach(Sub(res) userRecord.Add(res.AccessProperties.SheetName, res))
+          SyncLock _UserRecordManager
+            _UserRecordManager.Add(userInfo.GetIdNum, userRecord)
+          End SyncLock
+        End If
+      End Sub
+
+    End Class
+
+    Public Class ReadRecordTerm
+      Private _StartMonth As Integer
+      Public ReadOnly Property StartMonth() As Integer
+        Get
+          Return _StartMonth
+        End Get
+      End Property
+
+      Private _StartYear As Integer
+      Public ReadOnly Property StartYear() As Integer
+        Get
+          Return _StartYear
+        End Get
+      End Property
+
+      Private _EndMonth As Integer
+      Public ReadOnly Property EndMonth() As Integer
+        Get
+          Return _EndMonth
+        End Get
+      End Property
+
+      Private _EndYear As Integer
+      Public ReadOnly Property EndYear() As Integer
+        Get
+          Return _EndYear
+        End Get
+      End Property
+
+      Private _DateList As MyLinkedList(Of Tuple(Of Integer, Integer))
+      Public ReadOnly Property DateList As MyLinkedList(Of Tuple(Of Integer, Integer))
+        Get
+          Return _DateList
+        End Get
+      End Property
+
+      Public Sub New(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer)
+        If ValidTerm(startMonth, startYear, endMonth, endYear) Then
+          Me._StartMonth = startMonth
+          Me._StartYear = startYear
+          Me._EndMonth = endMonth
+          Me._EndYear = endYear
+          _DateList = GetTermList()
+          '_DateList.ForEach(Function(t) MessageBox.Show(t.Item1 & " " & t.Item2))
+        Else
+          Throw New Exception("期間の値が不正です。")
+        End If
+      End Sub
+
+      Public Function GetTermList() As MyLinkedList(Of Tuple(Of Integer, Integer))
+        Return GetTerm(_StartMonth, _StartYear, _EndMonth, _EndYear)
+      End Function
+
+      Public Function InTerm(month As Integer, year As Integer) As Boolean
+        Return AfterStartDate(month, year) AndAlso BeforeEndDate(month, year)
+      End Function
+
+      Private Function AfterStartDate(month As Integer, year As Integer) As Boolean
+        Return _
+          year = StartYear AndAlso month >= StartMonth OrElse
+          year > StartYear
+      End Function
+
+      Private Function BeforeEndDate(month As Integer, year As Integer) As Boolean
+        Return _
+          year = EndYear AndAlso month <= EndMonth OrElse
+          year < EndYear
+      End Function
+
+      Private Function GetTerm(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer) As MyLinkedList(Of Tuple(Of Integer, Integer))
+        If startYear = endYear AndAlso startMonth = endMonth Then
+          Return New MyLinkedList(Of Tuple(Of Integer, Integer))(Tuple.Create(startYear, startMonth))
+        Else
+          Dim l As MyLinkedList(Of Tuple(Of Integer, Integer)) = If(
+          startMonth < 12,
+          GetTerm(startMonth + 1, startYear, endMonth, endYear),
+          GetTerm(1, startYear + 1, endMonth, endYear))
+          Return l.AddFirst(Tuple.Create(startYear, startMonth))
+        End If
+      End Function
+
+      Private Function ValidTerm(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer) As Boolean
+        Return _
+          (startMonth >= 1 AndAlso startMonth <= 12 AndAlso endMonth >= 1 AndAlso endMonth <= 12) AndAlso
+          startYear < endYear OrElse (startYear = endYear AndAlso startMonth <= endMonth)
       End Function
     End Class
-  End Namespace
 
-  Namespace Control
     Public Class UserRecordManager
       Private UserInfoList As List(Of Model.ExpandedUserInfo)
       Private UserRecordMap As IDictionary(Of String, Model.UserRecord)
-      Private ExcelReader As Excel.ExcelReader
+      Private RecordTerm As ReadRecordTerm
 
-      Public Sub New(reader As Excel.ExcelReader, userInfoList As List(Of Model.ExpandedUserInfo))
+      Public Shared Function GetSheetName(month) As String
+        Return App.FileFormat.GetSheetName(month)
+      End Function
+
+      Public Shared Function GetSumSheetName() As String
+        Return App.FileFormat.GetSheetName2
+      End Function
+
+      Public Sub New(userInfoList As List(Of Model.ExpandedUserInfo), term As ReadRecordTerm)
         Me.UserInfoList = userInfoList
         UserRecordMap = New Dictionary(Of String, Model.UserRecord)
-        ExcelReader = reader
+        RecordTerm = term
       End Sub
+
+      Public Function GetReadRecordTerm() As ReadRecordTerm
+        Return RecordTerm
+      End Function
 
       Public Function GetUserInfoList() As List(Of Model.ExpandedUserInfo)
         Return UserInfoList
       End Function
 
+      Public Sub Add(id As String, record As Model.UserRecord)
+        If UserInfoList.Find(Function(info) info.GetIdNum = id) IsNot Nothing Then
+          UserRecordMap.Add(id, record)
+        End If
+      End Sub
+
+      Public Function ContainsRecord(id As String) As Boolean
+        Return UserRecordMap.ContainsKey(id)
+      End Function
+
       Public Function GetUserRecord(id As String) As Model.UserRecord
-        Return UserRecordMap(id)
+        If UserRecordMap.ContainsKey(id) Then
+          Return UserRecordMap(id)
+        Else
+          Throw New Exception("指定したIDのデータはありません。 id: " & id)
+        End If
       End Function
 
-      Public Function GetAllUserRecord() As List(Of Model.UserRecord)
-        Return UserRecordMap.Values
-      End Function
-
-      Public Function GetTotalRecordAt(month As Integer, day As Integer) As List(Of Model.RowRecord)
-        Dim key As String = App.FileFormat.GetSheetName(month)
-        Return _
-          UserRecordMap.Values.ToList.
-            ConvertAll(Function(r) r.GetSheetRecord(key)).
-            ConvertAll(Function(s) s.GetAll()(day - 1))
-      End Function
-
-      Public Function ReadUserRecord(userInfo As Model.ExpandedUserInfo) As Model.UserRecord
-        Dim userRecord As Model.UserRecord
-
-        SyncLock Me
-          If UserRecordMap Is Nothing OrElse Not UserRecordMap.ContainsKey(userInfo.GetIdNum()) Then
-            userRecord = New Model.UserRecord(userInfo)
-
-            Dim fileName As String = App.FileFormat.GetFileName(userInfo.GetIdNum())
-            ExcelReader.read(fileName).ToList.
-            ForEach(Sub(kv) userRecord.Add(kv.Key, kv.Value))
-
-            UserRecordMap.Add(userInfo.GetIdNum(), userRecord)
+      Public Function GetSheetRecord(id As String, key As String) As SheetRecord
+        If key = GetSumSheetName() Then
+          Return GetUsersSumRecord(id)
+        Else
+          Dim t As Tuple(Of Integer, Integer) =
+            RecordTerm.DateList.Find(Function(e) key = GetSheetName(e.Item2))
+          If t IsNot Nothing Then
+            Return GetUsersMonthlyRecord(id, t.Item2, t.Item1)
           Else
-            'MessageBox.Show("file that already has been read.")
-            userRecord = UserRecordMap(userInfo.GetIdNum)
+            Throw New Exception("指定したキーのデータはありません。 key: " & key)
           End If
-        End SyncLock
-
-        Return userRecord
+        End If
       End Function
+
+      Public Function GetUsersMonthlyRecord(id As String, month As Integer, year As Integer) As SheetRecord
+        If OutOfTerm(month, year) Then
+          Throw New Exception("指定した年月のデータはありません。")
+        Else
+          Dim sheetName As String = GetSheetName(month)
+          Dim record As SheetRecord = GetUserRecord(id).GetSheetRecord(sheetName)
+          Dim go As Func(Of Integer, SheetRecord, SheetRecord) =
+            Function(idx, rec)
+              If idx < Date.DaysInMonth(year, month) Then
+                Dim rr As RowRecord = rec.First.AddFirst((idx + 1).ToString & "日")
+                Return go(idx + 1, rec.Rest).AddFirst(rr)
+              ElseIf idx < RecordTableForm.TABLE_ROW_COUNT - 1
+                Return go(idx + 1, rec).AddFirst(RowRecord.Nil)
+              ElseIf idx = RecordTableForm.TABLE_ROW_COUNT - 1
+                Dim rr As RowRecord = rec.First.AddFirst("合計")
+                Return go(idx + 1, rec.Rest).AddFirst(rr)
+              Else
+                Return SheetRecord.Nil
+              End If
+            End Function
+          Return go(0, record)
+        End If
+      End Function
+
+      Public Function GetUsersSumRecord(id As String) As SheetRecord
+        Dim record As SheetRecord = GetUserRecord(id).GetSheetRecord(GetSumSheetName)
+        Dim dateList As MyLinkedList(Of Tuple(Of Integer, Integer)) = RecordTerm.DateList
+        Dim go As Func(Of Integer, SheetRecord, MyLinkedList(Of Tuple(Of Integer, Integer)), SheetRecord) =
+          Function(rowIdx, rec, term)
+            If rec.Empty Then
+              Return SheetRecord.Nil
+            ElseIf rec.IsLast Then
+              Dim rr As RowRecord = rec.First.AddFirst("合計")
+              Return go(rowIdx + 1, rec.Rest, term).AddFirst(rr)
+            Else
+              Dim rr As RowRecord = rec.First
+              Dim idx As Integer = rowIdx Mod 6
+
+              If idx < 5 Then
+                Dim nrr As RowRecord = rr.AddFirst("第" & (idx + 1).ToString & "週")
+                If idx = 0 Then
+                  Dim empty As RowRecord = RowRecord.Nil
+                  Dim header = If(
+                    Not term.Empty,
+                    term.First.Item2.ToString & "月",
+                    "")
+                  Return go(rowIdx + 1, rec.Rest, term.Rest).AddFirst(nrr).AddFirst(empty.AddFirst(header))
+                Else
+                  Return go(rowIdx + 1, rec.Rest, term).AddFirst(nrr)
+                End If
+              Else
+                Dim nrr As RowRecord = rr.AddFirst("月計")
+                Return go(rowIdx + 1, rec.Rest, term).AddFirst(nrr)
+              End If
+            End If
+          End Function
+        Return go(0, record, dateList)
+      End Function
+
+      Public Function GetDailyTotalRecord(day As Integer, month As Integer, year As Integer) As SheetRecord
+        If OutOfTerm(month, year) Then
+          Throw New Exception("指定した日付のデータはありません。")
+        ElseIf Not ValidDay(day, month, year)
+          Throw New Exception("日付の値が不正です。")
+        Else
+          Dim sheetName As String = GetSheetName(month)
+          Return _
+            GetTotalRecord(Function(userRecord) userRecord.GetSheetRecord(sheetName).GetItem(day - 1))
+        End If
+      End Function
+
+      Public Function GetWeeklyTotalRecord(week As Integer, month As Integer, year As Integer) As SheetRecord
+        If OutOfTerm(month, year) Then
+          Throw New Exception("指定した週のデータはありません。")
+        ElseIf week < 1 OrElse week > 5 OrElse month < 1 OrElse month > 12
+          Throw New Exception("日付の値が不正です。")
+        Else
+          Dim offset As Integer =
+            RecordTerm.DateList.IndexWhere(Function(t) t.Item2 = month AndAlso t.Item1 = year) * 6
+          If offset >= 0 Then
+            Return _
+              GetTotalRecord(Function(userRecord) userRecord.GetSheetRecord(GetSumSheetName).GetItem(offset + week - 1))
+          Else
+            Throw New Exception("指定した月のデータはありません。 month: " & month)
+          End If
+        End If
+      End Function
+
+      Public Function GetMonthlyTotalRecord(month As Integer, year As Integer) As SheetRecord
+        If OutOfTerm(month, year) Then
+          Throw New Exception("指定した月のデータはありません。")
+        ElseIf month < 1 OrElse month > 12
+          Throw New Exception("日付の値が不正です。")
+        Else
+          Dim idx As Integer =
+            RecordTerm.DateList.IndexWhere(Function(t) t.Item2 = month AndAlso t.Item1 = year) * 6 + 5
+          If idx >= 0 Then
+            Return _
+              GetTotalRecord(Function(userRecord) userRecord.GetSheetRecord(GetSumSheetName).GetItem(idx))
+          Else
+            Throw New Exception("指定した月のデータはありません。 month: " & month)
+          End If
+        End If
+      End Function
+
+      Public Function GetAllTotalRecord() As SheetRecord
+        Dim idx As Integer =
+          RecordTerm.DateList.Count * 6
+        Return _
+            GetTotalRecord(Function(userRecord) userRecord.GetSheetRecord(GetSumSheetName).GetItem(idx))
+      End Function
+
+      Private Function GetTotalRecord(getRowRecord As Func(Of Model.UserRecord, RowRecord)) As SheetRecord
+        Dim record As List(Of RowRecord) =
+          UserRecordMap.ToList.
+            FindAll(Function(kv) UserInfoList.Exists(Function(info) info.GetIdNum = kv.Key)).
+            ConvertAll(Of RowRecord)(
+              Function(kv)
+                Dim key As String = kv.Key
+                Dim rec As Model.UserRecord = kv.Value
+                Dim userName As String = UserInfoList.Find(Function(info) info.GetIdNum = key).GetName
+                Dim rr As RowRecord = getRowRecord(rec)
+                Return rr.AddFirst(userName).AddFirst(key)
+              End Function)
+
+        Return CalcSumOfCols(ListToImmutableList(record), 0, 1)
+      End Function
+
+      Private Function CalcSumOfCols(record As SheetRecord, ParamArray excludedCols As Integer()) As SheetRecord
+        Dim sumlist As New List(Of Integer)
+
+        Dim calc As Action(Of Integer, RowRecord) =
+          Sub(idx, rec)
+            If rec.Empty Then
+              Return
+            Else
+              Dim value As Double = Model.RecordConverter.ToDouble(rec.First)
+              If idx < sumlist.Count Then
+                If Not excludedCols.Contains(idx) Then
+                  sumlist.Item(idx) = value + sumlist(idx)
+                End If
+              Else
+                If Not excludedCols.Contains(idx) Then
+                  sumlist.Add(value)
+                Else
+                  sumlist.Add(0)
+                End If
+              End If
+              calc(idx + 1, rec.Rest)
+            End If
+          End Sub
+
+        record.ForEach(Sub(rec) calc(0, rec))
+
+        Dim toLinkedList As Func(Of Integer, RowRecord) =
+          Function(idx)
+            If idx >= sumlist.Count Then
+              Return RowRecord.Nil
+            Else
+              Dim value As String = If(sumlist(idx) = 0, "", sumlist(idx).ToString)
+              Return toLinkedList(idx + 1).AddFirst(value)
+            End If
+          End Function
+
+        Return record.AddLast(toLinkedList(0))
+      End Function
+
+      Public Function GetAllUserRecord() As MyLinkedList(Of Model.UserRecord)
+        Dim go As Func(Of List(Of Model.UserRecord), MyLinkedList(Of Model.UserRecord)) =
+          Function(values)
+            If values.Count = 0 Then
+              Return MyLinkedList(Of Model.UserRecord).Nil()
+            Else
+              Return go(values.Skip(1)).AddFirst(values.First)
+            End If
+          End Function
+        Return go(UserRecordMap.Values)
+      End Function
+
+      Private Function OutOfTerm(month As Integer, year As Integer) As Boolean
+        Dim sYear As Integer = RecordTerm.StartYear
+        Dim sMonth As Integer = RecordTerm.StartMonth
+        Dim eYear As Integer = RecordTerm.EndYear
+        Dim eMonth As Integer = RecordTerm.EndMonth
+        Return (year < sYear) _
+          OrElse (year = sYear AndAlso month < sMonth) _
+          OrElse (year = eYear AndAlso month > eMonth) _
+          OrElse (year > RecordTerm.EndYear)
+      End Function
+
+      Private Function ValidDay(day As Integer, month As Integer, year As Integer) As Boolean
+        Return day >= 1 AndAlso day <= Date.DaysInMonth(year, month)
+      End Function
+
+      Private Function ListToImmutableList(Of T)(list As List(Of T)) As MyLinkedList(Of T)
+        Dim il As MyLinkedList(Of T) = MyLinkedList(Of T).Nil
+        Dim go As Func(Of Integer, MyLinkedList(Of T)) =
+          Function(idx)
+            If idx >= list.Count Then
+              Return MyLinkedList(Of T).Nil
+            Else
+              Return go(idx + 1).AddFirst(list(idx))
+            End If
+          End Function
+        Return go(0)
+      End Function
+
     End Class
   End Namespace
 
@@ -293,83 +649,27 @@ Namespace WorkReportAnalysis
       Dim SheetName As String
       Dim Cols As List(Of String)
       Dim FirstRow As Integer
-      Dim RowCnt As Integer
-      Dim UseRowRecordHeader As Boolean
+      Dim RowSize As Integer
     End Structure
 
-    Public Class ExcelReader
-      Public KEY_TOTAL_SHEET_RECORD As String = "Total"
-
-      Private Excel As Office.Excel
-      Private AccessPropList As List(Of AccessProperties)
-
-      Public Sub New(year As Integer)
-        Me.Excel = New Office.Excel()
-        AccessPropList = New List(Of AccessProperties)
-
-        For month As Integer = 10 To 12
-          Dim p As AccessProperties
-          With p
-            .RecordKey = App.FileFormat.GetSheetName(month)
-            .SheetName = App.FileFormat.GetSheetName(month)
-            .Cols = App.FileFormat.GetItemCols()
-            .FirstRow = App.FileFormat.GetFirstDayOfAMonthRow()
-            .RowCnt = Date.DaysInMonth(year, month) + 1
-            .UseRowRecordHeader = True
-          End With
-          AccessPropList.Add(p)
-        Next
-
-        Dim t As AccessProperties
-        With t
-          .RecordKey = App.FileFormat.GetSheetName2
-          .SheetName = App.FileFormat.GetSheetName2()
-          .Cols = App.FileFormat.GetItemCols()
-          .FirstRow = App.FileFormat.GetFirstRow2()
-          .RowCnt = 6 * 3 + 1
-          .UseRowRecordHeader = True
-        End With
-        AccessPropList.Add(t)
-      End Sub
-
-      Public Sub Init()
-        ' Fix 本番ではコメントアウトしない
-        'Excel.Init()
-      End Sub
-
-      Public Sub Quit()
-        ' Fix 本番ではコメントアウトしない
-        'Excel.Quit()
-      End Sub
-
-      Public Function read(fileName As String) As IDictionary(Of String, Model.SheetRecord)
-        Dim a As ExcelAccessor = New ExcelAccessor(Excel)
-        Dim dict As New Dictionary(Of String, Model.SheetRecord)
-        Try
-          ' Fix 本番ではコメントアウトしない
-          'a.Open(fileName)
-
-          AccessPropList.
-            ForEach(Sub(p) dict.Add(p.RecordKey, a.ReadSheetRecord(p)))
-        Catch ex As Exception
-          Throw ex
-        Finally
-          ' Fix 本番ではコメントアウトしない
-          'a.Close()
-        End Try
-
-        Return dict
-      End Function
-    End Class
+    Public Structure RecordAndProperty
+      Dim SheetRecord As SheetRecord
+      Dim AccessProperties As AccessProperties
+    End Structure
 
     Public Class ExcelAccessor
-      Public Shared ROW_RECORD_HEADER = "<HEAD>"
-
-      Private Shared MAX_DAYS_IN_A_MONTH As Integer = 31
       Private Excel As Office.Excel
 
       Public Sub New(excel As Office.Excel)
         Me.Excel = excel
+      End Sub
+
+      Public Sub Init()
+        Excel.Init()
+      End Sub
+
+      Public Sub Quit()
+        Excel.Quit()
       End Sub
 
       Public Sub Open(fileName As String)
@@ -380,34 +680,55 @@ Namespace WorkReportAnalysis
         Excel.Close()
       End Sub
 
-      Public Function ReadSheetRecord(prop As AccessProperties) As Model.SheetRecord
-        Dim sheetRecord As Model.SheetRecord = New Model.SheetRecord()
+      Public Function Read(fileName As String, props As List(Of AccessProperties)) As List(Of RecordAndProperty)
+        Dim list As New List(Of RecordAndProperty)
 
-        Dim cells As List(Of Office.Cell) = CreateCellList(prop.Cols, prop.FirstRow, prop.RowCnt)
-        Dim values As List(Of String) = Excel.Read(prop.SheetName, ExtractValidCells(cells))
-        Dim record As List(Of String) = MakeRecordList(cells, values)
+        Try
+          ' Fix 本番ではコメントアウトしない
+          'Open(fileName)
+          props.ForEach(
+            Sub(p)
+              Dim rp As RecordAndProperty
+              With rp
+                .SheetRecord = ReadSheetRecord(p)
+                .AccessProperties = p
+              End With
 
-        For row As Integer = 0 To (prop.RowCnt - 1)
-          Dim l As New List(Of String)
+              list.Add(rp)
+            End Sub)
 
-          If prop.UseRowRecordHeader Then
-            l.Add(ROW_RECORD_HEADER)
-          End If
+        Finally
+          ' Fix 本番ではコメントアウトしない
+          'Close()
+        End Try
 
+        Return list
+      End Function
+
+      Private Function ReadSheetRecord(prop As AccessProperties) As SheetRecord
+        Dim sRecord As SheetRecord = SheetRecord.Nil()
+
+        Dim cells As List(Of Office.Cell) = CreateCellList(prop.Cols, prop.FirstRow, prop.RowSize)
+        Dim tmp As List(Of String) = Excel.Read(prop.SheetName, ExtractValidCells(cells))
+        Dim values As List(Of String) = MakeRecordList(cells, tmp)
+
+        Dim go As Func(Of Integer, Integer, RowRecord) =
+          Function(idx, max)
+            If idx > max Then
+              Return RowRecord.Nil()
+            Else
+              Return go(idx + 1, max).AddFirst(values(idx))
+            End If
+          End Function
+
+        For row As Integer = 0 To (prop.RowSize - 1)
           Dim offset As Integer = row * prop.Cols.Count()
-          For idx As Integer = 0 To (prop.Cols.Count() - 1)
-            l.Add(record(offset + idx))
-          Next
+          Dim rec As RowRecord = go(offset, offset + prop.Cols.Count() - 1)
 
-          Dim rowRecord As Model.RowRecord
-          With rowRecord
-            .List = l
-          End With
-
-          sheetRecord.Add(rowRecord)
+          sRecord = sRecord.AddFirst(rec)
         Next
 
-        Return sheetRecord
+        Return sRecord.reverse
       End Function
 
       Private Function CreateCellList(cols As List(Of String), offsetRow As Integer, rowCnt As Integer) As List(Of Office.Cell)
@@ -433,13 +754,6 @@ Namespace WorkReportAnalysis
 
       Private Function ExtractValidCells(cells As List(Of Office.Cell)) As List(Of Office.Cell)
         Return cells.FindAll(Function(cell) IsValidCell(cell))
-        'Dim l As New List(Of Office.Cell)
-        'For Each cell As Office.Cell In cells
-        '  If IsValidCell(cell) Then
-        '    l.Add(cell)
-        '  End If
-        'Next
-        'Return l
       End Function
 
       Private Function IsValidCell(cell As Office.Cell) As Boolean
@@ -457,17 +771,6 @@ Namespace WorkReportAnalysis
               Return ""
             End If
           End Function)
-        'Dim l As New List(Of String)
-        'Dim idx As Integer = 0
-        'For Each cell As Office.Cell In cells
-        '  If IsValidCell(cell) Then
-        '    l.Add(record(idx))
-        '    idx += 1
-        '  Else
-        '    l.Add("")
-        '  End If
-        'Next
-        'Return l
       End Function
     End Class
 
@@ -496,11 +799,11 @@ Namespace WorkReportAnalysis
 
     Public Class UserRecord
       Private UserInfo As ExpandedUserInfo
-      Private Record As IDictionary(Of String, SheetRecord)
+      Private RecordAndProperties As IDictionary(Of String, Excel.RecordAndProperty)
 
       Public Sub New(userInfo As ExpandedUserInfo)
         Me.UserInfo = userInfo
-        Me.Record = New Dictionary(Of String, SheetRecord)
+        Me.RecordAndProperties = New Dictionary(Of String, Excel.RecordAndProperty)
       End Sub
 
       Public Function GetIdNum() As String
@@ -511,57 +814,23 @@ Namespace WorkReportAnalysis
         Return UserInfo.GetName()
       End Function
 
-      Public Sub Add(key As String, record As SheetRecord)
-        Me.Record.Add(key, record)
+      Public Sub Add(key As String, recordAndProperty As Excel.RecordAndProperty)
+        Me.RecordAndProperties.Add(key, recordAndProperty)
       End Sub
 
       Public Function ContainsKey(key As String) As Boolean
-        Return Record.ContainsKey(key)
+        Return RecordAndProperties.ContainsKey(key)
       End Function
 
       Public Function GetSheetRecord(key As String) As SheetRecord
-        Return Record(key)
+        Return RecordAndProperties(key).SheetRecord
       End Function
-    End Class
-
-    Public Class SheetRecord
-      Private Record As List(Of RowRecord)
-
-      Public Sub New()
-        Record = New List(Of RowRecord)()
-      End Sub
-
-      Public Sub Add(ByVal record As RowRecord)
-        Me.Record.Add(record)
-      End Sub
-
-      Public Function GetAll() As List(Of RowRecord)
-        Return Record.ToList
-      End Function
-
-      Public Function GetFilteringRecord(filter As Filter) As List(Of RowRecord)
-        Return Record.FindAll(Function(r) filter(r))
-      End Function
-
-      Public Delegate Function Filter(r As RowRecord) As Boolean
 
     End Class
-
-    Public Module RecordFileters
-      Public All As SheetRecord.Filter = AddressOf _All
-
-      Private Function _All(r As RowRecord) As Boolean
-        Return True
-      End Function
-    End Module
-
-    Public Structure RowRecord
-      Dim List As List(Of String)
-    End Structure
 
     Module RecordConverter
       Public Function ToInt(r As String) As Integer
-        If Char.IsDigit(r) Then
+        If Utils.General.MyChar.IsInteger(r) Then
           Return Integer.Parse(r)
         Else
           Return 0
@@ -569,7 +838,7 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Function ToDouble(r As String) As Double
-        If Char.IsDigit(r) Then
+        If Utils.General.MyChar.IsDouble(r) Then
           Return Double.Parse(r)
         Else
           Return 0.0
@@ -579,6 +848,80 @@ Namespace WorkReportAnalysis
   End Namespace
 
   Namespace Layout
+
+    Public Class TableDrawer
+      Private ScrolledPanel As Panel
+
+      Private TextCols As List(Of Integer)
+      Private NoteCols As List(Of Integer)
+
+      Private FuncBackColor As Func(Of Integer, Color)
+
+      Public Sub New(scrolledPanel As Panel)
+        Me.ScrolledPanel = scrolledPanel
+        TextCols = New List(Of Integer)
+        NoteCols = New List(Of Integer)
+        FuncBackColor = Function(row) Color.Transparent
+      End Sub
+
+      Private Sub New(scrolledPanel As Panel, textCols As List(Of Integer), noteCols As List(Of Integer))
+        Me.ScrolledPanel = scrolledPanel
+        Me.TextCols = textCols
+        Me.NoteCols = noteCols
+        FuncBackColor = Function(row) Color.Transparent
+      End Sub
+
+      Public Function SetTextCols(ParamArray cols As Integer()) As TableDrawer
+        TextCols.AddRange(cols)
+        Return Me
+      End Function
+
+      Public Function SetNoteCols(ParamArray cols As Integer()) As TableDrawer
+        NoteCols.AddRange(cols)
+        Return Me
+      End Function
+
+      Public Function SetFuncBackColor(f As Func(Of Integer, Color)) As TableDrawer
+        FuncBackColor = f
+        Return Me
+      End Function
+
+      Public Function CreateCell(text As String, insertCol As Integer, insertRow As Integer) As Panel
+        Dim panel As Panel = CreatePanel(FuncBackColor(insertRow))
+        Dim label As Label = CreateLabel(text, insertCol)
+        panel.Controls.Add(label)
+        Return panel
+      End Function
+
+      Public Function CreatePanel(backColor) As Panel
+        Dim panel As Panel = ControlDrawer.CreatePanelInTable(backColor)
+        AddHandler panel.Click, AddressOf ClickEvent
+        Return panel
+      End Function
+
+      Public Function CreateLabel(text As String, insertCol As Integer) As Label
+        Dim label As Label
+        If TextCols.Contains(insertCol) Then
+          label = ControlDrawer.CreateTextLabelInTable(text)
+        ElseIf NoteCols.Contains(insertCol)
+          label = ControlDrawer.CreateNoteLabelInTable(text)
+        Else
+          label = ControlDrawer.CreateNumberLabelInTable(text)
+        End If
+
+        AddHandler label.Click, AddressOf ClickEvent
+        Return label
+      End Function
+
+      Private Sub ClickEvent(sender As Object, e As MouseEventArgs)
+        ScrolledPanel.Focus()
+      End Sub
+
+      Public Function GetColor(insertRow As Integer) As Color
+        Return FuncBackColor(insertRow)
+      End Function
+    End Class
+
     Public Class ControlDrawer
       Public Shared Function CreateTextPanelInTable(text As String, backColor As Color) As Panel
         Return Create(text, DockStyle.Left, backColor, False)
@@ -604,8 +947,20 @@ Namespace WorkReportAnalysis
         panel.Margin = New Padding(1, 1, 1, 1)
         panel.Dock = DockStyle.Fill
         panel.BackColor = backColor
-        AddHandler panel.Click, AddressOf ClickEvent
+        'AddHandler panel.Click, AddressOf ClickEvent
         Return panel
+      End Function
+
+      Public Shared Function CreateTextLabelInTable(text As String) As Label
+        Return CreateLabelInTable(text, DockStyle.Left, False)
+      End Function
+
+      Public Shared Function CreateNumberLabelInTable(numText As String) As Label
+        Return CreateLabelInTable(numText, DockStyle.Right, False)
+      End Function
+
+      Public Shared Function CreateNoteLabelInTable(text As String) As Label
+        Return CreateLabelInTable(text, DockStyle.Left, True)
       End Function
 
       Public Shared Function CreateLabelInTable(text As String, dock As DockStyle, useToolTip As Boolean) As Label

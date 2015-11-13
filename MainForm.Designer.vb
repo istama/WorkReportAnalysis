@@ -25,11 +25,11 @@ Partial Class MainForm
     Me.TabPage2 = New System.Windows.Forms.TabPage()
     Me.tabInTotalTab = New System.Windows.Forms.TabControl()
     Me.pageDays = New System.Windows.Forms.TabPage()
-    Me.dateTotal = New System.Windows.Forms.DateTimePicker()
+    Me.dPicDailyTotal = New System.Windows.Forms.DateTimePicker()
     Me.pageWeeks = New System.Windows.Forms.TabPage()
-    Me.cboxWeekTotal = New System.Windows.Forms.ComboBox()
+    Me.cboxWeeklyTotal = New System.Windows.Forms.ComboBox()
     Me.pageMonths = New System.Windows.Forms.TabPage()
-    Me.cboxMonthTotal = New System.Windows.Forms.ComboBox()
+    Me.cboxMonthlyTotal = New System.Windows.Forms.ComboBox()
     Me.pageYear = New System.Windows.Forms.TabPage()
     Me.TabPage1 = New System.Windows.Forms.TabPage()
     Me.cboxUserInfo = New System.Windows.Forms.ComboBox()
@@ -78,7 +78,7 @@ Partial Class MainForm
     'pageDays
     '
     Me.pageDays.BackColor = System.Drawing.SystemColors.Control
-    Me.pageDays.Controls.Add(Me.dateTotal)
+    Me.pageDays.Controls.Add(Me.dPicDailyTotal)
     Me.pageDays.Location = New System.Drawing.Point(4, 22)
     Me.pageDays.Name = "pageDays"
     Me.pageDays.Padding = New System.Windows.Forms.Padding(3)
@@ -86,17 +86,17 @@ Partial Class MainForm
     Me.pageDays.TabIndex = 0
     Me.pageDays.Text = "日"
     '
-    'dateTotal
+    'dPicDailyTotal
     '
-    Me.dateTotal.Location = New System.Drawing.Point(950, 15)
-    Me.dateTotal.Name = "dateTotal"
-    Me.dateTotal.Size = New System.Drawing.Size(244, 19)
-    Me.dateTotal.TabIndex = 0
+    Me.dPicDailyTotal.Location = New System.Drawing.Point(950, 15)
+    Me.dPicDailyTotal.Name = "dPicDailyTotal"
+    Me.dPicDailyTotal.Size = New System.Drawing.Size(244, 19)
+    Me.dPicDailyTotal.TabIndex = 0
     '
     'pageWeeks
     '
     Me.pageWeeks.BackColor = System.Drawing.SystemColors.Control
-    Me.pageWeeks.Controls.Add(Me.cboxWeekTotal)
+    Me.pageWeeks.Controls.Add(Me.cboxWeeklyTotal)
     Me.pageWeeks.Location = New System.Drawing.Point(4, 22)
     Me.pageWeeks.Name = "pageWeeks"
     Me.pageWeeks.Padding = New System.Windows.Forms.Padding(3)
@@ -104,20 +104,19 @@ Partial Class MainForm
     Me.pageWeeks.TabIndex = 1
     Me.pageWeeks.Text = "週"
     '
-    'cboxWeekTotal
+    'cboxWeeklyTotal
     '
-    Me.cboxWeekTotal.FormattingEnabled = True
-    Me.cboxWeekTotal.Items.AddRange(New Object() {"10月第1週", "10月第2週", "10月第3週", "10月第4週", "10月第5週", "11月第1週", "11月第2週", "11月第3週", "11月第4週", "11月第5週", "12月第1週", "12月第2週", "12月第3週", "12月第4週", "12月第5週"})
-    Me.cboxWeekTotal.Location = New System.Drawing.Point(950, 15)
-    Me.cboxWeekTotal.Name = "cboxWeekTotal"
-    Me.cboxWeekTotal.Size = New System.Drawing.Size(244, 20)
-    Me.cboxWeekTotal.TabIndex = 0
-    Me.cboxWeekTotal.Text = "参照する週を選んで下さい"
+    Me.cboxWeeklyTotal.FormattingEnabled = True
+    Me.cboxWeeklyTotal.Location = New System.Drawing.Point(950, 15)
+    Me.cboxWeeklyTotal.Name = "cboxWeeklyTotal"
+    Me.cboxWeeklyTotal.Size = New System.Drawing.Size(244, 20)
+    Me.cboxWeeklyTotal.TabIndex = 0
+    Me.cboxWeeklyTotal.Text = "参照する週を選んで下さい"
     '
     'pageMonths
     '
     Me.pageMonths.BackColor = System.Drawing.SystemColors.Control
-    Me.pageMonths.Controls.Add(Me.cboxMonthTotal)
+    Me.pageMonths.Controls.Add(Me.cboxMonthlyTotal)
     Me.pageMonths.Location = New System.Drawing.Point(4, 22)
     Me.pageMonths.Name = "pageMonths"
     Me.pageMonths.Padding = New System.Windows.Forms.Padding(3)
@@ -125,15 +124,14 @@ Partial Class MainForm
     Me.pageMonths.TabIndex = 2
     Me.pageMonths.Text = "月"
     '
-    'cboxMonthTotal
+    'cboxMonthlyTotal
     '
-    Me.cboxMonthTotal.FormattingEnabled = True
-    Me.cboxMonthTotal.Items.AddRange(New Object() {"10月", "11月", "12月"})
-    Me.cboxMonthTotal.Location = New System.Drawing.Point(950, 15)
-    Me.cboxMonthTotal.Name = "cboxMonthTotal"
-    Me.cboxMonthTotal.Size = New System.Drawing.Size(244, 20)
-    Me.cboxMonthTotal.TabIndex = 1
-    Me.cboxMonthTotal.Text = "参照する月を選んで下さい"
+    Me.cboxMonthlyTotal.FormattingEnabled = True
+    Me.cboxMonthlyTotal.Location = New System.Drawing.Point(950, 15)
+    Me.cboxMonthlyTotal.Name = "cboxMonthlyTotal"
+    Me.cboxMonthlyTotal.Size = New System.Drawing.Size(244, 20)
+    Me.cboxMonthlyTotal.TabIndex = 1
+    Me.cboxMonthlyTotal.Text = "参照する月を選んで下さい"
     '
     'pageYear
     '
@@ -282,8 +280,8 @@ Partial Class MainForm
   Friend WithEvents pageWeeks As TabPage
   Friend WithEvents pageMonths As TabPage
   Friend WithEvents pageYear As TabPage
-  Friend WithEvents dateTotal As DateTimePicker
-  Friend WithEvents cboxWeekTotal As ComboBox
+  Friend WithEvents dPicDailyTotal As DateTimePicker
+  Friend WithEvents cboxWeeklyTotal As ComboBox
   Friend WithEvents cmdReadAllFile As Button
-  Friend WithEvents cboxMonthTotal As ComboBox
+  Friend WithEvents cboxMonthlyTotal As ComboBox
 End Class

@@ -24,7 +24,7 @@ Partial Class ProgressBarForm
   Private Sub InitializeComponent()
     Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
     Me.Label1 = New System.Windows.Forms.Label()
-    Me.Button1 = New System.Windows.Forms.Button()
+    Me.btnCancel = New System.Windows.Forms.Button()
     Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
     Me.lblFileName = New System.Windows.Forms.Label()
     Me.SuspendLayout()
@@ -45,17 +45,19 @@ Partial Class ProgressBarForm
     Me.Label1.TabIndex = 1
     Me.Label1.Text = "ファイルを読み込んでいます"
     '
-    'Button1
+    'btnCancel
     '
-    Me.Button1.Location = New System.Drawing.Point(197, 57)
-    Me.Button1.Name = "Button1"
-    Me.Button1.Size = New System.Drawing.Size(75, 23)
-    Me.Button1.TabIndex = 2
-    Me.Button1.Text = "キャンセル"
-    Me.Button1.UseVisualStyleBackColor = True
+    Me.btnCancel.Location = New System.Drawing.Point(197, 57)
+    Me.btnCancel.Name = "btnCancel"
+    Me.btnCancel.Size = New System.Drawing.Size(75, 23)
+    Me.btnCancel.TabIndex = 2
+    Me.btnCancel.Text = "キャンセル"
+    Me.btnCancel.UseVisualStyleBackColor = True
     '
     'BackgroundWorker1
     '
+    Me.BackgroundWorker1.WorkerReportsProgress = True
+    Me.BackgroundWorker1.WorkerSupportsCancellation = True
     '
     'lblFileName
     '
@@ -72,7 +74,7 @@ Partial Class ProgressBarForm
     Me.ClientSize = New System.Drawing.Size(284, 91)
     Me.ControlBox = False
     Me.Controls.Add(Me.lblFileName)
-    Me.Controls.Add(Me.Button1)
+    Me.Controls.Add(Me.btnCancel)
     Me.Controls.Add(Me.Label1)
     Me.Controls.Add(Me.ProgressBar1)
     Me.Name = "ProgressBarForm"
@@ -84,7 +86,7 @@ Partial Class ProgressBarForm
 
   Friend WithEvents ProgressBar1 As ProgressBar
   Friend WithEvents Label1 As Label
-  Friend WithEvents Button1 As Button
+  Friend WithEvents btnCancel As Button
   Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
   Friend WithEvents lblFileName As Label
 End Class

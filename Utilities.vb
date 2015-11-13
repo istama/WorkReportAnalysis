@@ -260,7 +260,7 @@ Namespace Utils
 
         Dim isLatest = True
 
-        Dim ToNum As Func(Of String, Integer) = Function(nStr) If(Char.IsDigit(nStr), Integer.Parse(nStr), 0)
+        Dim ToNum As Func(Of String, Integer) = Function(nStr) If(General.MyChar.IsInteger(nStr), Integer.Parse(nStr), 0)
         Dim verCouples As List(Of Tuple(Of Integer, Integer)) =
           appVerNums.Zip(releaseVerNums, Function(n1, n2) Tuple.Create(ToNum(n1), ToNum(n2)))
 
@@ -546,4 +546,212 @@ Namespace Utils
     End Class
   End Namespace
 
+  Namespace General
+    Public Class MyChar
+      Public Shared Function IsInteger(str As String) As Boolean
+        Return CanConvert(str, AddressOf Integer.Parse)
+      End Function
+
+      Public Shared Function IsDouble(str As String) As Boolean
+        Return CanConvert(str, AddressOf Double.Parse)
+      End Function
+
+      Private Shared Function CanConvert(str As String, converter As Func(Of String, Object)) As Boolean
+        Dim res As Boolean
+        Try
+          converter(str)
+          res = True
+        Catch ex As Exception
+          res = False
+        End Try
+        Return res
+      End Function
+
+    End Class
+  End Namespace
+
+  Namespace MyCollection
+    Namespace Immutable
+      Public Class MyLinkedList(Of T)
+        Private Shared BLANK As New MyLinkedList(Of T)(Nothing)
+
+        Private Head As T
+        Private Tail As MyLinkedList(Of T)
+
+        Public Shared Function Nil() As MyLinkedList(Of T)
+          Return BLANK
+        End Function
+
+        Public Sub New(head As T)
+          Me.Head = head
+          Tail = BLANK
+        End Sub
+
+        Public Sub New(head As T, tail As MyLinkedList(Of T))
+          Me.Head = head
+          Me.Tail = tail
+        End Sub
+
+        Public Function Count() As Integer
+          'Return 1 + If(Not Tail.Empty, Tail.Count(), 0)
+          Return If(Not Me.Empty, 1 + Tail.Count(), 0)
+        End Function
+
+        Public Function First() As T
+          Return Head
+        End Function
+
+        Public Function Rest() As MyLinkedList(Of T)
+          Return Tail
+        End Function
+
+        Public Function Empty() As Boolean
+          Return Head Is Nothing
+        End Function
+
+        Public Function IsLast() As Boolean
+          Return Tail.Empty
+        End Function
+
+        Public Function IndexWhere(f As Func(Of T, Boolean)) As Integer
+          Dim go As Func(Of Integer, MyLinkedList(Of T), Integer) =
+            Function(idx, rec)
+              If rec.Empty Then
+                Return -1
+              ElseIf f(rec.First)
+                Return idx
+              Else
+                Return go(idx + 1, rec.Rest)
+              End If
+            End Function
+          Return go(0, Me)
+        End Function
+
+        Public Function Filtering(filter As Func(Of T, Boolean)) As MyLinkedList(Of T)
+          Dim go As Func(Of MyLinkedList(Of T), MyLinkedList(Of T)) =
+            Function(rec)
+              If rec.Empty Then
+                Return MyLinkedList(Of T).Nil()
+              Else
+                If filter(rec.First) Then
+                  Return New MyLinkedList(Of T)(rec.First, go(rec.Rest))
+                Else
+                  Return go(rec.Rest)
+                End If
+              End If
+            End Function
+          Return go(Me)
+        End Function
+
+        Public Function Find(f As Func(Of T, Boolean)) As T
+          Dim go As Func(Of MyLinkedList(Of T), T) =
+            Function(rec)
+              If rec.Empty Then
+                Return Nothing
+              ElseIf f(rec.First) Then
+                Return rec.First
+              Else
+                Return go(rec.Rest)
+              End If
+            End Function
+          Return go(Me)
+        End Function
+
+        Public Function FoldLeft(Of A)(f As Func(Of MyLinkedList(Of A), T, MyLinkedList(Of A))) As MyLinkedList(Of A)
+          Dim l = MyLinkedList(Of A).Nil
+          Dim go As Func(Of MyLinkedList(Of A), MyLinkedList(Of T), MyLinkedList(Of A)) =
+            Function(fold, rec)
+              If rec.Empty Then
+                Return fold
+              Else
+                Return go(f(fold, rec.First), rec.Rest)
+              End If
+            End Function
+          Return go(l, Me)
+        End Function
+
+        Public Function FoldRight(Of A)(f As Func(Of T, MyLinkedList(Of A), MyLinkedList(Of A))) As MyLinkedList(Of A)
+          Dim f2 As Func(Of MyLinkedList(Of A), T, MyLinkedList(Of A)) = Function(nl, e) f(e, nl)
+          Return reverse().FoldLeft(Of A)(f2)
+        End Function
+
+        Public Function reverse() As MyLinkedList(Of T)
+          Return FoldLeft(Of T)(Function(nl, e) nl.AddFirst(e))
+        End Function
+
+        Public Function GetItem(idx As Integer) As T
+          Dim go As Func(Of Integer, MyLinkedList(Of T), T) =
+            Function(i, rec) If(i = idx, rec.First, go(i + 1, rec.Rest))
+          Return go(0, Me)
+        End Function
+
+        Public Function AddFirst(item As T) As MyLinkedList(Of T)
+          Return New MyLinkedList(Of T)(item, Me)
+        End Function
+
+        Public Function AddRangeToHead(items As ICollection(Of T)) As MyLinkedList(Of T)
+          Dim go As Func(Of Integer, MyLinkedList(Of T)) =
+            Function(idx)
+              If idx >= items.Count Then
+                Return Me
+              Else
+                Return go(idx + 1).AddFirst(items(idx))
+              End If
+            End Function
+          Return go(0)
+        End Function
+
+        Public Function AddLast(item As T) As MyLinkedList(Of T)
+          Return Insert(Me.Count, item)
+        End Function
+
+        Public Function Insert(idx As Integer, item As T) As MyLinkedList(Of T)
+          Return Recur1(idx, Me, Function(i, rec) New MyLinkedList(Of T)(item, rec))
+        End Function
+
+        Private Function Recur1(idx As Integer, rec As MyLinkedList(Of T), f As Func(Of Integer, MyLinkedList(Of T), MyLinkedList(Of T))) As MyLinkedList(Of T)
+          If idx = 0 Then
+            Return f(idx, rec)
+          Else
+            Return New MyLinkedList(Of T)(rec.Head, Recur1(idx - 1, rec.Tail, f))
+          End If
+        End Function
+
+        Public Function ConvertAll(Of A)(f As Func(Of T, A)) As MyLinkedList(Of A)
+          Dim fold As Func(Of T, MyLinkedList(Of A), MyLinkedList(Of A)) =
+            Function(e, nl) nl.AddFirst(f(e))
+          Return FoldRight(fold)
+        End Function
+
+        Public Sub ForEach(f As Action(Of T))
+          Dim go As Action(Of MyLinkedList(Of T)) =
+            Sub(rec)
+              If Not rec.Empty Then
+                f(rec.First)
+                go(rec.Rest)
+              End If
+            End Sub
+          go(Me)
+        End Sub
+
+        Public Function ZipWithIndex() As MyLinkedList(Of Tuple(Of T, Integer))
+          Dim f As Func(Of Integer, MyLinkedList(Of T), MyLinkedList(Of Tuple(Of T, Integer))) =
+            Function(idx, rec)
+              If rec.Empty Then
+                Return MyLinkedList(Of Tuple(Of T, Integer)).Nil()
+              Else
+                Return f(idx + 1, rec.Rest()).AddFirst(Tuple.Create(rec.First, idx))
+              End If
+            End Function
+          Return f(0, Me)
+        End Function
+
+        Public Function ToList() As List(Of T)
+          Dim nl As New List(Of T)()
+          Me.ForEach(Sub(e) nl.Add(e))
+          Return nl
+        End Function
+      End Class
+    End Namespace
+  End Namespace
 End Namespace
