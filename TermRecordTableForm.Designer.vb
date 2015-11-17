@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class TotalRecordTableForm
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+Partial Class TermRecordTableForm
   Inherits System.Windows.Forms.Form
 
   'フォームがコンポーネントの一覧をクリーンアップするために dispose をオーバーライドします。
-  <System.Diagnostics.DebuggerNonUserCode()> _
+  <System.Diagnostics.DebuggerNonUserCode()>
   Protected Overrides Sub Dispose(ByVal disposing As Boolean)
     Try
       If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class TotalRecordTableForm
   'メモ: 以下のプロシージャは Windows フォーム デザイナーで必要です。
   'Windows フォーム デザイナーを使用して変更できます。  
   'コード エディターを使って変更しないでください。
-  <System.Diagnostics.DebuggerStepThrough()> _
+  <System.Diagnostics.DebuggerStepThrough()>
   Private Sub InitializeComponent()
     Me.tblTitles = New System.Windows.Forms.TableLayoutPanel()
     Me.Panel8 = New System.Windows.Forms.Panel()
@@ -151,7 +151,7 @@ Partial Class TotalRecordTableForm
     Me.tblTitles.RowCount = 1
     Me.tblTitles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
     Me.tblTitles.Size = New System.Drawing.Size(1193, 28)
-    Me.tblTitles.TabIndex = 28
+    Me.tblTitles.TabIndex = 27
     '
     'Panel8
     '
@@ -358,7 +358,7 @@ Partial Class TotalRecordTableForm
     Me.tblSubTItles.RowCount = 1
     Me.tblSubTItles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
     Me.tblSubTItles.Size = New System.Drawing.Size(1193, 32)
-    Me.tblSubTItles.TabIndex = 29
+    Me.tblSubTItles.TabIndex = 28
     '
     'Panel31
     '
@@ -378,6 +378,7 @@ Partial Class TotalRecordTableForm
     Me.lblIdCol.Name = "lblIdCol"
     Me.lblIdCol.Size = New System.Drawing.Size(42, 27)
     Me.lblIdCol.TabIndex = 2
+    Me.lblIdCol.Text = "ID"
     Me.lblIdCol.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
     '
     'Panel30
@@ -839,7 +840,7 @@ Partial Class TotalRecordTableForm
     Me.Label19.Name = "Label19"
     Me.Label19.Size = New System.Drawing.Size(126, 27)
     Me.Label19.TabIndex = 2
-    Me.Label19.Text = "日にち"
+    Me.Label19.Text = "名前"
     Me.Label19.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
     '
     'pnlForTable
@@ -849,7 +850,7 @@ Partial Class TotalRecordTableForm
     Me.pnlForTable.Location = New System.Drawing.Point(0, 58)
     Me.pnlForTable.Name = "pnlForTable"
     Me.pnlForTable.Size = New System.Drawing.Size(1216, 484)
-    Me.pnlForTable.TabIndex = 30
+    Me.pnlForTable.TabIndex = 29
     '
     'tblRecord
     '
@@ -883,40 +884,77 @@ Partial Class TotalRecordTableForm
     Me.tblRecord.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize
     Me.tblRecord.Location = New System.Drawing.Point(0, 0)
     Me.tblRecord.Name = "tblRecord"
-    Me.tblRecord.RowCount = 32
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126026!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.126025!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.12415!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.124171!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.124171!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.120265!))
-    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.119549!))
-    Me.tblRecord.Size = New System.Drawing.Size(1193, 674)
+    Me.tblRecord.RowCount = 69
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.430272!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429414!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429424!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.429424!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427637!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427637!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 1.427525!))
+    Me.tblRecord.Size = New System.Drawing.Size(1193, 1500)
     Me.tblRecord.TabIndex = 26
     '
     'tblSumOfRecord
@@ -948,14 +986,14 @@ Partial Class TotalRecordTableForm
     Me.tblSumOfRecord.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620836!))
     Me.tblSumOfRecord.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.616064!))
     Me.tblSumOfRecord.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.12559!))
-    Me.tblSumOfRecord.Location = New System.Drawing.Point(0, 547)
+    Me.tblSumOfRecord.Location = New System.Drawing.Point(0, 556)
     Me.tblSumOfRecord.Name = "tblSumOfRecord"
     Me.tblSumOfRecord.RowCount = 1
     Me.tblSumOfRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
     Me.tblSumOfRecord.Size = New System.Drawing.Size(1193, 28)
-    Me.tblSumOfRecord.TabIndex = 31
+    Me.tblSumOfRecord.TabIndex = 30
     '
-    'TotalRecordTableForm
+    'TermRecordTableForm
     '
     Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
     Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -964,7 +1002,7 @@ Partial Class TotalRecordTableForm
     Me.Controls.Add(Me.pnlForTable)
     Me.Controls.Add(Me.tblSubTItles)
     Me.Controls.Add(Me.tblTitles)
-    Me.Name = "TotalRecordTableForm"
+    Me.Name = "TermRecordTableForm"
     Me.Text = "TotalRecordTableForm"
     Me.tblTitles.ResumeLayout(False)
     Me.Panel8.ResumeLayout(False)
@@ -1018,10 +1056,7 @@ Partial Class TotalRecordTableForm
   Friend WithEvents lblItem2 As Label
   Friend WithEvents Panel1 As Panel
   Friend WithEvents lblItem1 As Label
-  Friend WithEvents Panel2 As Panel
   Friend WithEvents tblSubTItles As TableLayoutPanel
-  Friend WithEvents Panel31 As Panel
-  Friend WithEvents lblIdCol As Label
   Friend WithEvents Panel30 As Panel
   Friend WithEvents lbl7_3 As Label
   Friend WithEvents Panel29 As Panel
@@ -1064,9 +1099,12 @@ Partial Class TotalRecordTableForm
   Friend WithEvents lbl1_2 As Label
   Friend WithEvents Panel9 As Panel
   Friend WithEvents lbl1_1 As Label
-  Friend WithEvents Panel10 As Panel
-  Friend WithEvents Label19 As Label
   Friend WithEvents pnlForTable As Panel
   Friend WithEvents tblRecord As TableLayoutPanel
+  Friend WithEvents Panel2 As Panel
+  Friend WithEvents Panel10 As Panel
+  Friend WithEvents Label19 As Label
+  Friend WithEvents Panel31 As Panel
+  Friend WithEvents lblIdCol As Label
   Friend WithEvents tblSumOfRecord As TableLayoutPanel
 End Class

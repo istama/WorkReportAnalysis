@@ -32,46 +32,49 @@ Namespace Office
     End Sub
 
     Public Sub Init()
-      SyncLock Me
-        XLS = CreateObject("Excel.Application")
-        WorkBooks = XLS.WorkBooks
+      '本番はコメントアウト外す
+      'SyncLock Me
+      '  XLS = CreateObject("Excel.Application")
+      '  WorkBooks = XLS.WorkBooks
 
-        isInit = True
-      End SyncLock
+      '  isInit = True
+      'End SyncLock
     End Sub
 
     Public Sub Quit()
-      SyncLock Me
-        Close()
+      '本番はコメントアウト外す
+      'SyncLock Me
+      '  Close()
 
-        If isInit = True AndAlso Not isOpened Then
-          ReleaseComObj(WorkBooks)
-          XLS.Quit()
-          ReleaseComObj(XLS)
-          isInit = False
-        End If
-      End SyncLock
+      '  If isInit = True AndAlso Not isOpened Then
+      '    ReleaseComObj(WorkBooks)
+      '    XLS.Quit()
+      '    ReleaseComObj(XLS)
+      '    isInit = False
+      '  End If
+      'End SyncLock
     End Sub
 
     Public Sub Open(filePath As String, readMode As Boolean)
-      SyncLock Me
-        Book = WorkBooks.Open(filePath, Nothing, readMode)
-        isOpened = True
-      End SyncLock
+      '本番はコメントアウト外す
+      'SyncLock Me
+      '  Book = WorkBooks.Open(filePath, Nothing, readMode)
+      '  isOpened = True
+      'End SyncLock
     End Sub
 
     Public Sub Close()
-      SyncLock Me
-        If isOpened AndAlso Book IsNot Nothing Then
-          Book.Close(False)
-          ReleaseComObj(Book)
-          isOpened = False
-        End If
-      End SyncLock
+      '本番はコメントアウト外す
+      'SyncLock Me
+      '  If isOpened AndAlso Book IsNot Nothing Then
+      '    Book.Close(False)
+      '    ReleaseComObj(Book)
+      '    isOpened = False
+      '  End If
+      'End SyncLock
     End Sub
 
     Public Function Read(sheetName As String, cells As List(Of Cell)) As List(Of String)
-      'Return Access(OpMode.READ, sheetName, cells, Nothing)
       Return Access2(Function(sheet, cell)
                        'MessageBox.Show("row: " & cell.Row & " col " & cell.Col)
                        Return ((cell.Row + 1) * cell.Col).ToString
@@ -82,7 +85,6 @@ Namespace Office
     End Function
 
     Public Function Update(sheetName As String, cells As List(Of Cell), f As UpdateF) As List(Of String)
-      'Return Access(OpMode.UPDATE, sheetName, cells, f)
       Dim res As List(Of String) =
         Access2(Function(sheet, cell)
                   Dim tmp As Object = GetTextFromExcel(sheet, cell)
@@ -103,7 +105,6 @@ Namespace Office
     End Function
 
     Public Sub Write(sheetName As String, cells As List(Of Cell))
-      'Access(OpMode.WRITE, sheetName, cells, Nothing)
       Access2(Function(sheet, cell)
                 SetTextToExcel(cell.WrittenText, sheet, cell)
                 Return ""
@@ -130,11 +131,6 @@ Namespace Office
         'cells.ForEach(Sub(cell) values.Add(access(sheet, cell)))
         cells.ForEach(Sub(cell) values.Add(access(Nothing, cell)))
 
-        ''For Each cell As Cell In cells
-        ''  'values.Add(access(sheet, cell))
-        ''  values.Add(access(Nothing, cell))
-        ''Next
-
         '本番はコメントアウトする
         Return ToStringList(values)
       Catch ex As Exception
@@ -147,61 +143,61 @@ Namespace Office
       Return ToStringList(values)
     End Function
 
-    Private Function Access(opMode As OpMode, sheetName As String, cells As List(Of Cell), f As UpdateF) As List(Of String)
-      'If isInit = False Then
-      '  Throw New Exception("初期処理が実行されていません。")
-      'End If
+    'Private Function Access(opMode As OpMode, sheetName As String, cells As List(Of Cell), f As UpdateF) As List(Of String)
+    '  'If isInit = False Then
+    '  '  Throw New Exception("初期処理が実行されていません。")
+    '  'End If
 
-      Dim worksheets As Object = Nothing
-      Dim sheet As Object = Nothing
-      Dim values As New List(Of Object)
+    '  Dim worksheets As Object = Nothing
+    '  Dim sheet As Object = Nothing
+    '  Dim values As New List(Of Object)
 
-      Try
-        'worksheets = Book.Worksheets
-        'sheet = GetSheet(sheetName, worksheets)
+    '  Try
+    '    'worksheets = Book.Worksheets
+    '    'sheet = GetSheet(sheetName, worksheets)
 
-        If opMode = OpMode.READ Then
-          For Each cell As Cell In cells
-            values.Add(((cell.Row + 1) * cell.Col).ToString)
-            'values.Add(GetTextFromExcel(sheet, cell))
-          Next
-        ElseIf opMode = OpMode.WRITE Then
-          For Each cell As Cell In cells
-            SetTextToExcel(cell.WrittenText, sheet, cell)
-          Next
-        ElseIf OpMode.UPDATE
-          For Each cell As Cell In cells
-            Dim tmp As Object = GetTextFromExcel(sheet, cell)
-            If tmp IsNot Nothing Then
-              Dim val = CType(tmp, String)
-              If f IsNot Nothing Then
-                val = f(val)
-                SetTextToExcel(val, sheet, cell)
-              End If
-              values.Add(val)
-            Else
-              values.Add(Nothing)
-            End If
-          Next
-        End If
+    '    If opMode = OpMode.READ Then
+    '      For Each cell As Cell In cells
+    '        values.Add(((cell.Row + 1) * cell.Col).ToString)
+    '        'values.Add(GetTextFromExcel(sheet, cell))
+    '      Next
+    '    ElseIf opMode = OpMode.WRITE Then
+    '      For Each cell As Cell In cells
+    '        SetTextToExcel(cell.WrittenText, sheet, cell)
+    '      Next
+    '    ElseIf OpMode.UPDATE
+    '      For Each cell As Cell In cells
+    '        Dim tmp As Object = GetTextFromExcel(sheet, cell)
+    '        If tmp IsNot Nothing Then
+    '          Dim val = CType(tmp, String)
+    '          If f IsNot Nothing Then
+    '            val = f(val)
+    '            SetTextToExcel(val, sheet, cell)
+    '          End If
+    '          values.Add(val)
+    '        Else
+    '          values.Add(Nothing)
+    '        End If
+    '      Next
+    '    End If
 
-        Return ToStringList(values)
-        'If opMode <> OpMode.READ Then
-        '  Book.Save()
-        'End If
-      Catch ex As Exception
-        Throw New Exception(ex.Message & vbCrLf & ex.StackTrace)
-      Finally
-        ReleaseComObj(sheet)
-        ReleaseComObj(worksheets)
-        'If book IsNot Nothing Then
-        '  book.Close(False)
-        '  ReleaseComObj(book)
-        'End If
-      End Try
+    '    Return ToStringList(values)
+    '    'If opMode <> OpMode.READ Then
+    '    '  Book.Save()
+    '    'End If
+    '  Catch ex As Exception
+    '    Throw New Exception(ex.Message & vbCrLf & ex.StackTrace)
+    '  Finally
+    '    ReleaseComObj(sheet)
+    '    ReleaseComObj(worksheets)
+    '    'If book IsNot Nothing Then
+    '    '  book.Close(False)
+    '    '  ReleaseComObj(book)
+    '    'End If
+    '  End Try
 
-      Return ToStringList(values)
-    End Function
+    '  Return ToStringList(values)
+    'End Function
 
     Private Function ToStringList(l As List(Of Object)) As List(Of String)
       Dim texts As New List(Of String)

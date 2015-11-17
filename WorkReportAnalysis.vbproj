@@ -16,7 +16,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
@@ -46,6 +46,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -101,10 +104,22 @@
     <Compile Include="ProgressBarForm.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="RecordDataForm.Designer.vb">
+      <DependentUpon>RecordDataForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="RecordDataForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="RecordTableForm.Designer.vb">
       <DependentUpon>RecordTableForm.vb</DependentUpon>
     </Compile>
     <Compile Include="RecordTableForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TermRecordTableForm.Designer.vb">
+      <DependentUpon>TermRecordTableForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="TermRecordTableForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TotalRecordTableForm.Designer.vb">
@@ -129,14 +144,21 @@
     <EmbeddedResource Include="ProgressBarForm.resx">
       <DependentUpon>ProgressBarForm.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="RecordDataForm.resx">
+      <DependentUpon>RecordDataForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RecordTableForm.resx">
       <DependentUpon>RecordTableForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TermRecordTableForm.resx">
+      <DependentUpon>TermRecordTableForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TotalRecordTableForm.resx">
       <DependentUpon>TotalRecordTableForm.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

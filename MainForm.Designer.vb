@@ -23,13 +23,13 @@ Partial Class MainForm
   <System.Diagnostics.DebuggerStepThrough()>
   Private Sub InitializeComponent()
     Me.TabPage2 = New System.Windows.Forms.TabPage()
-    Me.tabInTotalTab = New System.Windows.Forms.TabControl()
+    Me.tabInTermTab = New System.Windows.Forms.TabControl()
     Me.pageDays = New System.Windows.Forms.TabPage()
-    Me.dPicDailyTotal = New System.Windows.Forms.DateTimePicker()
+    Me.dPicDailyTerm = New System.Windows.Forms.DateTimePicker()
     Me.pageWeeks = New System.Windows.Forms.TabPage()
-    Me.cboxWeeklyTotal = New System.Windows.Forms.ComboBox()
+    Me.cboxWeeklyTerm = New System.Windows.Forms.ComboBox()
     Me.pageMonths = New System.Windows.Forms.TabPage()
-    Me.cboxMonthlyTotal = New System.Windows.Forms.ComboBox()
+    Me.cboxMonthlyTerm = New System.Windows.Forms.ComboBox()
     Me.pageYear = New System.Windows.Forms.TabPage()
     Me.TabPage1 = New System.Windows.Forms.TabPage()
     Me.cboxUserInfo = New System.Windows.Forms.ComboBox()
@@ -40,45 +40,56 @@ Partial Class MainForm
     Me.pageSum = New System.Windows.Forms.TabPage()
     Me.btnClose = New System.Windows.Forms.Button()
     Me.tabMaster = New System.Windows.Forms.TabControl()
+    Me.TabPage3 = New System.Windows.Forms.TabPage()
+    Me.tabInTotalTab = New System.Windows.Forms.TabControl()
+    Me.pageDailyTotal = New System.Windows.Forms.TabPage()
+    Me.cboxDailyTotal = New System.Windows.Forms.ComboBox()
+    Me.pageWeeklyTotal = New System.Windows.Forms.TabPage()
+    Me.pageMonthlyTotal = New System.Windows.Forms.TabPage()
     Me.cmdReadAllFile = New System.Windows.Forms.Button()
+    Me.chkExcludeIncompleteRecordFromSum = New System.Windows.Forms.CheckBox()
+    Me.cmdOutputCSV = New System.Windows.Forms.Button()
     Me.TabPage2.SuspendLayout()
-    Me.tabInTotalTab.SuspendLayout()
+    Me.tabInTermTab.SuspendLayout()
     Me.pageDays.SuspendLayout()
     Me.pageWeeks.SuspendLayout()
     Me.pageMonths.SuspendLayout()
     Me.TabPage1.SuspendLayout()
     Me.tabInPersonalTab.SuspendLayout()
     Me.tabMaster.SuspendLayout()
+    Me.TabPage3.SuspendLayout()
+    Me.tabInTotalTab.SuspendLayout()
+    Me.pageDailyTotal.SuspendLayout()
     Me.SuspendLayout()
     '
     'TabPage2
     '
     Me.TabPage2.AutoScroll = True
     Me.TabPage2.BackColor = System.Drawing.SystemColors.Control
-    Me.TabPage2.Controls.Add(Me.tabInTotalTab)
+    Me.TabPage2.Controls.Add(Me.tabInTermTab)
     Me.TabPage2.Location = New System.Drawing.Point(4, 22)
     Me.TabPage2.Name = "TabPage2"
     Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
     Me.TabPage2.Size = New System.Drawing.Size(1274, 707)
     Me.TabPage2.TabIndex = 1
-    Me.TabPage2.Text = "集計データ"
+    Me.TabPage2.Text = "日付データ"
     '
-    'tabInTotalTab
+    'tabInTermTab
     '
-    Me.tabInTotalTab.Controls.Add(Me.pageDays)
-    Me.tabInTotalTab.Controls.Add(Me.pageWeeks)
-    Me.tabInTotalTab.Controls.Add(Me.pageMonths)
-    Me.tabInTotalTab.Controls.Add(Me.pageYear)
-    Me.tabInTotalTab.Location = New System.Drawing.Point(18, 32)
-    Me.tabInTotalTab.Name = "tabInTotalTab"
-    Me.tabInTotalTab.SelectedIndex = 0
-    Me.tabInTotalTab.Size = New System.Drawing.Size(1235, 652)
-    Me.tabInTotalTab.TabIndex = 0
+    Me.tabInTermTab.Controls.Add(Me.pageDays)
+    Me.tabInTermTab.Controls.Add(Me.pageWeeks)
+    Me.tabInTermTab.Controls.Add(Me.pageMonths)
+    Me.tabInTermTab.Controls.Add(Me.pageYear)
+    Me.tabInTermTab.Location = New System.Drawing.Point(18, 32)
+    Me.tabInTermTab.Name = "tabInTermTab"
+    Me.tabInTermTab.SelectedIndex = 0
+    Me.tabInTermTab.Size = New System.Drawing.Size(1235, 652)
+    Me.tabInTermTab.TabIndex = 0
     '
     'pageDays
     '
     Me.pageDays.BackColor = System.Drawing.SystemColors.Control
-    Me.pageDays.Controls.Add(Me.dPicDailyTotal)
+    Me.pageDays.Controls.Add(Me.dPicDailyTerm)
     Me.pageDays.Location = New System.Drawing.Point(4, 22)
     Me.pageDays.Name = "pageDays"
     Me.pageDays.Padding = New System.Windows.Forms.Padding(3)
@@ -86,17 +97,17 @@ Partial Class MainForm
     Me.pageDays.TabIndex = 0
     Me.pageDays.Text = "日"
     '
-    'dPicDailyTotal
+    'dPicDailyTerm
     '
-    Me.dPicDailyTotal.Location = New System.Drawing.Point(950, 15)
-    Me.dPicDailyTotal.Name = "dPicDailyTotal"
-    Me.dPicDailyTotal.Size = New System.Drawing.Size(244, 19)
-    Me.dPicDailyTotal.TabIndex = 0
+    Me.dPicDailyTerm.Location = New System.Drawing.Point(950, 15)
+    Me.dPicDailyTerm.Name = "dPicDailyTerm"
+    Me.dPicDailyTerm.Size = New System.Drawing.Size(244, 19)
+    Me.dPicDailyTerm.TabIndex = 0
     '
     'pageWeeks
     '
     Me.pageWeeks.BackColor = System.Drawing.SystemColors.Control
-    Me.pageWeeks.Controls.Add(Me.cboxWeeklyTotal)
+    Me.pageWeeks.Controls.Add(Me.cboxWeeklyTerm)
     Me.pageWeeks.Location = New System.Drawing.Point(4, 22)
     Me.pageWeeks.Name = "pageWeeks"
     Me.pageWeeks.Padding = New System.Windows.Forms.Padding(3)
@@ -104,19 +115,19 @@ Partial Class MainForm
     Me.pageWeeks.TabIndex = 1
     Me.pageWeeks.Text = "週"
     '
-    'cboxWeeklyTotal
+    'cboxWeeklyTerm
     '
-    Me.cboxWeeklyTotal.FormattingEnabled = True
-    Me.cboxWeeklyTotal.Location = New System.Drawing.Point(950, 15)
-    Me.cboxWeeklyTotal.Name = "cboxWeeklyTotal"
-    Me.cboxWeeklyTotal.Size = New System.Drawing.Size(244, 20)
-    Me.cboxWeeklyTotal.TabIndex = 0
-    Me.cboxWeeklyTotal.Text = "参照する週を選んで下さい"
+    Me.cboxWeeklyTerm.FormattingEnabled = True
+    Me.cboxWeeklyTerm.Location = New System.Drawing.Point(950, 15)
+    Me.cboxWeeklyTerm.Name = "cboxWeeklyTerm"
+    Me.cboxWeeklyTerm.Size = New System.Drawing.Size(244, 20)
+    Me.cboxWeeklyTerm.TabIndex = 0
+    Me.cboxWeeklyTerm.Text = "参照する週を選んで下さい"
     '
     'pageMonths
     '
     Me.pageMonths.BackColor = System.Drawing.SystemColors.Control
-    Me.pageMonths.Controls.Add(Me.cboxMonthlyTotal)
+    Me.pageMonths.Controls.Add(Me.cboxMonthlyTerm)
     Me.pageMonths.Location = New System.Drawing.Point(4, 22)
     Me.pageMonths.Name = "pageMonths"
     Me.pageMonths.Padding = New System.Windows.Forms.Padding(3)
@@ -124,14 +135,14 @@ Partial Class MainForm
     Me.pageMonths.TabIndex = 2
     Me.pageMonths.Text = "月"
     '
-    'cboxMonthlyTotal
+    'cboxMonthlyTerm
     '
-    Me.cboxMonthlyTotal.FormattingEnabled = True
-    Me.cboxMonthlyTotal.Location = New System.Drawing.Point(950, 15)
-    Me.cboxMonthlyTotal.Name = "cboxMonthlyTotal"
-    Me.cboxMonthlyTotal.Size = New System.Drawing.Size(244, 20)
-    Me.cboxMonthlyTotal.TabIndex = 1
-    Me.cboxMonthlyTotal.Text = "参照する月を選んで下さい"
+    Me.cboxMonthlyTerm.FormattingEnabled = True
+    Me.cboxMonthlyTerm.Location = New System.Drawing.Point(950, 15)
+    Me.cboxMonthlyTerm.Name = "cboxMonthlyTerm"
+    Me.cboxMonthlyTerm.Size = New System.Drawing.Size(244, 20)
+    Me.cboxMonthlyTerm.TabIndex = 1
+    Me.cboxMonthlyTerm.Text = "参照する月を選んで下さい"
     '
     'pageYear
     '
@@ -228,11 +239,74 @@ Partial Class MainForm
     '
     Me.tabMaster.Controls.Add(Me.TabPage1)
     Me.tabMaster.Controls.Add(Me.TabPage2)
+    Me.tabMaster.Controls.Add(Me.TabPage3)
     Me.tabMaster.Location = New System.Drawing.Point(0, 0)
     Me.tabMaster.Name = "tabMaster"
     Me.tabMaster.SelectedIndex = 0
     Me.tabMaster.Size = New System.Drawing.Size(1282, 733)
     Me.tabMaster.TabIndex = 0
+    '
+    'TabPage3
+    '
+    Me.TabPage3.AutoScroll = True
+    Me.TabPage3.Controls.Add(Me.tabInTotalTab)
+    Me.TabPage3.Location = New System.Drawing.Point(4, 22)
+    Me.TabPage3.Name = "TabPage3"
+    Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
+    Me.TabPage3.Size = New System.Drawing.Size(1274, 707)
+    Me.TabPage3.TabIndex = 2
+    Me.TabPage3.Text = "集計データ"
+    '
+    'tabInTotalTab
+    '
+    Me.tabInTotalTab.Controls.Add(Me.pageDailyTotal)
+    Me.tabInTotalTab.Controls.Add(Me.pageWeeklyTotal)
+    Me.tabInTotalTab.Controls.Add(Me.pageMonthlyTotal)
+    Me.tabInTotalTab.Location = New System.Drawing.Point(18, 32)
+    Me.tabInTotalTab.Name = "tabInTotalTab"
+    Me.tabInTotalTab.SelectedIndex = 0
+    Me.tabInTotalTab.Size = New System.Drawing.Size(1235, 652)
+    Me.tabInTotalTab.TabIndex = 1
+    '
+    'pageDailyTotal
+    '
+    Me.pageDailyTotal.BackColor = System.Drawing.SystemColors.Control
+    Me.pageDailyTotal.Controls.Add(Me.cboxDailyTotal)
+    Me.pageDailyTotal.Location = New System.Drawing.Point(4, 22)
+    Me.pageDailyTotal.Name = "pageDailyTotal"
+    Me.pageDailyTotal.Padding = New System.Windows.Forms.Padding(3)
+    Me.pageDailyTotal.Size = New System.Drawing.Size(1227, 626)
+    Me.pageDailyTotal.TabIndex = 0
+    Me.pageDailyTotal.Text = "日"
+    '
+    'cboxDailyTotal
+    '
+    Me.cboxDailyTotal.FormattingEnabled = True
+    Me.cboxDailyTotal.Location = New System.Drawing.Point(950, 15)
+    Me.cboxDailyTotal.Name = "cboxDailyTotal"
+    Me.cboxDailyTotal.Size = New System.Drawing.Size(244, 20)
+    Me.cboxDailyTotal.TabIndex = 2
+    Me.cboxDailyTotal.Text = "参照する月を選んで下さい"
+    '
+    'pageWeeklyTotal
+    '
+    Me.pageWeeklyTotal.BackColor = System.Drawing.SystemColors.Control
+    Me.pageWeeklyTotal.Location = New System.Drawing.Point(4, 22)
+    Me.pageWeeklyTotal.Name = "pageWeeklyTotal"
+    Me.pageWeeklyTotal.Padding = New System.Windows.Forms.Padding(3)
+    Me.pageWeeklyTotal.Size = New System.Drawing.Size(1227, 626)
+    Me.pageWeeklyTotal.TabIndex = 1
+    Me.pageWeeklyTotal.Text = "週"
+    '
+    'pageMonthlyTotal
+    '
+    Me.pageMonthlyTotal.BackColor = System.Drawing.SystemColors.Control
+    Me.pageMonthlyTotal.Location = New System.Drawing.Point(4, 22)
+    Me.pageMonthlyTotal.Name = "pageMonthlyTotal"
+    Me.pageMonthlyTotal.Padding = New System.Windows.Forms.Padding(3)
+    Me.pageMonthlyTotal.Size = New System.Drawing.Size(1227, 626)
+    Me.pageMonthlyTotal.TabIndex = 2
+    Me.pageMonthlyTotal.Text = "月"
     '
     'cmdReadAllFile
     '
@@ -243,26 +317,53 @@ Partial Class MainForm
     Me.cmdReadAllFile.Text = "全ファイル読み込み"
     Me.cmdReadAllFile.UseVisualStyleBackColor = True
     '
+    'chkExcludeIncompleteRecordFromSum
+    '
+    Me.chkExcludeIncompleteRecordFromSum.AutoSize = True
+    Me.chkExcludeIncompleteRecordFromSum.Checked = True
+    Me.chkExcludeIncompleteRecordFromSum.CheckState = System.Windows.Forms.CheckState.Checked
+    Me.chkExcludeIncompleteRecordFromSum.Location = New System.Drawing.Point(22, 740)
+    Me.chkExcludeIncompleteRecordFromSum.Name = "chkExcludeIncompleteRecordFromSum"
+    Me.chkExcludeIncompleteRecordFromSum.Size = New System.Drawing.Size(234, 16)
+    Me.chkExcludeIncompleteRecordFromSum.TabIndex = 4
+    Me.chkExcludeIncompleteRecordFromSum.Text = "合計件数から作業時間記入漏れの日を除く"
+    Me.chkExcludeIncompleteRecordFromSum.UseVisualStyleBackColor = True
+    '
+    'cmdOutputCSV
+    '
+    Me.cmdOutputCSV.Location = New System.Drawing.Point(834, 744)
+    Me.cmdOutputCSV.Name = "cmdOutputCSV"
+    Me.cmdOutputCSV.Size = New System.Drawing.Size(141, 32)
+    Me.cmdOutputCSV.TabIndex = 5
+    Me.cmdOutputCSV.Text = "CSV出力"
+    Me.cmdOutputCSV.UseVisualStyleBackColor = True
+    '
     'MainForm
     '
     Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
     Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
     Me.BackColor = System.Drawing.SystemColors.Control
     Me.ClientSize = New System.Drawing.Size(1281, 788)
+    Me.Controls.Add(Me.cmdOutputCSV)
+    Me.Controls.Add(Me.chkExcludeIncompleteRecordFromSum)
     Me.Controls.Add(Me.cmdReadAllFile)
     Me.Controls.Add(Me.btnClose)
     Me.Controls.Add(Me.tabMaster)
     Me.Name = "MainForm"
     Me.Text = "WorkReportAnalysis"
     Me.TabPage2.ResumeLayout(False)
-    Me.tabInTotalTab.ResumeLayout(False)
+    Me.tabInTermTab.ResumeLayout(False)
     Me.pageDays.ResumeLayout(False)
     Me.pageWeeks.ResumeLayout(False)
     Me.pageMonths.ResumeLayout(False)
     Me.TabPage1.ResumeLayout(False)
     Me.tabInPersonalTab.ResumeLayout(False)
     Me.tabMaster.ResumeLayout(False)
+    Me.TabPage3.ResumeLayout(False)
+    Me.tabInTotalTab.ResumeLayout(False)
+    Me.pageDailyTotal.ResumeLayout(False)
     Me.ResumeLayout(False)
+    Me.PerformLayout()
 
   End Sub
   Friend WithEvents TabPage2 As TabPage
@@ -275,13 +376,21 @@ Partial Class MainForm
   Friend WithEvents pageSum As TabPage
   Friend WithEvents tabMaster As TabControl
   Friend WithEvents btnClose As Button
-  Friend WithEvents tabInTotalTab As TabControl
+  Friend WithEvents tabInTermTab As TabControl
   Friend WithEvents pageDays As TabPage
   Friend WithEvents pageWeeks As TabPage
   Friend WithEvents pageMonths As TabPage
   Friend WithEvents pageYear As TabPage
-  Friend WithEvents dPicDailyTotal As DateTimePicker
-  Friend WithEvents cboxWeeklyTotal As ComboBox
+  Friend WithEvents dPicDailyTerm As DateTimePicker
+  Friend WithEvents cboxWeeklyTerm As ComboBox
   Friend WithEvents cmdReadAllFile As Button
-  Friend WithEvents cboxMonthlyTotal As ComboBox
+  Friend WithEvents cboxMonthlyTerm As ComboBox
+  Friend WithEvents chkExcludeIncompleteRecordFromSum As CheckBox
+  Friend WithEvents TabPage3 As TabPage
+  Friend WithEvents tabInTotalTab As TabControl
+  Friend WithEvents pageDailyTotal As TabPage
+  Friend WithEvents pageWeeklyTotal As TabPage
+  Friend WithEvents pageMonthlyTotal As TabPage
+  Friend WithEvents cboxDailyTotal As ComboBox
+  Friend WithEvents cmdOutputCSV As Button
 End Class
