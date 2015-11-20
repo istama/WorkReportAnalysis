@@ -596,7 +596,17 @@ Namespace Utils
         Return l
       End Function
 
-      Private Shared Function GetWeek(year As Integer, month As Integer, day As Integer) As Integer
+      Public Shared Function GetWeekNumInMonth(day As Date) As Integer
+        Dim first As Date = New Date(day.Year, day.Month, 1)
+        Return DatePart("WW", day) - DatePart("ww", first) + 1
+      End Function
+
+      Public Shared Function GetLastWeekNum(year As Integer, month As Integer) As Integer
+        Dim last As Date = New Date(year, month, Date.DaysInMonth(year, month))
+        Return GetWeekNumInMonth(last)
+      End Function
+
+      Public Shared Function GetWeek(year As Integer, month As Integer, day As Integer) As Integer
         If month >= 1 AndAlso month <= 12 AndAlso day <= Date.DaysInMonth(year, month) Then
           Return Weekday(year & "/" & month & "/" & day)
         Else
@@ -835,14 +845,14 @@ Namespace Utils
 
         Public Function OrderBy(Of U)(f As Func(Of T, U)) As MyLinkedList(Of T)
           Dim l As List(Of T) = ToList()
-          l.OrderBy(Function(e) f(e))
-          Return Nil.AddRangeToHead(l)
+          Dim query As IOrderedEnumerable(Of T) = l.OrderBy(Function(e) f(e))
+          Return Nil.AddRangeToHead(query.ToList)
         End Function
 
         Public Function OrderByDescending(Of U)(f As Func(Of T, U)) As MyLinkedList(Of T)
           Dim l As List(Of T) = ToList()
-          l.OrderByDescending(Function(e) f(e))
-          Return Nil.AddRangeToHead(l)
+          Dim query As IOrderedEnumerable(Of T) = l.OrderByDescending(Function(e) f(e))
+          Return Nil.AddRangeToHead(query.ToList)
         End Function
 
         Public Function ToList() As List(Of T)

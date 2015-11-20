@@ -3,6 +3,7 @@ Imports MP.Office
 Imports AP = MP.Utils.Common.AppProperties
 Imports MP.Utils.Common
 Imports MP.Utils.Model
+Imports MP.Utils.MyDate
 Imports WAP = MP.WorkReportAnalysis.App.WorkReportAnalysisProperties
 Imports MP.WorkReportAnalysis.App
 Imports MP.WorkReportAnalysis.Control
@@ -112,11 +113,11 @@ Public Class MainForm
   Private Sub InitInnerTabPageInPersonalTab()
     InnerTabPageInfoListInPersonalTab = New List(Of TabInfo)()
 
-    For Each ym As Tuple(Of Integer, Integer) In ReadRecordTerm.GetTermList.ToList
+    For Each ym As MonthlyItem In ReadRecordTerm.MonthlyItemList.ToList
       Dim tab As TabInfo
       With tab
-        .Name = UserRecordManager.GetSheetName(ym.Item2)
-        .LoadTableCallBack = GetActionForCreatingMonthlyTable(ym.Item1, ym.Item2)
+        .Name = UserRecordManager.GetSheetName(ym.Month)
+        .LoadTableCallBack = GetActionForCreatingMonthlyTable(ym.Year, ym.Month)
       End With
       InnerTabPageInfoListInPersonalTab.Add(tab)
     Next
@@ -186,7 +187,7 @@ Public Class MainForm
       .Name = "月"
       .LoadTableCallBack =
         GetActionForCreatingPlaneTable(
-          Function() UserRecordManager.GetWeeklyTotalRecord(FileFormat.GetYear, GetFuncForFilteringImcompleteRecord()))
+          Function() UserRecordManager.GetMonthlyTotalRecord(FileFormat.GetYear, GetFuncForFilteringImcompleteRecord()))
     End With
 
     InnerTabPageInfoListInTotalTab.Add(tabDays)
@@ -234,8 +235,45 @@ Public Class MainForm
     TotalRecordTableForm.lblItem6.Text = ExcelProps.GetValue(WAP.KEY_ITEM_NAME6)
     TotalRecordTableForm.lblItem7.Text = ExcelProps.GetValue(WAP.KEY_ITEM_NAME7)
 
-    ShowPersonalTableTitles(page10Month)
-    ShowTermTableTitles(pageDays)
+    For i As Integer = 0 To RecordTableForm.tblSubTitles.ColumnCount - 2
+      AddHandler RecordTableForm.tblSubTitles.Controls.Item(i).Controls.Item(0).Click, AddressOf SortPersonalRecordCallback
+    Next
+    For i As Integer = 0 To TermRecordTableForm.tblSubTItles.ColumnCount - 2
+      AddHandler TermRecordTableForm.tblSubTItles.Controls.Item(i).Controls.Item(0).Click, AddressOf SortTermRecordCallback
+    Next
+    For i As Integer = 0 To TotalRecordTableForm.tblSubTItles.ColumnCount - 2
+      AddHandler TotalRecordTableForm.tblSubTItles.Controls.Item(i).Controls.Item(0).Click, AddressOf SortTotalRecordCallback
+    Next
+
+    ShowPersonalTableTitles(page10Month, GetOffsetLocationInPersonalTab)
+    ShowTotalTableTitles(pageSum, GetOffsetLocationInPersonalTab)
+    ShowTermTableTitles(pageDays, GetOffsetLocationInTermTab)
+    ShowTotalTableTitles(pageDailyTotal, GetOffsetLocationInTotalTab)
+  End Sub
+
+  Private Sub SortPersonalRecordCallback(sender As Object, e As EventArgs)
+    SortRecordCallback(sender, tabInPersonalTab.SelectedTab, InnerTabPageInfoListInPersonalTab)
+  End Sub
+
+  Private Sub SortTermRecordCallback(sender As Object, e As EventArgs)
+    SortRecordCallback(sender, tabInTermTab.SelectedTab, InnerTabPageInfoListInTermTab)
+  End Sub
+
+  Private Sub SortTotalRecordCallback(sender As Object, e As EventArgs)
+    SortRecordCallback(sender, tabInTotalTab.SelectedTab, InnerTabPageInfoListInTotalTab)
+  End Sub
+
+  Private Sub SortRecordCallback(sender As Object, selectedTab As TabPage, tabInfo As List(Of TabInfo))
+    Dim label As Label = CType(sender, Label)
+    Dim col As Integer = TermRecordTableForm.tblRecord.GetColumn(label.Parent)
+
+    Dim sortInfo As SortInfo
+    With sortInfo
+      .Col = If(col = 0, -1, col)
+      .Asc = True
+    End With
+
+    LoadInnerTabPage(selectedTab, tabInfo, sortInfo)
   End Sub
 
   Private Sub InitCBoxUserInfo()
@@ -244,12 +282,7 @@ Public Class MainForm
 
   Private Sub InitCBoxWeeklyTerm()
     Dim items As New List(Of DateItem)
-    ReadRecordTerm.DateList.ForEach(
-      Sub(t)
-        For i As Integer = 1 To 5
-          items.Add(New WeeklyItem(i, t.Item2, t.Item1))
-        Next
-      End Sub)
+    ReadRecordTerm.WeeklyItemList.ForEach(Sub(w) items.Add(w))
 
     items.ForEach(Sub(i) cboxWeeklyTerm.Items.Add(i))
 
@@ -262,8 +295,7 @@ Public Class MainForm
 
   Private Sub InitCBoxMonthlyTerm()
     Dim items As New List(Of MonthlyItem)
-    ReadRecordTerm.DateList.ForEach(
-      Sub(t) items.Add(New MonthlyItem(t.Item2, t.Item1)))
+    ReadRecordTerm.MonthlyItemList.ForEach(Sub(m) items.Add(m))
 
     items.ForEach(Sub(i) cboxMonthlyTerm.Items.Add(i))
 
@@ -278,17 +310,16 @@ Public Class MainForm
 
   Private Sub InitCBoxDailyTotal()
     Dim items As New List(Of MonthlyItem)
-    ReadRecordTerm.DateList.ForEach(
-      Sub(t) items.Add(New MonthlyItem(t.Item2, t.Item1)))
+    ReadRecordTerm.MonthlyItemList.ForEach(Sub(m) items.Add(m))
 
     items.ForEach(Sub(i) cboxDailyTotal.Items.Add(i))
   End Sub
 
   Private Sub InitDPicDailyTerm()
-    Dim min As Tuple(Of Integer, Integer) = ReadRecordTerm.DateList.First
-    dPicDailyTerm.MinDate = New DateTime(min.Item1, min.Item2, 1, 0, 0, 0)
-    Dim max As Tuple(Of Integer, Integer) = ReadRecordTerm.DateList.ToList.Last
-    dPicDailyTerm.MaxDate = New DateTime(max.Item1, max.Item2, Date.DaysInMonth(max.Item1, max.Item2), 0, 0, 0)
+    Dim min As MonthlyItem = ReadRecordTerm.MonthlyItemList.First
+    dPicDailyTerm.MinDate = New DateTime(min.Year, min.Month, 1, 0, 0, 0)
+    Dim max As MonthlyItem = ReadRecordTerm.MonthlyItemList.ToList.Last
+    dPicDailyTerm.MaxDate = New DateTime(max.Year, max.Month, Date.DaysInMonth(max.Year, max.Month), 0, 0, 0)
   End Sub
 
   Private Sub LoadAllUserRecord()
@@ -337,7 +368,7 @@ Public Class MainForm
   End Sub
 
   Private Sub cboxUserInfo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboxUserInfo.SelectedIndexChanged
-    LoadInnerTabPage(tabInPersonalTab.SelectedTab, InnerTabPageInfoListInPersonalTab)
+    LoadInnerTabPageWithDefaultRecord(tabInPersonalTab.SelectedTab, InnerTabPageInfoListInPersonalTab)
   End Sub
 
   Private Sub tabInTermTab_PageChanged(sender As Object, e As EventArgs) Handles tabInTermTab.SelectedIndexChanged
@@ -349,7 +380,7 @@ Public Class MainForm
   End Sub
 
   Private Sub datePickerDailyTerm_DateChanged(sender As Object, e As EventArgs) Handles dPicDailyTerm.ValueChanged
-    If ReadRecordTerm.InTerm(dPicDailyTerm.Value.Month, dPicDailyTerm.Value.Year) Then
+    If ReadRecordTerm.InMonthlyTerm(dPicDailyTerm.Value.Month, dPicDailyTerm.Value.Year) Then
       ShowTermRecord()
     End If
   End Sub
@@ -379,28 +410,37 @@ Public Class MainForm
   End Sub
 
   Private Sub ShowPersonalRecord()
-    ShowPersonalTableTitles(tabInPersonalTab.SelectedTab)
-    LoadInnerTabPage(tabInPersonalTab.SelectedTab, InnerTabPageInfoListInPersonalTab)
+    If tabInPersonalTab.SelectedIndex = tabInPersonalTab.TabCount - 1 Then
+      ShowTotalTableTitles(tabInPersonalTab.SelectedTab, GetOffsetLocationInPersonalTab)
+    Else
+      ShowPersonalTableTitles(tabInPersonalTab.SelectedTab, GetOffsetLocationInPersonalTab)
+    End If
+
+    LoadInnerTabPageWithDefaultRecord(tabInPersonalTab.SelectedTab, InnerTabPageInfoListInPersonalTab)
   End Sub
 
   Private Sub ShowTermRecord()
-    ShowTermTableTitles(tabInTermTab.SelectedTab)
-    LoadInnerTabPage(tabInTermTab.SelectedTab, InnerTabPageInfoListInTermTab)
+    ShowTermTableTitles(tabInTermTab.SelectedTab, GetOffsetLocationInTermTab)
+    LoadInnerTabPageWithDefaultRecord(tabInTermTab.SelectedTab, InnerTabPageInfoListInTermTab)
   End Sub
 
   Private Sub ShowTotalRecord()
-    ShowTotalTableTitles(tabInTotalTab.SelectedTab)
-    LoadInnerTabPage(tabInTotalTab.SelectedTab, InnerTabPageInfoListInTotalTab)
+    ShowTotalTableTitles(tabInTotalTab.SelectedTab, GetOffsetLocationInTotalTab)
+    LoadInnerTabPageWithDefaultRecord(tabInTotalTab.SelectedTab, InnerTabPageInfoListInTotalTab)
   End Sub
 
-  Private Sub LoadInnerTabPage(selectedTabPage As TabPage, tabInfoList As List(Of TabInfo))
-    Try
-      Dim sortInfo As SortInfo
-      With sortInfo
-        .Col = -1
-        .Asc = True
-      End With
+  Private Sub LoadInnerTabPageWithDefaultRecord(selectedTabPage As TabPage, tabInfoList As List(Of TabInfo))
+    Dim sortInfo As SortInfo
+    With sortInfo
+      .Col = -1
+      .Asc = True
+    End With
 
+    LoadInnerTabPage(selectedTabPage, tabInfoList, sortInfo)
+  End Sub
+
+  Private Sub LoadInnerTabPage(selectedTabPage As TabPage, tabInfoList As List(Of TabInfo), sortInfo As SortInfo)
+    Try
       tabInfoList.
         Find(Function(info) info.Name = selectedTabPage.Text).
         LoadTableCallBack(selectedTabPage, sortInfo)
@@ -419,21 +459,19 @@ Public Class MainForm
     Dim sumrow As RowRecord = CreateSumRowRecord(record, "合計")
     Dim nRecord As SheetRecord = record.AddLast(sumrow)
     CreateTable(RecordTableForm.tblRecord, tabPage, nRecord, tableDrawer)
-    ShowTableRecord(tabPage)
+    ShowPersonalTableRecord(tabPage, GetOffsetLocationInPersonalTab)
     CurrentlyShowedSheetRecord = nRecord
   End Sub
 
   Private Sub CreateSumTable(tabPage As TabPage, record As SheetRecord)
     Dim tableDrawer As TableDrawer =
-      New TableDrawer(RecordTableForm.pnlForTable).
+      New TableDrawer(TotalRecordTableForm.pnlForTable).
         SetTextCols(0).
-        SetNoteCols(RecordTableForm.tblRecord.ColumnCount - 1).
-        SetFuncBackColor(AddressOf GetRowColorInSumTable)
+        SetNoteCols(TotalRecordTableForm.tblRecord.ColumnCount - 1).
+        SetFuncBackColor(Function(row) If(row = record.Count - 1, Color.PaleGreen, Color.Transparent))
 
-    'Dim sumrow As RowRecord = CreateSumRowRecord(record, "合計")
-    'Dim nRecord As SheetRecord = record.AddLast(sumrow)
-    CreateTable(RecordTableForm.tblRecord, tabPage, record, tableDrawer)
-    ShowTableRecord(tabPage)
+    CreateTable(TotalRecordTableForm.tblRecord, tabPage, record, tableDrawer)
+    ShowTotalTableRecord(tabPage, GetOffsetLocationInPersonalTab)
     CurrentlyShowedSheetRecord = record
   End Sub
 
@@ -447,7 +485,7 @@ Public Class MainForm
     Dim sumrow As RowRecord = CreateSumRowRecord(record, "", "合計")
     Dim nRecord As SheetRecord = record.AddLast(sumrow)
     CreateTable(TermRecordTableForm.tblRecord, tabPage, nRecord, tableDrawer)
-    ShowTermTableRecord(tabPage)
+    ShowTermTableRecord(tabPage, GetOffsetLocationInTermTab)
     CurrentlyShowedSheetRecord = nRecord
   End Sub
 
@@ -461,7 +499,7 @@ Public Class MainForm
     Dim sumrow As RowRecord = CreateSumRowRecord(record, "", "合計")
     Dim nRecord As SheetRecord = record.AddLast(sumrow)
     CreateTable(TotalRecordTableForm.tblRecord, tabPage, nRecord, tableDrawer)
-    ShowTotalTableRecord(tabPage)
+    ShowTotalTableRecord(tabPage, GetOffsetLocationInTotalTab)
     CurrentlyShowedSheetRecord = nRecord
   End Sub
 
@@ -470,12 +508,12 @@ Public Class MainForm
       New TableDrawer(TotalRecordTableForm.pnlForTable).
         SetTextCols(0, 1).
         SetNoteCols(RecordTableForm.tblRecord.ColumnCount - 1).
-        SetFuncBackColor(Function(row) If(row = TermRecordTableForm.tblRecord.RowCount - 1, Color.Green, Color.Transparent))
+        SetFuncBackColor(Function(row) If(row = record.Count, Color.PaleGreen, Color.Transparent))
 
     Dim sumrow As RowRecord = CreateSumRowRecord(record, "", "合計")
     Dim nRecord As SheetRecord = record.AddLast(sumrow)
-    CreateTable(TotalRecordTableForm.tblRecord, tabPage, record, tableDrawer)
-    ShowTotalTableRecord(tabPage)
+    CreateTable(TotalRecordTableForm.tblRecord, tabPage, nRecord, tableDrawer)
+    ShowTotalTableRecord(tabPage, GetOffsetLocationInTotalTab)
     CurrentlyShowedSheetRecord = nRecord
   End Sub
 
@@ -671,7 +709,7 @@ Public Class MainForm
   Private Function GetActionForCreatingAllTermTable() As LoadTableCallBack
     Return _
       Sub(tabPage, sortInfo)
-        Dim r As SheetRecord = UserRecordManager.GetAllTermRecord()
+        Dim r As SheetRecord = UserRecordManager.GetAllTermRecord(FileFormat.GetYear(), GetFuncForFilteringImcompleteRecord())
         CreateTermTable(tabPage, Sort(r, sortInfo))
       End Sub
   End Function
@@ -699,13 +737,20 @@ Public Class MainForm
   End Function
 
   Private Function Sort(record As SheetRecord, sortInfo As SortInfo) As SheetRecord
-    Dim f As Func(Of RowRecord, Double) = Function(row) RecordConverter.ToDouble(row.GetItem(sortInfo.Col))
+    Dim NONE As Double = If(sortInfo.Asc, Integer.MaxValue, Integer.MinValue)
+
+    Dim f As Func(Of RowRecord, Double) =
+      Function(row)
+        Dim value As String = row.GetItem(sortInfo.Col)
+        Return If(value = "", NONE, RecordConverter.ToDouble(value))
+      End Function
+
     If sortInfo.Col = -1 Then
       Return record
     ElseIf sortInfo.Asc Then
-      Return record.OrderBy(Function(row) f(row))
+      Return record.OrderBy(f)
     Else
-      Return record.OrderByDescending(Function(row) f(row))
+      Return record.OrderByDescending(f)
     End If
   End Function
 
@@ -715,22 +760,22 @@ Public Class MainForm
         If row = 31 Then
           Return Color.PaleGreen
         Else
-          Dim week As Integer = GetWeek(year, month, row + 1)
+          Dim week As Integer = MyCalendar.GetWeek(year, month, row + 1)
           Return If(week = 1 OrElse week = 7, Color.Pink, Color.Transparent)
         End If
       End Function
   End Function
 
-  Private Function GetRowColorInSumTable(row As Integer) As Color
-    If row = 21 Then
-      Return Color.PaleTurquoise
-      'Return Color.Transparent
-    ElseIf row Mod 7 = 6 AndAlso row < 21
-      Return Color.PaleGreen
-    Else
-      Return Color.Transparent
-    End If
-  End Function
+  'Private Function GetRowColorInSumTable(row As Integer) As Color
+  '  If row = 21 Then
+  '    Return Color.PaleTurquoise
+  '    'Return Color.Transparent
+  '  ElseIf row Mod 7 = 6 AndAlso row < 21
+  '    Return Color.PaleGreen
+  '  Else
+  '    Return Color.Transparent
+  '  End If
+  'End Function
 
   Private Function RoundDecStr(value As String) As String
     If MP.Utils.General.MyChar.IsDouble(value) Then
@@ -741,76 +786,55 @@ Public Class MainForm
     End If
   End Function
 
-  Private Sub ShowPersonalTableTitles(showedTabPage As TabPage)
-    Dim tblTitles As TableLayoutPanel = RecordTableForm.tblTitles
-    tblTitles.Location = New Point(3, 6)
-    Dim tblSubTitles As TableLayoutPanel = RecordTableForm.tblSubTItles
-    tblSubTitles.Location = New Point(3, 32)
-
-    showedTabPage.Controls.Add(tblTitles)
-    showedTabPage.Controls.Add(tblSubTitles)
-  End Sub
-
-  Private Sub ShowTermTableTitles(showedTabPage As TabPage)
-    Dim tblTitles As TableLayoutPanel = TermRecordTableForm.tblTitles
-    tblTitles.Location = New Point(3, 46)
-    Dim tblSubTitles As TableLayoutPanel = TermRecordTableForm.tblSubTItles
-    tblSubTitles.Location = New Point(3, 72)
-
-    showedTabPage.Controls.Add(tblTitles)
-    showedTabPage.Controls.Add(tblSubTitles)
-  End Sub
-
-  Private Sub ShowTotalTableTitles(showedTabPage As TabPage)
-    Dim tblTitles As TableLayoutPanel = TotalRecordTableForm.tblTitles
-    tblTitles.Location = New Point(3, 46)
-    Dim tblSubTitles As TableLayoutPanel = TotalRecordTableForm.tblSubTItles
-    tblSubTitles.Location = New Point(3, 72)
-
-    showedTabPage.Controls.Add(tblTitles)
-    showedTabPage.Controls.Add(tblSubTitles)
-  End Sub
-
-  Private Sub ShowTableRecord(showedTabPage As TabPage)
-    Dim scrollPanel As Panel = RecordTableForm.pnlForTable
-    scrollPanel.Location = New Point(3, 63)
-    scrollPanel.AutoScroll = True
-    showedTabPage.Controls.Add(scrollPanel)
-
-    'Dim tblSumOfRecord As TableLayoutPanel = RecordTableForm.tblSumOfRecord
-    'tblSumOfRecord.Location = New Point(3, 558)
-    'showedTabPage.Controls.Add(tblSumOfRecord)
-  End Sub
-
-  Private Sub ShowTermTableRecord(showedTabPage As TabPage)
-    Dim scrollPanel As Panel = TermRecordTableForm.pnlForTable
-    scrollPanel.Location = New Point(3, 103)
-    scrollPanel.AutoScroll = True
-    showedTabPage.Controls.Add(scrollPanel)
-
-    'Dim tblSumOfRecord As TableLayoutPanel = TermRecordTableForm.tblSumOfRecord
-    'tblSumOfRecord.Location = New Point(3, 558)
-    'showedTabPage.Controls.Add(tblSumOfRecord)
-  End Sub
-
-  Private Sub ShowTotalTableRecord(showedTabPage As TabPage)
-    Dim scrollPanel As Panel = TotalRecordTableForm.pnlForTable
-    scrollPanel.Location = New Point(3, 103)
-    scrollPanel.AutoScroll = True
-    showedTabPage.Controls.Add(scrollPanel)
-
-    'Dim tblSumOfRecord As TableLayoutPanel = TotalRecordTableForm.tblSumOfRecord
-    'tblSumOfRecord.Location = New Point(3, 558)
-    'showedTabPage.Controls.Add(tblSumOfRecord)
-  End Sub
-
-  Private Function GetWeek(year As Integer, month As Integer, day As Integer) As Integer
-    If month >= 1 AndAlso month <= 12 AndAlso day <= Date.DaysInMonth(year, month) Then
-      Return Weekday(year & "/" & month & "/" & day)
-    Else
-      Return -1
-    End If
+  Private Function GetOffsetLocationInPersonalTab() As Point
+    Return New Point(3, 6)
   End Function
+
+  Private Function GetOffsetLocationInTermTab() As Point
+    Return New Point(3, 46)
+  End Function
+
+  Private Function GetOffsetLocationInTotalTab() As Point
+    Return New Point(3, 46)
+  End Function
+
+  Private Sub ShowPersonalTableTitles(showedTabPage As TabPage, offsetLocation As Point)
+    ShowedTableTitles(showedTabPage, offsetLocation, RecordTableForm.tblTitles, RecordTableForm.tblSubTitles)
+  End Sub
+
+  Private Sub ShowTermTableTitles(showedTabPage As TabPage, offsetLocation As Point)
+    ShowedTableTitles(showedTabPage, offsetLocation, TermRecordTableForm.tblTitles, TermRecordTableForm.tblSubTItles)
+  End Sub
+
+  Private Sub ShowTotalTableTitles(showedTabPage As TabPage, offsetLocation As Point)
+    ShowedTableTitles(showedTabPage, offsetLocation, TotalRecordTableForm.tblTitles, TotalRecordTableForm.tblSubTItles)
+  End Sub
+
+  Private Sub ShowedTableTitles(showedTabPage As TabPage, offsetLocation As Point, titles As TableLayoutPanel, subTitles As TableLayoutPanel)
+    titles.Location = offsetLocation
+    subTitles.Location = New Point(offsetLocation.X, offsetLocation.Y + 26)
+
+    showedTabPage.Controls.Add(titles)
+    showedTabPage.Controls.Add(subTitles)
+  End Sub
+
+  Private Sub ShowPersonalTableRecord(showedTabPage As TabPage, offsetLocation As Point)
+    ShowTableRecord(showedTabPage, offsetLocation, RecordTableForm.pnlForTable)
+  End Sub
+
+  Private Sub ShowTermTableRecord(showedTabPage As TabPage, offsetLocation As Point)
+    ShowTableRecord(showedTabPage, offsetLocation, TermRecordTableForm.pnlForTable)
+  End Sub
+
+  Private Sub ShowTotalTableRecord(showedTabPage As TabPage, offsetLocation As Point)
+    ShowTableRecord(showedTabPage, offsetLocation, TotalRecordTableForm.pnlForTable)
+  End Sub
+
+  Private Sub ShowTableRecord(showedTabPage As TabPage, offsetLocation As Point, scrollPanel As Panel)
+    scrollPanel.Location = New Point(offsetLocation.X, offsetLocation.Y + 57)
+    scrollPanel.AutoScroll = True
+    showedTabPage.Controls.Add(scrollPanel)
+  End Sub
 
   Private Sub cmdOutputCSV_Click(sender As Object, e As EventArgs) Handles cmdOutputCSV.Click
     If CurrentlyShowedSheetRecord Is Nothing Then
@@ -861,96 +885,6 @@ Public Class MainForm
       End If
     End If
   End Sub
-
-  Public Class WeeklyItem
-    Inherits DateItem
-
-    Private _Week As Integer
-    Public ReadOnly Property Week() As Integer
-      Get
-        Return _Week
-      End Get
-    End Property
-
-    Public Shared Function GetWeekNumInMonth(d As Integer, m As Integer, y As Integer) As Integer
-      Return GetWeekNumInMonth(New Date(y, m, d))
-    End Function
-
-    Public Shared Function GetWeekNumInMonth(day As Date) As Integer
-      Dim first As Date = MonthlyItem.GetFirstDateInMonth(day.Month, day.Year)
-      Return DatePart("WW", day) - DatePart("ww", first) + 1
-    End Function
-
-    Public Sub New(w As Integer, m As Integer, y As Integer)
-      MyBase.New(w, m, y)
-      _Week = MyBase.Value
-    End Sub
-
-    Public Overrides Function Agree(day As Date) As Boolean
-      If day.Year = Year() AndAlso day.Month = Month() Then
-        Dim w As Integer = GetWeekNumInMonth(day)
-        Return w = Week()
-      Else
-        Return False
-      End If
-    End Function
-
-    Public Overrides Function ToString() As String
-      Return Month & "月 第" & _Week & "週"
-    End Function
-  End Class
-
-  Public Class MonthlyItem
-    Inherits DateItem
-
-    Public Shared Function GetFirstDateInMonth(m As Integer, y As Integer) As Date
-      Return New Date(y, m, 1)
-    End Function
-
-    Public Sub New(m As Integer, y As Integer)
-      MyBase.New(-1, m, y)
-    End Sub
-
-    Public Overrides Function Agree(day As Date) As Boolean
-      Return day.Year = Year() AndAlso day.Month = Month()
-    End Function
-
-    Public Overrides Function ToString() As String
-      Return Month & "月"
-    End Function
-  End Class
-
-  Public MustInherit Class DateItem
-    Private _Value As Integer
-    Protected ReadOnly Property Value() As Integer
-      Get
-        Return _Value
-      End Get
-    End Property
-
-    Private _Month As Integer
-    Public ReadOnly Property Month() As Integer
-      Get
-        Return _Month
-      End Get
-    End Property
-
-    Private _Year As Integer
-    Public ReadOnly Property Year() As Integer
-      Get
-        Return _Year
-      End Get
-    End Property
-
-    Public Sub New(value As Integer, m As Integer, y As Integer)
-      _Value = value
-      _Month = m
-      _Year = y
-    End Sub
-
-    Public MustOverride Function Agree(day As Date) As Boolean
-  End Class
-
 
 End Class
 

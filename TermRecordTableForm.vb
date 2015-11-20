@@ -8,9 +8,9 @@
   End Sub
 
   Private Sub lblCol1InItem1_Click(sender As Object, e As EventArgs) Handles lbl1_1.Click
-    Dim label As Label = CType(sender, Label)
-    Dim col As Integer = tblRecord.GetColumn(label.Parent)
+    'Dim label As Label = CType(sender, Label)
+    'Dim col As Integer = tblRecord.GetColumn(label.Parent)
 
-    MessageBox.Show("click col: " & col.ToString)
+    'MessageBox.Show("click col: " & col.ToString)
   End Sub
 End Class

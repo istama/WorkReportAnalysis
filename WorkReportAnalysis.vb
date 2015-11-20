@@ -1,6 +1,7 @@
 ﻿
 Imports MP.Utils.Model
 
+Imports MP.Utils.MyDate
 Imports MP.Utils.MyCollection.Immutable
 Imports RowRecord = MP.Utils.MyCollection.Immutable.MyLinkedList(Of String)
 Imports SheetRecord = MP.Utils.MyCollection.Immutable.MyLinkedList(Of MP.Utils.MyCollection.Immutable.MyLinkedList(Of String))
@@ -221,31 +222,31 @@ Namespace WorkReportAnalysis
       Private Sub Init()
         AccessPropList.Clear()
 
-        Dim term As MyLinkedList(Of Tuple(Of Integer, Integer)) =
-          _UserRecordManager.GetReadRecordTerm.GetTermList()
+        Dim term As MyLinkedList(Of MonthlyItem) =
+          _UserRecordManager.GetReadRecordTerm.MonthlyItemList
 
         term.ForEach(
           Sub(e)
             Dim p As Excel.AccessProperties
             With p
-              .RecordKey = UserRecordManager.GetSheetName(e.Item2)
-              .SheetName = UserRecordManager.GetSheetName(e.Item2)
+              .RecordKey = UserRecordManager.GetSheetName(e.Month)
+              .SheetName = UserRecordManager.GetSheetName(e.Month)
               .Cols = App.FileFormat.GetItemCols()
               .FirstRow = App.FileFormat.GetFirstDayOfAMonthRow()
-              .RowSize = Date.DaysInMonth(e.Item1, e.Item2) '+ 1
+              .RowSize = Date.DaysInMonth(e.Year, e.Month) '+ 1
             End With
             AccessPropList.Add(p)
           End Sub)
 
-        Dim sum As Excel.AccessProperties
-        With sum
-          .RecordKey = UserRecordManager.GetSumSheetName
-          .SheetName = UserRecordManager.GetSumSheetName
-          .Cols = App.FileFormat.GetItemCols(App.WorkReportAnalysisProperties.KEY_NOTE_COL)
-          .FirstRow = App.FileFormat.GetFirstRow2()
-          .RowSize = 6 * term.Count '+ 1
-        End With
-        AccessPropList.Add(sum)
+        'Dim sum As Excel.AccessProperties
+        'With sum
+        '  .RecordKey = UserRecordManager.GetSumSheetName
+        '  .SheetName = UserRecordManager.GetSumSheetName
+        '  .Cols = App.FileFormat.GetItemCols(App.WorkReportAnalysisProperties.KEY_NOTE_COL)
+        '  .FirstRow = App.FileFormat.GetFirstRow2()
+        '  .RowSize = 6 * term.Count '+ 1
+        'End With
+        'AccessPropList.Add(sum)
       End Sub
 
       Public Sub LoadUserRecord()
@@ -335,291 +336,277 @@ Namespace WorkReportAnalysis
         If key = GetSumSheetName() Then
           Return GetUserSumRecord(id, filter)
         Else
-          Dim t As Tuple(Of Integer, Integer) =
-            RecordTerm.DateList.Find(Function(e) key = GetSheetName(e.Item2))
-          If t IsNot Nothing Then
-            Return GetUsersDailyRecordInMonth(id, t.Item2, t.Item1)
+          Dim m As MonthlyItem =
+            RecordTerm.MonthlyItemList.Find(Function(e) key = GetSheetName(e.Month))
+          If m IsNot Nothing Then
+            Return GetUserDailyRecordInMonth(id, m.Month, m.Year)
           Else
             Throw New Exception("指定したキーのデータはありません。 key: " & key)
           End If
         End If
       End Function
 
-      Public Function GetUsersDailyRecordInMonth(id As String, month As Integer, year As Integer) As SheetRecord
-        CheckValidDate(1, 1, month, year)
+      Public Function GetUserDailyRecordInMonth(id As String, month As Integer, year As Integer) As SheetRecord
+        Dim record As SheetRecord = GetUserDailyRecord(id, 1, Date.DaysInMonth(year, month), month, year)
+        Return PadEmptyRowRecord(record, RecordTableForm.TABLE_ROW_COUNT - 1)
+      End Function
 
+      Public Function GetUserDailyRecordInWeek(id As String, week As Integer, month As Integer, year As Integer) As SheetRecord
+        If Not CheckValidDate(1, week, month, year) Then
+          Return SheetRecord.Nil
+        End If
+
+        Dim days As List(Of Integer) = MyCalendar.GetDaysInWeek(year, month, week)
+        Dim weekRec As SheetRecord = GetUserDailyRecord(id, days.First, days.Count, month, year)
+
+        If days.Count < 7 Then
+          Dim restDays As Integer = 7 - days.Count
+          If week = 1 Then
+            Dim lastMonth As Integer = If(month = 1, 12, month - 1)
+            Dim lastYear As Integer = If(month = 1, year - 1, year)
+            Dim dayOfSunday As Integer = Date.DaysInMonth(lastYear, lastMonth) - (restDays - 1)
+            Dim lastRec As SheetRecord = GetUserDailyRecord(id, dayOfSunday, restDays, lastMonth, lastYear)
+            weekRec = weekRec.AddRangeToHead(lastRec)
+          Else
+            Dim nextMonth As Integer = If(month = 12, 1, month + 1)
+            Dim nextYear As Integer = If(month = 12, year + 1, year)
+            Dim nextRec As SheetRecord = GetUserDailyRecord(id, 1, restDays, nextMonth, nextYear)
+            weekRec = nextRec.AddRangeToHead(weekRec)
+          End If
+        End If
+
+        Return weekRec
+      End Function
+
+      Private Function GetUserDailyRecord(id As String, startDay As Integer, count As Integer, month As Integer, year As Integer) As SheetRecord
+        If Not CheckValidDate(1, 1, month, year) Then
+          Return SheetRecord.Nil()
+        End If
+
+        Dim endDay As Integer = startDay + count - 1
         Dim sheetName As String = GetSheetName(month)
         Dim record As SheetRecord = GetUserRecord(id).GetSheetRecord(sheetName)
         Dim go As Func(Of Integer, SheetRecord, SheetRecord) =
           Function(idx, rec)
-            If idx < Date.DaysInMonth(year, month) Then
+            If idx < endDay Then
               Dim rr As RowRecord = rec.First.AddFirst((idx + 1).ToString & "日")
               Return go(idx + 1, rec.Rest).AddFirst(rr)
-            ElseIf idx < RecordTableForm.TABLE_ROW_COUNT - 1
-              Return go(idx + 1, rec).AddFirst(RowRecord.Nil)
-              'ElseIf idx = RecordTableForm.TABLE_ROW_COUNT - 1
-              'Dim rr As RowRecord = rec.First.AddFirst("合計")
-              'Return go(idx + 1, rec.Rest).AddFirst(rr)
             Else
               Return SheetRecord.Nil
             End If
           End Function
-        Return go(0, record)
+        Return go(startDay - 1, record.Skip(startDay - 1))
       End Function
 
-      Public Function GetUserDailyRecordInWeek(id As String, week As Integer, month As Integer, year As Integer) As SheetRecord
-        CheckValidDate(1, week, month, year)
-
-        Dim record As SheetRecord = GetUsersDailyRecordInMonth(id, month, year)
-        Dim days As List(Of Integer) = Utils.MyDate.MyCalendar.GetDaysInWeek(year, month, week)
-        'MessageBox.Show("w: " & week & " m: " & month & " y: " & year & " cnt: " & days.Count & " days: " & days.First)
-        'MessageBox.Show(record.Skip(days.First - 1).First.First)
-        'MessageBox.Show(record.Skip(days.First - 1).Take(days.Count).First.First)
-
-        Return record.Skip(days.First - 1).Take(days.Count)
-      End Function
-
-      Public Function GetUserWeeklyRecordInMonth(id As String, month As Integer, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
-        Dim go As Func(Of Integer, SheetRecord) =
-          Function(week)
-            If week > 5 Then
-              Return SheetRecord.Nil
-            Else
-              Dim rec As SheetRecord = GetUserDailyRecordInWeek(id, week, month, year)
-              'MessageBox.Show("w: " & week & " m: " & month & " y: " & year & " cnt: " & rec.Count & " first: " & rec.First.First)
-
-              Dim rr As RowRecord = RecordConverter.CreateSumRowRecord(rec, 1, filter)
-              Return go(week + 1).AddFirst(rr)
-            End If
-          End Function
-        Return go(1)
-      End Function
-
-      Public Function GetUserMonthlyRecord(id As String, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
-        Dim go As Func(Of MyLinkedList(Of Tuple(Of Integer, Integer)), SheetRecord) =
+      Public Function GetUserWeeklyRecordAll(id As String, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
+        Dim go As Func(Of MyLinkedList(Of WeeklyItem), SheetRecord) =
           Function(term)
             If term.Empty Then
               Return SheetRecord.Nil
             Else
-              Dim ym As Tuple(Of Integer, Integer) = term.First
-              Dim rec As SheetRecord = GetUsersDailyRecordInMonth(id, ym.Item2, ym.Item1)
-              Dim rr As RowRecord = RecordConverter.CreateSumRowRecord(rec, 1, filter)
+              Dim w As WeeklyItem = term.First
+              Dim rr As RowRecord = GetUserWeeklyRecord(id, w, filter)
               Return go(term.Rest).AddFirst(rr)
             End If
           End Function
-        Return go(RecordTerm.DateList)
+        Return go(RecordTerm.WeeklyItemList)
       End Function
 
-      Public Function GetUserSumRecord(id As String, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
-        Dim monthlyList As New List(Of RowRecord)
-        Dim go As Func(Of MyLinkedList(Of Tuple(Of Integer, Integer)), SheetRecord) =
+      Public Function GetUserWeeklyRecordInMonth(id As String, month As Integer, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
+        Dim weekCnt As Integer = MyCalendar.GetLastWeekNum(year, month)
+        Dim go As Func(Of MyLinkedList(Of WeeklyItem), SheetRecord) =
+          Function(week)
+            If week.Empty OrElse week.First.Year < year OrElse week.First.Month < month Then
+              Return SheetRecord.Nil
+            Else
+              Dim w As WeeklyItem = week.First
+              Dim rr As RowRecord = GetUserWeeklyRecord(id, w, filter)
+              Return go(week.Rest).AddFirst(rr)
+            End If
+          End Function
+        Return go(RecordTerm.WeeklyItemList)
+      End Function
+
+      Private Function GetUserWeeklyRecord(id As String, w As WeeklyItem, filter As Func(Of RowRecord, Integer, Boolean)) As RowRecord
+        Dim rec As SheetRecord = GetUserDailyRecordInWeek(id, w.Week, w.Month, w.Year)
+        Return RecordConverter.CreateSumRowRecord(rec, 1, filter).AddFirst(w.ToString)
+      End Function
+
+      Public Function GetUserMonthlyRecordAll(id As String, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
+        Dim go As Func(Of MyLinkedList(Of MonthlyItem), SheetRecord) =
           Function(term)
             If term.Empty Then
               Return SheetRecord.Nil
             Else
-              Dim ym As Tuple(Of Integer, Integer) = term.First
-              Dim title As RowRecord = RowRecord.Nil.AddFirst(ym.Item2 & "月")
-              Dim weekly As SheetRecord =
-                GetUserWeeklyRecordInMonth(id, ym.Item2, ym.Item1, filter).
-                  ZipWithIndex.
-                  ConvertAll(Of RowRecord)(
-                    Function(t)
-                      Dim rr As RowRecord = t.Item1
-                      Return rr.AddFirst("第" & (t.Item2 + 1) & "週")
-                    End Function)
-              Dim sum As RowRecord = RecordConverter.CreateSumRowRecord(weekly, 1, Function(row, col) True).AddFirst("月計")
-              monthlyList.Add(sum)
-
-              Dim res As SheetRecord = weekly.AddFirst(title).AddLast(sum)
-
-              Return go(term.Rest).AddRangeToHead(res)
+              Dim ym As MonthlyItem = term.First
+              Dim rr As RowRecord = GetUserMonthlyRecord(id, ym, filter)
+              Return go(term.Rest).AddFirst(rr)
             End If
           End Function
-
-        Dim sRec As SheetRecord = go(RecordTerm.DateList)
-        Dim total As RowRecord = RecordConverter.CreateSumRowRecord(SheetRecord.Nil.AddRangeToHead(monthlyList), 1, Function(row, col) True).AddFirst("合計")
-        Return sRec.AddLast(total)
+        Return go(RecordTerm.MonthlyItemList)
       End Function
 
-      'Public Shared Function GetWeekNumInMonth(day As Date) As Integer
-      '  Dim first As Date = MonthlyItem.GetFirstDateInMonth(day.Month, day.Year)
-      '  Return DatePart("WW", day) - DatePart("ww", first) + 1
-      'End Function
+      Private Function GetUserMonthlyRecord(id As String, m As MonthlyItem, filter As Func(Of RowRecord, Integer, Boolean)) As RowRecord
+        Dim rec As SheetRecord = GetUserDailyRecordInMonth(id, m.Month, m.Year)
+        Return RecordConverter.CreateSumRowRecord(rec, 1, filter).AddFirst(m.ToString)
+      End Function
 
-      'Public Function GetUsersSumRecord(id As String) As SheetRecord
-      '  Dim record As SheetRecord = GetUserRecord(id).GetSheetRecord(GetSumSheetName)
-      '  Dim dateList As MyLinkedList(Of Tuple(Of Integer, Integer)) = RecordTerm.DateList
-      '  Dim go As Func(Of Integer, SheetRecord, MyLinkedList(Of Tuple(Of Integer, Integer)), SheetRecord) =
-      '    Function(rowIdx, rec, term)
-      '      If rec.Empty Then
-      '        Return SheetRecord.Nil
-      '      ElseIf rec.IsLast Then
-      '        Return SheetRecord.Nil
-      '        'Dim rr As RowRecord = rec.First.AddFirst("合計")
-      '        'Return go(rowIdx + 1, rec.Rest, term).AddFirst(rr)
-      '      Else
-      '        Dim rr As RowRecord = rec.First
-      '        Dim idx As Integer = rowIdx Mod 6
+      Public Function GetUserTotalRecord(id As String, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As RowRecord
+        Dim rec As SheetRecord = GetUserMonthlyRecordAll(id, year, filter)
+        Return RecordConverter.CreateSumRowRecord(rec, 1, filter).AddFirst(year & "年")
+      End Function
 
-      '        If idx < 5 Then
-      '          Dim nrr As RowRecord = rr.AddFirst("第" & (idx + 1).ToString & "週")
-      '          If idx = 0 Then
-      '            Dim empty As RowRecord = RowRecord.Nil
-      '            Dim header = If(
-      '              Not term.Empty,
-      '              term.First.Item2.ToString & "月",
-      '              "")
-      '            Return go(rowIdx + 1, rec.Rest, term.Rest).AddFirst(nrr).AddFirst(empty.AddFirst(header))
-      '          Else
-      '            Return go(rowIdx + 1, rec.Rest, term).AddFirst(nrr)
-      '          End If
-      '        Else
-      '          Dim nrr As RowRecord = rr.AddFirst("月計")
-      '          Return go(rowIdx + 1, rec.Rest, term).AddFirst(nrr)
-      '        End If
-      '      End If
-      '    End Function
-      '  Return go(0, record, dateList)
-      'End Function
+      Public Function GetUserSumRecord(id As String, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
+        Dim weekly As SheetRecord =
+          GetUserWeeklyRecordAll(id, RecordTerm.StartYear, filter).
+            ConvertAll(Function(rr) rr.AddFirst("")).
+            AddFirst(RowRecord.Nil.AddFirst("週計"))
+        Dim monthly As SheetRecord =
+          GetUserMonthlyRecordAll(id, RecordTerm.StartYear, filter).
+            ConvertAll(Function(rr) rr.AddFirst("")).
+            AddFirst(RowRecord.Nil.AddFirst("月計"))
+        Dim total As SheetRecord =
+          SheetRecord.Nil.
+          AddFirst(GetUserTotalRecord(id, RecordTerm.StartYear, filter).AddFirst("")).
+          AddFirst(RowRecord.Nil.AddFirst("合計"))
+
+        Return total.AddRangeToHead(monthly).AddRangeToHead(weekly)
+      End Function
 
       Public Function GetDailyTermRecord(day As Integer, month As Integer, year As Integer) As SheetRecord
-        CheckValidDate(day, 1, month, year)
+        If Not CheckValidDate(day, 1, month, year) Then
+          Return SheetRecord.Nil
+        End If
 
-        Dim sheetName As String = GetSheetName(month)
-        Return _
-            GetTermRecord(Function(userRecord) userRecord.GetSheetRecord(sheetName).GetItem(day - 1))
+        Return GetAllUserRecord(Function(id) GetUserDailyRecord(id, day, 1, month, year).First.Rest)
       End Function
 
       Public Function GetWeeklyTermRecord(week As Integer, month As Integer, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
-        CheckValidDate(1, week, month, year)
+        If Not CheckValidDate(1, week, month, year) Then
+          Return SheetRecord.Nil
+        End If
 
-        'Dim offset As Integer =
-        '  RecordTerm.DateList.IndexWhere(Function(t) t.Item2 = month AndAlso t.Item1 = year) * 6
-        'Return _
-        '      GetTermRecord(Function(userRecord) userRecord.GetSheetRecord(GetSumSheetName).GetItem(offset + week - 1))
-        Return GetTermRecord2(
-          Function(id)
-            'Dim wRec As SheetRecord = GetUserDailyRecordInWeek(id, week, month, year)
-            Return GetUserWeeklyRecordInMonth(id, month, year, filter).GetItem(week - 1)
-            'Return RecordConverter.CreateSumRowRecord(wRec, 2, filter)
-          End Function)
+        Return GetAllUserRecord(Function(id) GetUserWeeklyRecord(id, New WeeklyItem(week, month, year, RecordTerm), filter).Rest)
       End Function
 
       Public Function GetMonthlyTermRecord(month As Integer, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
-        CheckValidDate(1, 1, month, year)
+        If Not CheckValidDate(1, 1, month, year) Then
+          Return SheetRecord.Nil
+        End If
 
-        Return _
-          GetTermRecord2(
-            Function(id)
-              Dim idx As Integer = RecordTerm.DateList.IndexWhere(Function(t) month = t.Item2 AndAlso year = t.Item1)
-              Return GetUserMonthlyRecord(id, year, filter).GetItem(idx)
-            End Function)
-
-        'Dim idx As Integer =
-        '    RecordTerm.DateList.IndexWhere(Function(t) t.Item2 = month AndAlso t.Item1 = year) * 6 + 5
-        'Return _
-        '      GetTermRecord(Function(userRecord) userRecord.GetSheetRecord(GetSumSheetName).GetItem(idx))
+        Return GetAllUserRecord(Function(id) GetUserMonthlyRecord(id, New MonthlyItem(month, year), filter).Rest)
       End Function
 
-      Public Function GetAllTermRecord() As SheetRecord
-        Dim idx As Integer =
-          RecordTerm.DateList.Count * 6
-        Return _
-            GetTermRecord(Function(userRecord) userRecord.GetSheetRecord(GetSumSheetName).GetItem(idx))
+      Public Function GetAllTermRecord(year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
+        Return GetAllUserRecord(Function(id) GetUserTotalRecord(id, year, filter).Rest)
       End Function
 
-      Private Function GetTermRecord(getRowRecord As Func(Of Model.UserRecord, RowRecord)) As SheetRecord
-        Dim record As List(Of RowRecord) =
-          UserRecordMap.ToList.
-            FindAll(Function(kv) UserInfoList.Exists(Function(info) info.GetIdNum = kv.Key)).
-            ConvertAll(Of RowRecord)(
-              Function(kv)
-                Dim key As String = kv.Key.PadLeft(3, "0"c)
-                Dim rec As Model.UserRecord = kv.Value
-                Dim userName As String = UserInfoList.Find(Function(info) info.GetIdNum = key).GetName
-                Dim rr As RowRecord = getRowRecord(rec)
-                Return rr.AddFirst(userName).AddFirst(key)
-              End Function)
-
-        Return ListToImmutableList(record)
-      End Function
-
-      Private Function GetTermRecord2(getRowRec As Func(Of String, RowRecord)) As SheetRecord
+      Private Function GetAllUserRecord(getRowRec As Func(Of String, RowRecord)) As SheetRecord
         Dim record As List(Of RowRecord) =
           UserInfoList.
             ConvertAll(
               Function(info)
-                Dim rr As RowRecord = getRowRec(info.GetIdNum)
-                Return rr.AddFirst(info.GetName).AddFirst(info.GetIdNum)
+                If UserRecordMap.ContainsKey(info.GetIdNum) Then
+                  Dim rr As RowRecord = getRowRec(info.GetIdNum)
+                  Return rr.AddFirst(info.GetName).AddFirst(info.GetIdNum)
+                Else
+                  Return RowRecord.Nil
+                End If
               End Function)
-        Return ListToImmutableList(record)
+
+        Return SheetRecord.Nil.AddRangeToHead(record)
       End Function
 
-      Public Function GetAllUserRecord() As MyLinkedList(Of Model.UserRecord)
-        Dim go As Func(Of List(Of Model.UserRecord), MyLinkedList(Of Model.UserRecord)) =
-          Function(values)
-            If values.Count = 0 Then
-              Return MyLinkedList(Of Model.UserRecord).Nil()
-            Else
-              Return go(values.Skip(1)).AddFirst(values.First)
-            End If
-          End Function
-        Return go(UserRecordMap.Values)
-      End Function
+      'Public Function GetAllUserRecord() As MyLinkedList(Of Model.UserRecord)
+      '  Dim go As Func(Of List(Of Model.UserRecord), MyLinkedList(Of Model.UserRecord)) =
+      '    Function(values)
+      '      If values.Count = 0 Then
+      '        Return MyLinkedList(Of Model.UserRecord).Nil()
+      '      Else
+      '        Return go(values.Skip(1)).AddFirst(values.First)
+      '      End If
+      '    End Function
+      '  Return go(UserRecordMap.Values)
+      'End Function
 
       Public Function GetDailyTotalRecord(month As Integer, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
+        If Not CheckValidDate(1, 1, month, year) Then
+          Return SheetRecord.Nil
+        End If
+
         Dim sheet As New List(Of RowRecord)
         For d As Integer = 1 To Date.DaysInMonth(year, month)
           Dim rec As SheetRecord = GetDailyTermRecord(d, month, year)
           Dim rr As RowRecord = RecordConverter.CreateSumRowRecord(rec, 2, filter).AddFirst(d.ToString & "日").AddFirst("")
           sheet.Add(rr)
         Next
-        Return SheetRecord.Nil.AddRangeToHead(sheet)
+        Return PadEmptyRowRecord(SheetRecord.Nil.AddRangeToHead(sheet), TotalRecordTableForm.tblRecord.RowCount - 1)
       End Function
 
       Public Function GetWeeklyTotalRecord(year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
         Dim sheet As New List(Of RowRecord)
-        RecordTerm.GetTermList.
+        RecordTerm.WeeklyItemList.
           ForEach(
-            Sub(t)
-              For w As Integer = 1 To 5
-                Dim rec As SheetRecord = GetWeeklyTermRecord(w, t.Item2, t.Item1, filter)
-                Dim rr As RowRecord = RecordConverter.CreateSumRowRecord(rec, 2, filter).AddFirst(t.Item2.ToString & "月第" & w.ToString & "週").AddFirst("")
-                sheet.Add(rr)
-              Next
+            Sub(w)
+              Dim rec As SheetRecord = GetWeeklyTermRecord(w.Week, w.Month, w.Year, filter)
+              Dim rr As RowRecord = RecordConverter.CreateSumRowRecord(rec, 2, filter).AddFirst(w.ToString).AddFirst("")
+              sheet.Add(rr)
             End Sub)
         Return SheetRecord.Nil.AddRangeToHead(sheet)
       End Function
 
-      Private Sub CheckValidDate(day As Integer, week As Integer, month As Integer, year As Integer)
+      Public Function GetMonthlyTotalRecord(year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
+        Dim sheet As New List(Of RowRecord)
+        RecordTerm.MonthlyItemList.
+          ForEach(
+            Sub(m)
+              Dim rec As SheetRecord = GetMonthlyTermRecord(m.Month, m.Year, filter)
+              Dim rr As RowRecord = RecordConverter.CreateSumRowRecord(rec, 2, filter).AddFirst(m.ToString).AddFirst("")
+              sheet.Add(rr)
+            End Sub)
+
+        Return SheetRecord.Nil.AddRangeToHead(sheet)
+      End Function
+
+      Private Function PadEmptyRowRecord(record As SheetRecord, allcnt As Integer) As SheetRecord
+        If record.Count < allcnt Then
+          Return PadEmptyRowRecord(record.AddLast(RowRecord.Nil), allcnt)
+        Else
+          Return record
+        End If
+      End Function
+
+      Private Function CheckValidDate(day As Integer, week As Integer, month As Integer, year As Integer) As Boolean
         If InvalidMonth(month) Then
           Throw New Exception("月の値が不正です。 month:  " & month)
-        ElseIf InvalidWeek(week) Then
+        ElseIf InvalidWeek(week, month, year) Then
           Throw New Exception("週の値が不正です。 week: " & week)
         ElseIf InvalidDay(day, month, year) Then
           Throw New Exception("日の値が不正です。 day: " & day & " month: " & month & " year: " & year)
         ElseIf OutOfTerm(month, year) Then
-          Throw New Exception("指定した年月のデータはありません。 month: " & month & " year: " & year)
+          Return False
+        Else
+          Return True
         End If
-      End Sub
+      End Function
 
       Private Function OutOfTerm(month As Integer, year As Integer) As Boolean
-        Return Not RecordTerm.DateList.Exists(Function(t) t.Item2 = month AndAlso t.Item1 = year)
+        Return Not RecordTerm.MonthlyItemList.Exists(Function(t) t.Month = month AndAlso t.Year = year)
       End Function
 
       Private Function InvalidMonth(month As Integer) As Boolean
         Return month < 1 OrElse month > 12
       End Function
 
-      Private Function InvalidWeek(week As Integer) As Boolean
-        Return week < 1 OrElse week > 5
+      Private Function InvalidWeek(week As Integer, month As Integer, year As Integer) As Boolean
+        Return week < 1 OrElse week > Utils.MyDate.MyCalendar.GetLastWeekNum(year, month)
       End Function
 
       Private Function InvalidDay(day As Integer, month As Integer, year As Integer) As Boolean
         Return day < 1 OrElse day > Date.DaysInMonth(year, month)
       End Function
 
-      Private Function ListToImmutableList(Of T)(list As List(Of T)) As MyLinkedList(Of T)
+      Private Function ToImmutableListFrom(Of T)(list As List(Of T)) As MyLinkedList(Of T)
         Dim il As MyLinkedList(Of T) = MyLinkedList(Of T).Nil
         Dim go As Func(Of Integer, MyLinkedList(Of T)) =
           Function(idx)
@@ -663,31 +650,34 @@ Namespace WorkReportAnalysis
         End Get
       End Property
 
-      Private _DateList As MyLinkedList(Of Tuple(Of Integer, Integer))
-      Public ReadOnly Property DateList As MyLinkedList(Of Tuple(Of Integer, Integer))
+      Private _MonthlyItemList As MyLinkedList(Of MonthlyItem)
+      Public ReadOnly Property MonthlyItemList As MyLinkedList(Of MonthlyItem)
         Get
-          Return _DateList
+          Return _MonthlyItemList
+        End Get
+      End Property
+
+      Private _WeeklyItemList As MyLinkedList(Of WeeklyItem)
+      Public ReadOnly Property WeeklyItemList As MyLinkedList(Of WeeklyItem)
+        Get
+          Return _WeeklyItemList
         End Get
       End Property
 
       Public Sub New(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer)
-        If ValidTerm(startMonth, startYear, endMonth, endYear) Then
+        If IsValidTerm(startMonth, startYear, endMonth, endYear) Then
           Me._StartMonth = startMonth
           Me._StartYear = startYear
           Me._EndMonth = endMonth
           Me._EndYear = endYear
-          _DateList = GetTermList()
-          '_DateList.ForEach(Function(t) MessageBox.Show(t.Item1 & " " & t.Item2))
+          _MonthlyItemList = GetMonthlyTerm(startMonth, startYear, endMonth, endYear)
+          _WeeklyItemList = GetWeeklyTerm(1, startMonth, startYear, endMonth, endYear)
         Else
           Throw New Exception("期間の値が不正です。")
         End If
       End Sub
 
-      Public Function GetTermList() As MyLinkedList(Of Tuple(Of Integer, Integer))
-        Return GetTerm(_StartMonth, _StartYear, _EndMonth, _EndYear)
-      End Function
-
-      Public Function InTerm(month As Integer, year As Integer) As Boolean
+      Public Function InMonthlyTerm(month As Integer, year As Integer) As Boolean
         Return AfterStartDate(month, year) AndAlso BeforeEndDate(month, year)
       End Function
 
@@ -703,23 +693,161 @@ Namespace WorkReportAnalysis
           year < EndYear
       End Function
 
-      Private Function GetTerm(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer) As MyLinkedList(Of Tuple(Of Integer, Integer))
+      Private Function GetMonthlyTerm(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer) As MyLinkedList(Of MonthlyItem)
         If startYear = endYear AndAlso startMonth = endMonth Then
-          Return New MyLinkedList(Of Tuple(Of Integer, Integer))(Tuple.Create(startYear, startMonth))
+          Return New MyLinkedList(Of MonthlyItem)(New MonthlyItem(startMonth, startYear))
         Else
-          Dim l As MyLinkedList(Of Tuple(Of Integer, Integer)) =
+          Dim l As MyLinkedList(Of MonthlyItem) =
             If(startMonth < 12,
-               GetTerm(startMonth + 1, startYear, endMonth, endYear),
-               GetTerm(1, startYear + 1, endMonth, endYear))
-          Return l.AddFirst(Tuple.Create(startYear, startMonth))
+               GetMonthlyTerm(startMonth + 1, startYear, endMonth, endYear),
+               GetMonthlyTerm(1, startYear + 1, endMonth, endYear))
+          Return l.AddFirst(New MonthlyItem(startMonth, startYear))
         End If
       End Function
 
-      Private Function ValidTerm(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer) As Boolean
+      Private Function GetWeeklyTerm(week As Integer, startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer) As MyLinkedList(Of WeeklyItem)
+        If startYear = endYear AndAlso startMonth = endMonth AndAlso week = MyCalendar.GetLastWeekNum(startYear, startMonth) Then
+          Return New MyLinkedList(Of WeeklyItem)(New WeeklyItem(week, startMonth, startYear, Me))
+        Else
+          Dim l As MyLinkedList(Of WeeklyItem) =
+            If(week < MyCalendar.GetLastWeekNum(startYear, startMonth),
+              GetWeeklyTerm(week + 1, startMonth, startYear, endMonth, endYear),
+              If(startMonth < 12,
+                GetWeeklyTerm(1, startMonth + 1, startYear, endMonth, endYear),
+                GetWeeklyTerm(1, 1, startYear + 1, endMonth, endYear)))
+          If week = 1 AndAlso (startMonth <> Me.StartMonth OrElse startYear <> Me.StartYear) AndAlso MyCalendar.GetWeek(startYear, startMonth, 1) <> 1 Then
+            Return l
+          Else
+            Return l.AddFirst(New WeeklyItem(week, startMonth, startYear, Me))
+          End If
+        End If
+      End Function
+
+      Private Function IsValidTerm(startMonth As Integer, startYear As Integer, endMonth As Integer, endYear As Integer) As Boolean
         Return _
           (startMonth >= 1 AndAlso startMonth <= 12 AndAlso endMonth >= 1 AndAlso endMonth <= 12) AndAlso
           startYear < endYear OrElse (startYear = endYear AndAlso startMonth <= endMonth)
       End Function
+
+    End Class
+
+    Public Class WeeklyItem
+      Inherits DateItem
+
+      Private _Week As Integer
+      Public ReadOnly Property Week() As Integer
+        Get
+          Return _Week
+        End Get
+      End Property
+
+      Private IsWeekUnder7Days As Boolean
+      Private RecordTerm As ReadRecordTerm
+
+      'Public Shared Function GetWeekNumInMonth(d As Integer, m As Integer, y As Integer) As Integer
+      '  Return GetWeekNumInMonth(New Date(y, m, d))
+      'End Function
+
+      'Public Shared Function GetWeekNumInMonth(day As Date) As Integer
+      '  Dim first As Date = MonthlyItem.GetFirstDateInMonth(day.Month, day.Year)
+      '  Return DatePart("WW", day) - DatePart("ww", first) + 1
+      'End Function
+
+      Public Sub New(w As Integer, m As Integer, y As Integer, recordTerm As ReadRecordTerm)
+        MyBase.New(w, m, y)
+        _Week = MyBase.Value
+        IsWeekUnder7Days =
+        (w = 1 AndAlso MyCalendar.GetWeek(y, m, 1) <> 1) OrElse
+        (w = MyCalendar.GetLastWeekNum(y, m) AndAlso MyCalendar.GetWeek(y, m, Date.DaysInMonth(y, m)) <> 7)
+        Me.RecordTerm = recordTerm
+      End Sub
+
+      Public Overrides Function Agree(day As Date) As Boolean
+        If day.Year = Year() AndAlso day.Month = Month() Then
+          Dim w As Integer = MyCalendar.GetWeekNumInMonth(day)
+          Return w = Week()
+        Else
+          Return False
+        End If
+      End Function
+
+      Public Function IsWeekUnderSevenDays() As Boolean
+        Return IsWeekUnder7Days
+      End Function
+
+      Public Overrides Function ToString() As String
+        If IsWeekUnder7Days Then
+          If Week() = 1 Then
+            If (Month <> RecordTerm.StartMonth OrElse Year <> RecordTerm.StartYear) Then
+              Dim m As Integer = If(Month = 1, 12, Month - 1)
+              Dim y As Integer = If(m = 12, Year - 1, Year)
+              Dim lastWeek As Integer = MyCalendar.GetLastWeekNum(y, m)
+              Return CreateString(lastWeek, m) & "/" & CreateString(Week, Month)
+            End If
+          ElseIf Month <> RecordTerm.EndMonth OrElse Year <> RecordTerm.EndYear Then
+            Dim m As Integer = If(Month = 12, 1, Month + 1)
+            Dim y As Integer = If(m = 1, Year + 1, Year)
+            Return CreateString(Week, Month) & "/" & CreateString(1, m)
+          End If
+        End If
+
+        Return CreateString(Week, Month)
+      End Function
+
+      Private Function CreateString(w As Integer, m As Integer) As String
+        Return m & "月 第" & w & "週"
+      End Function
+    End Class
+
+    Public Class MonthlyItem
+      Inherits DateItem
+
+      Public Shared Function GetFirstDateInMonth(m As Integer, y As Integer) As Date
+        Return New Date(y, m, 1)
+      End Function
+
+      Public Sub New(m As Integer, y As Integer)
+        MyBase.New(-1, m, y)
+      End Sub
+
+      Public Overrides Function Agree(day As Date) As Boolean
+        Return day.Year = Year() AndAlso day.Month = Month()
+      End Function
+
+      Public Overrides Function ToString() As String
+        Return Month & "月"
+      End Function
+    End Class
+
+    Public MustInherit Class DateItem
+      Private _Value As Integer
+      Protected ReadOnly Property Value() As Integer
+        Get
+          Return _Value
+        End Get
+      End Property
+
+      Private _Month As Integer
+      Public ReadOnly Property Month() As Integer
+        Get
+          Return _Month
+        End Get
+      End Property
+
+      Private _Year As Integer
+      Public ReadOnly Property Year() As Integer
+        Get
+          Return _Year
+        End Get
+      End Property
+
+      Public Sub New(value As Integer, m As Integer, y As Integer)
+        _Value = value
+        _Month = m
+        _Year = y
+      End Sub
+
+      Public MustOverride Function Agree(day As Date) As Boolean
     End Class
 
     Public Class RecordConverter
@@ -736,7 +864,11 @@ Namespace WorkReportAnalysis
               Dim offset = idx * 3 + startColIdx
               Dim sum1 As Double = RecordConverter.sum(record, offset, filter)
               Dim sum2 As Double = RecordConverter.sum(record, offset + 1, filter)
-              Dim sum3 As Double = sum1 / sum2
+
+              Dim sum3 As Double = 0.0
+              If sum2 > 0 Then
+                sum3 = sum1 / sum2
+              End If
               Return go(idx + 1).AddFirst(sum3).AddFirst(sum2).AddFirst(sum1)
             End If
           End Function

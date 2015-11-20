@@ -356,7 +356,7 @@ Partial Class TotalRecordTableForm
     Me.tblSubTItles.Location = New System.Drawing.Point(0, 27)
     Me.tblSubTItles.Name = "tblSubTItles"
     Me.tblSubTItles.RowCount = 1
-    Me.tblSubTItles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
+    Me.tblSubTItles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45.0!))
     Me.tblSubTItles.Size = New System.Drawing.Size(1193, 32)
     Me.tblSubTItles.TabIndex = 29
     '
@@ -951,7 +951,7 @@ Partial Class TotalRecordTableForm
     Me.tblSumOfRecord.Location = New System.Drawing.Point(0, 547)
     Me.tblSumOfRecord.Name = "tblSumOfRecord"
     Me.tblSumOfRecord.RowCount = 1
-    Me.tblSumOfRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
+    Me.tblSumOfRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31.0!))
     Me.tblSumOfRecord.Size = New System.Drawing.Size(1193, 28)
     Me.tblSumOfRecord.TabIndex = 31
     '

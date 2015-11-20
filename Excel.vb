@@ -27,6 +27,8 @@ Namespace Office
     Private isInit As Boolean
     Private isOpened As Boolean
 
+    Dim r As New System.Random(100)
+
     Sub New()
       isInit = False
     End Sub
@@ -77,7 +79,8 @@ Namespace Office
     Public Function Read(sheetName As String, cells As List(Of Cell)) As List(Of String)
       Return Access2(Function(sheet, cell)
                        'MessageBox.Show("row: " & cell.Row & " col " & cell.Col)
-                       Return ((cell.Row + 1) * cell.Col).ToString
+
+                       Return ((cell.Row + 1) * cell.Col + r.Next(100)).ToString
                        'Return GetTextFromExcel(sheet, cell),
                      End Function,
                      sheetName,
