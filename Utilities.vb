@@ -628,6 +628,11 @@ Namespace Utils
           Return BLANK
         End Function
 
+        'Private Shared Function GetDefaultValue() As T
+        '  Dim def As T = Nothing
+        '  Return def
+        'End Function
+
         Public Sub New(head As T)
           Me.Head = head
           Tail = BLANK

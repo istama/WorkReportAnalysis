@@ -5,11 +5,19 @@ Imports System.Runtime.InteropServices.Marshal
 Imports MP.Utils.Common
 
 Namespace Office
+
+
   Public Structure Cell
     Dim Row As Integer
     Dim Col As Integer
     Dim WrittenText As String
   End Structure
+
+  Public Class CellTree
+    Public Cell As Cell
+    Public IsCellThatReturnValue As Boolean
+    Public NextCell As MP.Utils.MyCollection.Immutable.MyLinkedList(Of CellTree)
+  End Class
 
   Public Delegate Function UpdateF(value As String) As String
 
@@ -77,46 +85,62 @@ Namespace Office
     End Sub
 
     Public Function Read(sheetName As String, cells As List(Of Cell)) As List(Of String)
-      Return Access2(Function(sheet, cell)
-                       'MessageBox.Show("row: " & cell.Row & " col " & cell.Col)
+      Return Access(
+        Function(sheet, cell)
+          Return ((cell.Row + 1) * cell.Col + r.Next(100)).ToString
+          'Return GetTextFromExcel(sheet, cell)
+        End Function,
+        sheetName,
+        cells)
+    End Function
 
-                       Return ((cell.Row + 1) * cell.Col + r.Next(100)).ToString
-                       'Return GetTextFromExcel(sheet, cell),
-                     End Function,
-                     sheetName,
-                     cells)
+    Public Function Read(sheetName As String, CellTree As List(Of CellTree)) As List(Of String)
+      Return AccessWithTree(
+        Function(sheet, cell)
+          'MessageBox.Show("col: " & cell.Col.ToString & " row: " & cell.Row.ToString)
+          If cell.Col < 0 OrElse cell.Row < 0 Then
+            Return ""
+          Else
+            '本番ではコメントを入れ替える
+            'Return ((cell.Row + 1) * cell.Col).ToString
+            Return ((cell.Row + 1) * cell.Col + r.Next(100)).ToString
+            'Return GetTextFromExcel(sheet, cell)
+          End If
+        End Function,
+      sheetName,
+      CellTree)
     End Function
 
     Public Function Update(sheetName As String, cells As List(Of Cell), f As UpdateF) As List(Of String)
       Dim res As List(Of String) =
-        Access2(Function(sheet, cell)
-                  Dim tmp As Object = GetTextFromExcel(sheet, cell)
-                  If tmp IsNot Nothing Then
-                    Dim val = CType(tmp, String)
-                    If f IsNot Nothing Then
-                      val = f(val)
-                      SetTextToExcel(val, sheet, cell)
-                    End If
-                    Return val
-                  Else
-                    Return Nothing
-                  End If
-                End Function,
+        Access(Function(sheet, cell)
+                 Dim tmp As Object = GetTextFromExcel(sheet, cell)
+                 If tmp IsNot Nothing Then
+                   Dim val = CType(tmp, String)
+                   If f IsNot Nothing Then
+                     val = f(val)
+                     SetTextToExcel(val, sheet, cell)
+                   End If
+                   Return val
+                 Else
+                   Return Nothing
+                 End If
+               End Function,
                 sheetName, cells)
       Book.Save()
       Return res
     End Function
 
     Public Sub Write(sheetName As String, cells As List(Of Cell))
-      Access2(Function(sheet, cell)
-                SetTextToExcel(cell.WrittenText, sheet, cell)
-                Return ""
-              End Function,
+      Access(Function(sheet, cell)
+               SetTextToExcel(cell.WrittenText, sheet, cell)
+               Return ""
+             End Function,
               sheetName, cells)
       Book.Save()
     End Sub
 
-    Private Function Access2(access As Func(Of Object, Cell, Object), sheetName As String, cells As List(Of Cell)) As List(Of String)
+    Private Function Access(connect As Func(Of Object, Cell, Object), sheetName As String, cells As List(Of Cell)) As List(Of String)
       '本番はコメントアウトをはずす
       'If isInit = False Then
       '  Throw New Exception("初期処理が実行されていません。")
@@ -131,8 +155,8 @@ Namespace Office
         'worksheets = Book.Worksheets
         'sheet = GetSheet(sheetName, worksheets)
 
-        'cells.ForEach(Sub(cell) values.Add(access(sheet, cell)))
-        cells.ForEach(Sub(cell) values.Add(access(Nothing, cell)))
+        'cells.ForEach(Sub(cell) values.Add(connect(sheet, cell)))
+        cells.ForEach(Sub(cell) values.Add(connect(Nothing, cell)))
 
         '本番はコメントアウトする
         Return ToStringList(values)
@@ -146,61 +170,54 @@ Namespace Office
       Return ToStringList(values)
     End Function
 
-    'Private Function Access(opMode As OpMode, sheetName As String, cells As List(Of Cell), f As UpdateF) As List(Of String)
-    '  'If isInit = False Then
-    '  '  Throw New Exception("初期処理が実行されていません。")
-    '  'End If
+    Private Function AccessWithTree(connect As Func(Of Object, Cell, Object), sheetName As String, cellTree As List(Of CellTree)) As List(Of String)
+      '本番はコメントアウトをはずす
+      'If isInit = False Then
+      '  Throw New Exception("初期処理が実行されていません。")
+      'End If
 
-    '  Dim worksheets As Object = Nothing
-    '  Dim sheet As Object = Nothing
-    '  Dim values As New List(Of Object)
+      Dim worksheets As Object = Nothing
+      Dim sheet As Object = Nothing
+      Dim values As New List(Of Object)
 
-    '  Try
-    '    'worksheets = Book.Worksheets
-    '    'sheet = GetSheet(sheetName, worksheets)
+      Try
+        '本番はコメントアウトをはずす
+        'worksheets = Book.Worksheets
+        'sheet = GetSheet(sheetName, worksheets)
 
-    '    If opMode = OpMode.READ Then
-    '      For Each cell As Cell In cells
-    '        values.Add(((cell.Row + 1) * cell.Col).ToString)
-    '        'values.Add(GetTextFromExcel(sheet, cell))
-    '      Next
-    '    ElseIf opMode = OpMode.WRITE Then
-    '      For Each cell As Cell In cells
-    '        SetTextToExcel(cell.WrittenText, sheet, cell)
-    '      Next
-    '    ElseIf OpMode.UPDATE
-    '      For Each cell As Cell In cells
-    '        Dim tmp As Object = GetTextFromExcel(sheet, cell)
-    '        If tmp IsNot Nothing Then
-    '          Dim val = CType(tmp, String)
-    '          If f IsNot Nothing Then
-    '            val = f(val)
-    '            SetTextToExcel(val, sheet, cell)
-    '          End If
-    '          values.Add(val)
-    '        Else
-    '          values.Add(Nothing)
-    '        End If
-    '      Next
-    '    End If
+        Dim f As Action(Of CellTree, Boolean) =
+          Sub(tree, read)
+            '本番はコメントアウトを入れ替える
+            'Dim res As String = If(notRead, "", connect(sheet, tree.Cell))
+            Dim res As String = If(read, connect(Nothing, tree.Cell), "")
+            If tree.IsCellThatReturnValue Then
+              values.Add(res)
+            End If
 
-    '    Return ToStringList(values)
-    '    'If opMode <> OpMode.READ Then
-    '    '  Book.Save()
-    '    'End If
-    '  Catch ex As Exception
-    '    Throw New Exception(ex.Message & vbCrLf & ex.StackTrace)
-    '  Finally
-    '    ReleaseComObj(sheet)
-    '    ReleaseComObj(worksheets)
-    '    'If book IsNot Nothing Then
-    '    '  book.Close(False)
-    '    '  ReleaseComObj(book)
-    '    'End If
-    '  End Try
+            If tree.NextCell IsNot Nothing Then
+              If res = "" Then
+                tree.NextCell.ForEach(Sub(b) f(b, False))
+              Else
+                tree.NextCell.ForEach(Sub(b) f(b, True))
+              End If
+            End If
+          End Sub
 
-    '  Return ToStringList(values)
-    'End Function
+        cellTree.ForEach(Sub(t) f(t, True))
+
+        '本番はコメントアウトする
+        Return ToStringList(values)
+      Catch ex As Exception
+        Throw New Exception(ex.Message & vbCrLf & ex.StackTrace)
+      Finally
+        ReleaseComObj(sheet)
+        ReleaseComObj(worksheets)
+      End Try
+
+      Return ToStringList(values)
+    End Function
+
+
 
     Private Function ToStringList(l As List(Of Object)) As List(Of String)
       Dim texts As New List(Of String)
@@ -334,5 +351,6 @@ Namespace Office
       Dim aCode As Integer = Asc(a)
       Return Convert.ToChar(offset + aCode - 1)
     End Function
+
   End Class
 End Namespace

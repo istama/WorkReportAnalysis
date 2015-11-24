@@ -82,11 +82,11 @@ Partial Class RecordTableForm
     Me.Panel31 = New System.Windows.Forms.Panel()
     Me.Label19 = New System.Windows.Forms.Label()
     Me.tblSubTitles = New System.Windows.Forms.TableLayoutPanel()
+    Me.Panel2 = New System.Windows.Forms.Panel()
+    Me.Label20 = New System.Windows.Forms.Label()
     Me.tblRecord = New System.Windows.Forms.TableLayoutPanel()
     Me.pnlForTable = New System.Windows.Forms.Panel()
     Me.tblSumOfRecord = New System.Windows.Forms.TableLayoutPanel()
-    Me.Panel2 = New System.Windows.Forms.Panel()
-    Me.Label20 = New System.Windows.Forms.Label()
     Me.Panel1.SuspendLayout()
     Me.Panel3.SuspendLayout()
     Me.Panel4.SuspendLayout()
@@ -118,8 +118,8 @@ Partial Class RecordTableForm
     Me.Panel30.SuspendLayout()
     Me.Panel31.SuspendLayout()
     Me.tblSubTitles.SuspendLayout()
-    Me.pnlForTable.SuspendLayout()
     Me.Panel2.SuspendLayout()
+    Me.pnlForTable.SuspendLayout()
     Me.SuspendLayout()
     '
     'Panel1
@@ -806,9 +806,28 @@ Partial Class RecordTableForm
     Me.tblSubTitles.Location = New System.Drawing.Point(0, 27)
     Me.tblSubTitles.Name = "tblSubTitles"
     Me.tblSubTitles.RowCount = 1
-    Me.tblSubTitles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43.0!))
+    Me.tblSubTitles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
     Me.tblSubTitles.Size = New System.Drawing.Size(1193, 32)
     Me.tblSubTitles.TabIndex = 27
+    '
+    'Panel2
+    '
+    Me.Panel2.Controls.Add(Me.Label20)
+    Me.Panel2.Location = New System.Drawing.Point(4, 4)
+    Me.Panel2.Name = "Panel2"
+    Me.Panel2.Size = New System.Drawing.Size(37, 25)
+    Me.Panel2.TabIndex = 23
+    '
+    'Label20
+    '
+    Me.Label20.BackColor = System.Drawing.Color.Transparent
+    Me.Label20.Dock = System.Windows.Forms.DockStyle.Fill
+    Me.Label20.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
+    Me.Label20.Location = New System.Drawing.Point(0, 0)
+    Me.Label20.Name = "Label20"
+    Me.Label20.Size = New System.Drawing.Size(37, 25)
+    Me.Label20.TabIndex = 2
+    Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
     '
     'tblRecord
     '
@@ -917,27 +936,9 @@ Partial Class RecordTableForm
     Me.tblSumOfRecord.Location = New System.Drawing.Point(0, 592)
     Me.tblSumOfRecord.Name = "tblSumOfRecord"
     Me.tblSumOfRecord.RowCount = 1
-    Me.tblSumOfRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43.0!))
+    Me.tblSumOfRecord.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44.0!))
     Me.tblSumOfRecord.Size = New System.Drawing.Size(1193, 28)
     Me.tblSumOfRecord.TabIndex = 29
-    '
-    'Panel2
-    '
-    Me.Panel2.Controls.Add(Me.Label20)
-    Me.Panel2.Location = New System.Drawing.Point(4, 4)
-    Me.Panel2.Name = "Panel2"
-    Me.Panel2.Size = New System.Drawing.Size(37, 25)
-    Me.Panel2.TabIndex = 23
-    '
-    'Label20
-    '
-    Me.Label20.Dock = System.Windows.Forms.DockStyle.Fill
-    Me.Label20.Font = New System.Drawing.Font("MS UI Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(128, Byte))
-    Me.Label20.Location = New System.Drawing.Point(0, 0)
-    Me.Label20.Name = "Label20"
-    Me.Label20.Size = New System.Drawing.Size(37, 25)
-    Me.Label20.TabIndex = 2
-    Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
     '
     'RecordTableForm
     '
@@ -981,8 +982,8 @@ Partial Class RecordTableForm
     Me.Panel30.ResumeLayout(False)
     Me.Panel31.ResumeLayout(False)
     Me.tblSubTitles.ResumeLayout(False)
-    Me.pnlForTable.ResumeLayout(False)
     Me.Panel2.ResumeLayout(False)
+    Me.pnlForTable.ResumeLayout(False)
     Me.ResumeLayout(False)
 
   End Sub

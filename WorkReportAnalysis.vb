@@ -1,4 +1,6 @@
 ﻿
+'Option Strict On
+
 Imports MP.Utils.Model
 
 Imports MP.Utils.MyDate
@@ -8,53 +10,62 @@ Imports SheetRecord = MP.Utils.MyCollection.Immutable.MyLinkedList(Of MP.Utils.M
 
 Namespace WorkReportAnalysis
   Namespace App
+    'Public Structure ItemTree
+    '  Dim Key As String
+    '  Dim DependedKeys As MyLinkedList(Of ItemTree)
+    'End Structure
+
     Public Class WorkReportAnalysisProperties
-      Private Shared SETTING_FILE_NAME = "excel.properties"
+      Private Shared SETTING_FILE_NAME As String = "excel.properties"
 
-      Public Shared KEY_YEAR = "Year"
-      Public Shared KEY_MAIN_FORM_NAME = "MainFormName"
-      Public Shared KEY_EXCEL_FILE_DIR = "ExcelFileDir"
-      Public Shared KEY_EXCEL_FILE_NAME_FORMAT = "ExcelFileNameFormat"
-      Public Shared KEY_SHEET_NAME_FORMAT = "SheetNameFormat"
-      Public Shared KEY_SUM_SHEET_NAME_FORMAT = "SheetNameFormat2"
-      Public Shared KEY_FIRST_DAY_OF_A_MONTH_ROW = "FirstDayOfAMonthRow"
-      Public Shared KEY_FIRST_MONTH_OF_SUM_SHEET_ROW = "FirstRow2"
+      Public Shared KEY_YEAR As String = "Year"
+      Public Shared KEY_MAIN_FORM_NAME As String = "MainFormName"
+      Public Shared KEY_EXCEL_FILE_DIR As String = "ExcelFileDir"
+      Public Shared KEY_EXCEL_FILE_NAME_FORMAT As String = "ExcelFileNameFormat"
+      Public Shared KEY_SHEET_NAME_FORMAT As String = "SheetNameFormat"
+      Public Shared KEY_SUM_SHEET_NAME_FORMAT As String = "SheetNameFormat2"
+      Public Shared KEY_FIRST_DAY_OF_A_MONTH_ROW As String = "FirstDayOfAMonthRow"
+      Public Shared KEY_FIRST_MONTH_OF_SUM_SHEET_ROW As String = "FirstRow2"
 
-      Public Shared KEY_ITEM_NAME1 = "ItemName1"
-      Public Shared KEY_COL1_OF_ITEM1 = "Col1OfItem1"
-      Public Shared KEY_COL2_OF_ITEM1 = "Col2OfItem1"
-      Public Shared KEY_COL3_OF_ITEM1 = "Col3OfItem1"
-      Public Shared KEY_ITEM_NAME2 = "ItemName2"
-      Public Shared KEY_COL1_OF_ITEM2 = "Col1OfItem2"
-      Public Shared KEY_COL2_OF_ITEM2 = "Col2OfItem2"
-      Public Shared KEY_COL3_OF_ITEM2 = "Col3OfItem2"
-      Public Shared KEY_ITEM_NAME3 = "ItemName3"
-      Public Shared KEY_COL1_OF_ITEM3 = "Col1OfItem3"
-      Public Shared KEY_COL2_OF_ITEM3 = "Col2OfItem3"
-      Public Shared KEY_COL3_OF_ITEM3 = "Col3OfItem3"
-      Public Shared KEY_ITEM_NAME4 = "ItemName4"
-      Public Shared KEY_COL1_OF_ITEM4 = "Col1OfItem4"
-      Public Shared KEY_COL2_OF_ITEM4 = "Col2OfItem4"
-      Public Shared KEY_COL3_OF_ITEM4 = "Col3OfItem4"
-      Public Shared KEY_ITEM_NAME5 = "ItemName5"
-      Public Shared KEY_COL1_OF_ITEM5 = "Col1OfItem5"
-      Public Shared KEY_COL2_OF_ITEM5 = "Col2OfItem5"
-      Public Shared KEY_COL3_OF_ITEM5 = "Col3OfItem5"
-      Public Shared KEY_ITEM_NAME6 = "ItemName6"
-      Public Shared KEY_COL1_OF_ITEM6 = "Col1OfItem6"
-      Public Shared KEY_COL2_OF_ITEM6 = "Col2OfItem6"
-      Public Shared KEY_COL3_OF_ITEM6 = "Col3OfItem6"
-      Public Shared KEY_ITEM_NAME7 = "ItemName7"
-      Public Shared KEY_COL1_OF_ITEM7 = "Col1OfItem7"
-      Public Shared KEY_COL2_OF_ITEM7 = "Col2OfItem7"
-      Public Shared KEY_COL3_OF_ITEM7 = "Col3OfItem7"
 
-      Public Shared KEY_NOTE_COL = "NoteCol"
-      Public Shared KEY_WORKDAY_COL = "WorkdayCol"
+      Public Shared ITEM_COUNT As Integer = 7
+      Public Shared ITEM_DETAIL_COUNT As Integer = 3
 
-      Public Shared MANAGER = New MP.Utils.Common.PropertyManager(SETTING_FILE_NAME, DefaultSettingProperties(), True)
+      Public Shared KEY_ITEM_NAME1 As String = "ItemName1"
+      Public Shared KEY_COL1_OF_ITEM1 As String = "Col1OfItem1"
+      Public Shared KEY_COL2_OF_ITEM1 As String = "Col2OfItem1"
+      Public Shared KEY_COL3_OF_ITEM1 As String = "Col3OfItem1"
+      Public Shared KEY_ITEM_NAME2 As String = "ItemName2"
+      Public Shared KEY_COL1_OF_ITEM2 As String = "Col1OfItem2"
+      Public Shared KEY_COL2_OF_ITEM2 As String = "Col2OfItem2"
+      Public Shared KEY_COL3_OF_ITEM2 As String = "Col3OfItem2"
+      Public Shared KEY_ITEM_NAME3 As String = "ItemName3"
+      Public Shared KEY_COL1_OF_ITEM3 As String = "Col1OfItem3"
+      Public Shared KEY_COL2_OF_ITEM3 As String = "Col2OfItem3"
+      Public Shared KEY_COL3_OF_ITEM3 As String = "Col3OfItem3"
+      Public Shared KEY_ITEM_NAME4 As String = "ItemName4"
+      Public Shared KEY_COL1_OF_ITEM4 As String = "Col1OfItem4"
+      Public Shared KEY_COL2_OF_ITEM4 As String = "Col2OfItem4"
+      Public Shared KEY_COL3_OF_ITEM4 As String = "Col3OfItem4"
+      Public Shared KEY_ITEM_NAME5 As String = "ItemName5"
+      Public Shared KEY_COL1_OF_ITEM5 As String = "Col1OfItem5"
+      Public Shared KEY_COL2_OF_ITEM5 As String = "Col2OfItem5"
+      Public Shared KEY_COL3_OF_ITEM5 As String = "Col3OfItem5"
+      Public Shared KEY_ITEM_NAME6 As String = "ItemName6"
+      Public Shared KEY_COL1_OF_ITEM6 As String = "Col1OfItem6"
+      Public Shared KEY_COL2_OF_ITEM6 As String = "Col2OfItem6"
+      Public Shared KEY_COL3_OF_ITEM6 As String = "Col3OfItem6"
+      Public Shared KEY_ITEM_NAME7 As String = "ItemName7"
+      Public Shared KEY_COL1_OF_ITEM7 As String = "Col1OfItem7"
+      Public Shared KEY_COL2_OF_ITEM7 As String = "Col2OfItem7"
+      Public Shared KEY_COL3_OF_ITEM7 As String = "Col3OfItem7"
 
-      Public Shared Function ItemKeys() As String()
+      Public Shared KEY_NOTE_COL As String = "NoteCol"
+      Public Shared KEY_WORKDAY_COL As String = "WorkdayCol"
+
+      Public Shared MANAGER As New MP.Utils.Common.PropertyManager(SETTING_FILE_NAME, DefaultSettingProperties(), True)
+
+      Public Shared Function AllItemKeys() As String()
         Dim keys As String() = New String() {
           KEY_COL1_OF_ITEM1,
           KEY_COL2_OF_ITEM1,
@@ -82,6 +93,63 @@ Namespace WorkReportAnalysis
         Return keys
       End Function
 
+      Public Shared Function ItemKeys(itemNum As Integer) As String()
+        If itemNum < 0 OrElse itemNum >= ITEM_COUNT Then
+          Throw New Exception("指定された番号がアイテムの範囲を越えています。 itemNum: " & itemNum)
+        End If
+
+        Return AllItemKeys.Skip(itemNum * ITEM_DETAIL_COUNT).Take(ITEM_DETAIL_COUNT).ToArray
+      End Function
+
+      Public Shared Function ItemKeysList() As String()()
+        Dim l As New List(Of String())
+        For num As Integer = 0 To ITEM_COUNT - 1
+          Dim i As String() = ItemKeys(num)
+          l.Add(ItemKeys(num))
+        Next
+        Return l.ToArray
+      End Function
+
+      'Public Shared Function ItemTree() As ItemTree
+      '  Return CreateLinkedKeys(KEY_WORKDAY_COL, ItemKeysList())
+      'End Function
+
+      'Private Shared Function CreateLinkedKeys(parentKey As String, childs As String()()) As ItemTree
+      '  Dim f As Func(Of String()(), MyLinkedList(Of ItemTree)) =
+      '    Function(c)
+      '      If c.Count = 0 Then
+      '        Return MyLinkedList(Of ItemTree).Nil
+      '      Else
+      '        Return f(c.Skip(1)).AddFirst(CreateChainKeys(c.First))
+      '      End If
+      '    End Function
+
+      '  Dim tree As ItemTree
+      '  With tree
+      '    .Key = parentKey
+      '    .DependedKeys = f(childs)
+      '  End With
+      '  Return tree
+      'End Function
+
+      'Private Shared Function CreateChainKeys(ParamArray keys As String()) As ItemTree
+      '  Dim f As Func(Of String(), ItemTree) =
+      '    Function(k)
+      '      Dim n As MyLinkedList(Of ItemTree) = MyLinkedList(Of ItemTree).Nil
+      '      If k.Count > 0 Then
+      '        n = n.AddFirst(f(k.Skip(1)))
+      '      End If
+
+      '      Dim t As ItemTree
+      '      With t
+      '        .Key = k.First
+      '        .DependedKeys = n
+      '      End With
+
+      '      Return t
+      '    End Function
+      '  Return f(keys)
+      'End Function
 
       Private Shared Function DefaultSettingProperties() As IDictionary(Of String, String)
         Dim dict As IDictionary(Of String, String) = New Dictionary(Of String, String)
@@ -92,8 +160,8 @@ Namespace WorkReportAnalysis
         dict(KEY_SHEET_NAME_FORMAT) = "{0}月分"
         dict(KEY_SUM_SHEET_NAME_FORMAT) = "集計"
 
-        dict(KEY_FIRST_DAY_OF_A_MONTH_ROW) = 7
-        dict(KEY_FIRST_MONTH_OF_SUM_SHEET_ROW) = 12
+        dict(KEY_FIRST_DAY_OF_A_MONTH_ROW) = "7"
+        dict(KEY_FIRST_MONTH_OF_SUM_SHEET_ROW) = "12"
 
         dict(KEY_ITEM_NAME1) = "郵政"
         dict(KEY_COL1_OF_ITEM1) = "C"
@@ -184,13 +252,27 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Shared Function GetItemCols(ParamArray excludedItemKeys As String()) As List(Of String)
-        Return App.WorkReportAnalysisProperties.ItemKeys().ToList.
+        Return App.WorkReportAnalysisProperties.AllItemKeys().ToList.
           FindAll(Function(k) Not excludedItemKeys.Contains(k)).
           ConvertAll(
             Function(k)
               Dim col As String = m.GetValue(k)
-              Return If(Char.IsLetter(col), col, "")
+              Return If(Char.IsLetter(CType(col, Char)), col, "")
             End Function)
+      End Function
+
+      Public Shared Function GetItemColsList(ParamArray excludedItemKeys As String()) As List(Of List(Of String))
+        Return _
+          App.WorkReportAnalysisProperties.ItemKeysList.ToList.
+            ConvertAll(
+              Function(keys)
+                Dim l As New List(Of String)
+                For Each k As String In keys
+                  Dim col As String = m.GetValue(k)
+                  l.Add(If(Char.IsLetter(CType(col, Char)) AndAlso Not excludedItemKeys.Contains(col), col, ""))
+                Next
+                Return l
+              End Function)
       End Function
 
       Public Shared Function GetYear() As Integer
@@ -210,11 +292,15 @@ Namespace WorkReportAnalysis
 
       Private Excel As Excel.ExcelAccessor
       Private AccessPropList As List(Of Excel.AccessProperties)
+      Private AccessPropListWithTree As List(Of Excel.AccessPropertiesWithTree)
+
+      Private Shared m As Utils.Common.PropertyManager = App.WorkReportAnalysisProperties.MANAGER
 
       Public Sub New(excel As Excel.ExcelAccessor, manager As UserRecordManager)
         _UserRecordManager = manager
         Me.Excel = excel
         AccessPropList = New List(Of Excel.AccessProperties)
+        AccessPropListWithTree = New List(Of Excel.AccessPropertiesWithTree)
 
         Init()
       End Sub
@@ -236,6 +322,30 @@ Namespace WorkReportAnalysis
               .RowSize = Date.DaysInMonth(e.Year, e.Month) '+ 1
             End With
             AccessPropList.Add(p)
+          End Sub)
+
+        Dim colTree As Excel.ColTree =
+          WorkReportAnalysis.Excel.ExcelAccessor.CreateTreeList(
+            m.GetValue(App.WorkReportAnalysisProperties.KEY_WORKDAY_COL),
+            False,
+            App.FileFormat.GetItemColsList)
+
+        term.ForEach(
+          Sub(e)
+            Dim format As Excel.SheetFormat
+            With format
+              .OffsetRow = App.FileFormat.GetFirstDayOfAMonthRow
+              .RowSize = Date.DaysInMonth(e.Year, e.Month)
+              .ColTree = colTree
+            End With
+
+            Dim p As Excel.AccessPropertiesWithTree
+            With p
+              .RecordKey = UserRecordManager.GetSheetName(e.Month)
+              .SheetName = UserRecordManager.GetSheetName(e.Month)
+              .SheetFormat = format
+            End With
+            AccessPropListWithTree.Add(p)
           End Sub)
 
         'Dim sum As Excel.AccessProperties
@@ -277,8 +387,10 @@ Namespace WorkReportAnalysis
           Dim fileName As String = App.FileFormat.GetFilePath(userInfo.GetIdNum())
           Dim userRecord As New Model.UserRecord(userInfo)
 
-          Excel.Read(fileName, AccessPropList).
-              ForEach(Sub(res) userRecord.Add(res.AccessProperties.SheetName, res))
+          'Excel.Read(fileName, AccessPropList).
+          'ForEach(Sub(res) userRecord.Add(res.SheetName, res))
+          Excel.ReadWithTree(fileName, AccessPropListWithTree).
+            ForEach(Sub(res) userRecord.Add(res.SheetName, res))
           SyncLock _UserRecordManager
             _UserRecordManager.Add(userInfo.GetIdNum, userRecord)
           End SyncLock
@@ -292,7 +404,7 @@ Namespace WorkReportAnalysis
       Private UserRecordMap As IDictionary(Of String, Model.UserRecord)
       Private RecordTerm As ReadRecordTerm
 
-      Public Shared Function GetSheetName(month) As String
+      Public Shared Function GetSheetName(month As Integer) As String
         Return App.FileFormat.GetSheetName(month)
       End Function
 
@@ -348,7 +460,7 @@ Namespace WorkReportAnalysis
 
       Public Function GetUserDailyRecordInMonth(id As String, month As Integer, year As Integer) As SheetRecord
         Dim record As SheetRecord = GetUserDailyRecord(id, 1, Date.DaysInMonth(year, month), month, year)
-        Return PadEmptyRowRecord(record, RecordTableForm.TABLE_ROW_COUNT - 1)
+        Return PadEmptyRowRecord(record, RecordTableForm.tblRecord.RowCount - 1)
       End Function
 
       Public Function GetUserDailyRecordInWeek(id As String, week As Integer, month As Integer, year As Integer) As SheetRecord
@@ -869,7 +981,7 @@ Namespace WorkReportAnalysis
               If sum2 > 0 Then
                 sum3 = sum1 / sum2
               End If
-              Return go(idx + 1).AddFirst(sum3).AddFirst(sum2).AddFirst(sum1)
+              Return go(idx + 1).AddFirst(sum3.ToString).AddFirst(sum2.ToString).AddFirst(sum1.ToString)
             End If
           End Function
 
@@ -916,6 +1028,13 @@ Namespace WorkReportAnalysis
   End Namespace
 
   Namespace Excel
+    Public Class ColTree
+      Public Col As String
+      Public IsColThatReturnValue As Boolean
+      Public DependedCols As MyLinkedList(Of ColTree)
+      Public AllCount As Integer
+    End Class
+
     Public Structure AccessProperties
       Dim RecordKey As String
       Dim SheetName As String
@@ -924,9 +1043,22 @@ Namespace WorkReportAnalysis
       Dim RowSize As Integer
     End Structure
 
-    Public Structure RecordAndProperty
+    Public Structure AccessPropertiesWithTree
+      Dim RecordKey As String
+      Dim SheetName As String
+      Dim SheetFormat As SheetFormat
+    End Structure
+
+    Public Structure SheetFormat
+      Dim ColTree As ColTree
+      Dim OffsetRow As Integer
+      Dim RowSize As Integer
+    End Structure
+
+    Public Structure ReadRecord
+      Dim SheetName As String
       Dim SheetRecord As SheetRecord
-      Dim AccessProperties As AccessProperties
+      'Dim AccessProperties As AccessProperties
     End Structure
 
     Public Class ExcelAccessor
@@ -952,25 +1084,46 @@ Namespace WorkReportAnalysis
         Excel.Close()
       End Sub
 
-      Public Function Read(fileName As String, props As List(Of AccessProperties)) As List(Of RecordAndProperty)
-        Dim list As New List(Of RecordAndProperty)
+      Public Function Read(fileName As String, props As List(Of AccessProperties)) As List(Of ReadRecord)
+        Dim list As New List(Of ReadRecord)
 
         Try
-          ' Fix 本番ではコメントアウトしない
           Open(fileName)
           props.ForEach(
             Sub(p)
-              Dim rp As RecordAndProperty
+              Dim rp As ReadRecord
               With rp
                 .SheetRecord = ReadSheetRecord(p)
-                .AccessProperties = p
+                .SheetName = p.SheetName
               End With
 
               list.Add(rp)
             End Sub)
 
         Finally
-          ' Fix 本番ではコメントアウトしない
+          Close()
+        End Try
+
+        Return list
+      End Function
+
+      Public Function ReadWithTree(fileName As String, props As List(Of AccessPropertiesWithTree)) As List(Of ReadRecord)
+        Dim list As New List(Of ReadRecord)
+
+        Try
+          Open(fileName)
+          props.ForEach(
+            Sub(p)
+              Dim rp As ReadRecord
+              With rp
+                .SheetRecord = ReadSheetRecordWithTree(p)
+                .SheetName = p.SheetName
+              End With
+
+              list.Add(rp)
+            End Sub)
+
+        Finally
           Close()
         End Try
 
@@ -1003,6 +1156,71 @@ Namespace WorkReportAnalysis
         Return sRecord.reverse
       End Function
 
+      Private Function ReadSheetRecordWithTree(prop As AccessPropertiesWithTree) As SheetRecord
+        Dim sRecord As SheetRecord = SheetRecord.Nil()
+
+        Dim cells As List(Of Office.CellTree) = CreateCellTree(prop.SheetFormat.ColTree, prop.SheetFormat.OffsetRow, prop.SheetFormat.RowSize)
+        Dim values As List(Of String) = Excel.Read(prop.SheetName, cells)
+
+        Dim createRowRecord As Func(Of Integer, Integer, RowRecord) =
+          Function(idx, max)
+            Return If(idx < max,
+              createRowRecord(idx + 1, max).AddFirst(values(idx)),
+              RowRecord.Nil())
+          End Function
+
+        Dim createSheetRecord As Func(Of Integer, Integer, SheetRecord) =
+          Function(row, max)
+            If row < max Then
+              Dim offset As Integer = row * prop.SheetFormat.ColTree.AllCount
+              Dim rec As RowRecord = createRowRecord(offset, offset + prop.SheetFormat.ColTree.AllCount)
+              Return createSheetRecord(row + 1, max).AddFirst(rec)
+            Else
+              Return SheetRecord.Nil
+            End If
+          End Function
+
+        'For row As Integer = 0 To (prop.RowSize - 1)
+        '  Dim offset As Integer = row * prop.ColTree.AllCount
+        '  Dim rec As RowRecord = createRowRecord(offset, offset + prop.ColTree.AllCount)
+
+        '  sRecord = sRecord.AddFirst(rec)
+        'Next
+
+        Return createSheetRecord(0, prop.SheetFormat.RowSize)
+      End Function
+
+      Private Function CreateCellTree(cols As ColTree, offsetRow As Integer, rowCnt As Integer) As List(Of Office.CellTree)
+        Dim f As Func(Of ColTree, Integer, Office.CellTree) =
+          Function(tree, row)
+            Dim cell As Office.Cell
+            With cell
+              .Col = If(Char.IsLetter(CType(tree.Col, Char)), Office.Alph.ToInt(tree.Col), -1)
+              .Row = row
+              .WrittenText = ""
+            End With
+
+            Dim childs As MyLinkedList(Of Office.CellTree) =
+              tree.DependedCols.ConvertAll(Function(t) f(t, row))
+
+            Dim cellTree As New Office.CellTree
+            With cellTree
+              .Cell = cell
+              .IsCellThatReturnValue = tree.IsColThatReturnValue
+              .NextCell = childs
+            End With
+
+            Return cellTree
+          End Function
+
+        Dim l As New List(Of Office.CellTree)
+        For row As Integer = 0 To rowCnt - 1
+          l.Add(f(cols, offsetRow + row))
+        Next
+
+        Return l
+      End Function
+
       Private Function CreateCellList(cols As List(Of String), offsetRow As Integer, rowCnt As Integer) As List(Of Office.Cell)
         Dim l As New List(Of Office.Cell)
         For idx As Integer = 0 To (rowCnt - 1)
@@ -1010,7 +1228,7 @@ Namespace WorkReportAnalysis
           Dim cells As List(Of Office.Cell) =
             cols.ConvertAll(
               Function(k)
-                Dim col As Integer = If(Char.IsLetter(k), Office.Alph.ToInt(k), -1)
+                Dim col As Integer = If(Char.IsLetter(CType(k, Char)), Office.Alph.ToInt(k), -1)
                 Dim cell As Office.Cell
                 With cell
                   .Row = row
@@ -1044,6 +1262,53 @@ Namespace WorkReportAnalysis
             End If
           End Function)
       End Function
+
+      Public Shared Function CreateTreeList(parent As String, isParentColThatReturnValue As Boolean, childs As List(Of List(Of String))) As ColTree
+        Dim cList As MyLinkedList(Of ColTree) = CreateSequentialTreeList(childs)
+
+        Dim tree As New ColTree
+        With tree
+          .Col = parent
+          .IsColThatReturnValue = isParentColThatReturnValue
+          .DependedCols = cList
+          .AllCount = If(isParentColThatReturnValue, 1, 0) + cList.FoldLeft(0, Function(sum, e) e.AllCount + sum)
+        End With
+        Return tree
+      End Function
+
+      Public Shared Function CreateSequentialTreeList(colsArray As List(Of List(Of String))) As MyLinkedList(Of ColTree)
+        Dim f As Func(Of List(Of List( OF String)), MyLinkedList(Of ColTree)) =
+          Function(c)
+            If c.Count = 0 Then
+              Return MyLinkedList(Of ColTree).Nil
+            Else
+              Return f(c.Skip(1).ToList).AddFirst(CreateSequentialTree(c.First.ToArray))
+            End If
+          End Function
+
+        Return f(colsArray)
+      End Function
+
+      Public Shared Function CreateSequentialTree(ParamArray cols As String()) As ColTree
+        Dim f As Func(Of String(), ColTree) =
+          Function(k)
+            Dim n As MyLinkedList(Of ColTree) = MyLinkedList(Of ColTree).Nil
+            If k.Count > 1 Then
+              n = n.AddFirst(f(k.Skip(1).ToArray))
+            End If
+
+            Dim t As New ColTree
+            With t
+              .Col = k.First
+              .IsColThatReturnValue = True
+              .DependedCols = n
+              .AllCount = 1 + n.FoldLeft(0, Function(sum, e) e.AllCount + sum)
+            End With
+
+            Return t
+          End Function
+        Return f(cols)
+      End Function
     End Class
 
   End Namespace
@@ -1071,11 +1336,11 @@ Namespace WorkReportAnalysis
 
     Public Class UserRecord
       Private UserInfo As ExpandedUserInfo
-      Private RecordAndProperties As IDictionary(Of String, Excel.RecordAndProperty)
+      Private RecordAndProperties As IDictionary(Of String, Excel.ReadRecord)
 
       Public Sub New(userInfo As ExpandedUserInfo)
         Me.UserInfo = userInfo
-        Me.RecordAndProperties = New Dictionary(Of String, Excel.RecordAndProperty)
+        Me.RecordAndProperties = New Dictionary(Of String, Excel.ReadRecord)
       End Sub
 
       Public Function GetIdNum() As String
@@ -1086,7 +1351,7 @@ Namespace WorkReportAnalysis
         Return UserInfo.GetName()
       End Function
 
-      Public Sub Add(key As String, recordAndProperty As Excel.RecordAndProperty)
+      Public Sub Add(key As String, recordAndProperty As Excel.ReadRecord)
         Me.RecordAndProperties.Add(key, recordAndProperty)
       End Sub
 
@@ -1103,6 +1368,15 @@ Namespace WorkReportAnalysis
   End Namespace
 
   Namespace Layout
+    Public Class Handler
+      Public DoubleClickCallBack As Action(Of Object, EventArgs)
+
+      Sub DoubleClick(sender As Object, e As EventArgs)
+        If DoubleClickCallBack IsNot Nothing Then
+          DoubleClickCallBack(sender, e)
+        End If
+      End Sub
+    End Class
 
     Public Class TableDrawer
       Private ScrolledPanel As Panel
@@ -1141,20 +1415,20 @@ Namespace WorkReportAnalysis
         Return Me
       End Function
 
-      Public Function CreateCell(text As String, insertCol As Integer, insertRow As Integer) As Panel
+      Public Function CreateCell(text As String, insertCol As Integer, insertRow As Integer, Handler As Handler) As Panel
         Dim panel As Panel = CreatePanel(FuncBackColor(insertRow))
-        Dim label As Label = CreateLabel(text, insertCol)
+        Dim label As Label = CreateLabel(text, insertCol, Handler)
         panel.Controls.Add(label)
         Return panel
       End Function
 
-      Public Function CreatePanel(backColor) As Panel
+      Public Function CreatePanel(backColor As Color) As Panel
         Dim panel As Panel = ControlDrawer.CreatePanelInTable(backColor)
         AddHandler panel.Click, AddressOf ClickEvent
         Return panel
       End Function
 
-      Public Function CreateLabel(text As String, insertCol As Integer) As Label
+      Public Function CreateLabel(text As String, insertCol As Integer, handler As Handler) As Label
         Dim label As Label
         If TextCols.Contains(insertCol) Then
           label = ControlDrawer.CreateTextLabelInTable(text)
@@ -1165,16 +1439,20 @@ Namespace WorkReportAnalysis
         End If
 
         AddHandler label.Click, AddressOf ClickEvent
+        If handler IsNot Nothing Then
+          AddHandler label.DoubleClick, AddressOf handler.DoubleClick
+        End If
         Return label
       End Function
 
-      Private Sub ClickEvent(sender As Object, e As MouseEventArgs)
+      Private Sub ClickEvent(sender As Object, e As EventArgs)
         ScrolledPanel.Focus()
       End Sub
 
       Public Function GetColor(insertRow As Integer) As Color
         Return FuncBackColor(insertRow)
       End Function
+
     End Class
 
     Public Class ControlDrawer
@@ -1231,7 +1509,7 @@ Namespace WorkReportAnalysis
         Return label
       End Function
 
-      Private Shared Sub ClickEvent(sender As Object, e As MouseEventArgs)
+      Private Shared Sub ClickEvent(sender As Object, e As EventArgs)
         RecordTableForm.pnlForTable.Focus()
       End Sub
     End Class
