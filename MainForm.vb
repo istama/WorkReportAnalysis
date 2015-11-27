@@ -38,6 +38,7 @@ Public Class MainForm
   Private InnerTabPageInfoListInTermTab As List(Of TabInfo)
   Private InnerTabPageInfoListInTotalTab As List(Of TabInfo)
 
+  Private SaveFileDialog As SaveFileDialog
   Private CurrentlyShowedSheetRecordManager As SheetRecordManager = Nothing
 
   Private Loaded As Boolean = False
@@ -68,6 +69,8 @@ Public Class MainForm
       InitCBoxWeeklyTerm()
       InitCBoxMonthlyTerm()
       InitCBoxDailyTotal()
+
+      InitSvaeFileDialog()
 
       LoadAllUserRecord()
     Catch ex As Exception
@@ -111,7 +114,7 @@ Public Class MainForm
   End Sub
 
   Private Sub InitInnerTabPageInPersonalTab()
-    InnerTabPageInfoListInPersonalTab = New List(Of TabInfo)()
+    Dim infoList = New List(Of TabInfo)()
 
     For Each ym As MonthlyItem In ReadRecordTerm.MonthlyItemList.ToList
       Dim tab As TabInfo
@@ -119,14 +122,18 @@ Public Class MainForm
         .Name = UserRecordManager.GetSheetName(ym.Month)
         Dim c As SheetRecordController
         With c
+          .TabPage = Nothing
           .ReadCallback = AddressOf GetPersonalRecord
           .AddSumOfRecordCallback = AddressOf AddSumOfPersonalRecord
           .LoadTableCallback = GetActionForCreatingPersonalDailyTableInMonth(ym.Year, ym.Month)
           .CanSort = True
+          .GetCSVFileNameCallback = GetFuncForGettingCSVFileNameOfPersonal(ym)
+          .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfPersonalRecord
+          .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfPersonalRecord
         End With
         .SheetRecordController = c
       End With
-      InnerTabPageInfoListInPersonalTab.Add(tab)
+      infoList.Add(tab)
     Next
 
     Dim sumTab As TabInfo
@@ -134,29 +141,37 @@ Public Class MainForm
       .Name = UserRecordManager.GetSumSheetName
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetPersonalRecord
         .AddSumOfRecordCallback = Function(roc) roc
         .LoadTableCallback = AddressOf CreateSumTable
         .CanSort = False
+        .GetCSVFileNameCallback = AddressOf GetCSVFileNameOfSumOfPersonal
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTotalRecord
       End With
       .SheetRecordController = c
     End With
-    InnerTabPageInfoListInPersonalTab.Add(sumTab)
+    infoList.Add(sumTab)
 
-    SetTabPageName(tabInPersonalTab, InnerTabPageInfoListInPersonalTab)
+    InnerTabPageInfoListInPersonalTab = connectTabPageWithInfo(tabInPersonalTab, infoList)
   End Sub
 
   Private Sub InitInnerTabPageInTermTab()
-    InnerTabPageInfoListInTermTab = New List(Of TabInfo)()
+    Dim infoList = New List(Of TabInfo)()
     Dim tabDays As TabInfo
     With tabDays
       .Name = "日"
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetDailyTermRecord
         .AddSumOfRecordCallback = AddressOf AddSumOfTermRecord
         .LoadTableCallback = AddressOf CreateTermTable
         .CanSort = True
+        .GetCSVFileNameCallback = AddressOf GetCSVFileNameOfDailyTerm
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTermRecord
       End With
       .SheetRecordController = c
     End With
@@ -166,10 +181,14 @@ Public Class MainForm
       .Name = "週"
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetWeeklyTermRecord
         .AddSumOfRecordCallback = AddressOf AddSumOfTermRecord
         .LoadTableCallback = AddressOf CreateTermTable
         .CanSort = True
+        .GetCSVFileNameCallback = AddressOf GetCSVFileNameOfWeeklyTerm
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTermRecord
       End With
       .SheetRecordController = c
     End With
@@ -179,10 +198,14 @@ Public Class MainForm
       .Name = "月"
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetMonthlyTermRecord
         .AddSumOfRecordCallback = AddressOf AddSumOfTermRecord
         .LoadTableCallback = AddressOf CreateTermTable
         .CanSort = True
+        .GetCSVFileNameCallback = AddressOf GetCSVFileNameOfMonthlyTerm
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTermRecord
       End With
       .SheetRecordController = c
     End With
@@ -192,33 +215,41 @@ Public Class MainForm
       .Name = "合計"
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetAllTermRecord
         .AddSumOfRecordCallback = AddressOf AddSumOfTermRecord
         .LoadTableCallback = AddressOf CreateTermTable
         .CanSort = True
+        .GetCSVFileNameCallback = Function() String.Format("日付データ_{0}年.csv", FileFormat.GetYear())
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTermRecord
       End With
       .SheetRecordController = c
     End With
 
-    InnerTabPageInfoListInTermTab.Add(tabDays)
-    InnerTabPageInfoListInTermTab.Add(tabWeeks)
-    InnerTabPageInfoListInTermTab.Add(tabMonths)
-    InnerTabPageInfoListInTermTab.Add(tabYear)
+    infoList.Add(tabDays)
+    infoList.Add(tabWeeks)
+    infoList.Add(tabMonths)
+    infoList.Add(tabYear)
 
-    SetTabPageName(tabInTermTab, InnerTabPageInfoListInTermTab)
+    InnerTabPageInfoListInTermTab = connectTabPageWithInfo(tabInTermTab, infoList)
   End Sub
 
   Private Sub InitInnerTabPageInTotalTab()
-    InnerTabPageInfoListInTotalTab = New List(Of TabInfo)()
+    Dim infoList = New List(Of TabInfo)()
     Dim tabDays As TabInfo
     With tabDays
       .Name = "日"
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetDailyTotalRecord
         .AddSumOfRecordCallback = AddressOf AddSumOfTermRecord
         .LoadTableCallback = GetActionForCreatingDailyTotalTableInMonth()
         .CanSort = True
+        .GetCSVFileNameCallback = AddressOf GetCSVFileNameOfDailyTotal
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTotalRecord
       End With
       .SheetRecordController = c
     End With
@@ -228,10 +259,14 @@ Public Class MainForm
       .Name = "週"
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetWeeklyTotalRecord
         .AddSumOfRecordCallback = AddressOf AddSumOfTermRecord
         .LoadTableCallback = AddressOf CreateTotalTable
         .CanSort = True
+        .GetCSVFileNameCallback = Function() String.Format("集計データ_週単位_{0}年", FileFormat.GetYear())
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTotalRecord
       End With
       .SheetRecordController = c
     End With
@@ -241,33 +276,43 @@ Public Class MainForm
       .Name = "月"
       Dim c As SheetRecordController
       With c
+        .TabPage = Nothing
         .ReadCallback = AddressOf GetMonthlyTotalRecord
         .AddSumOfRecordCallback = AddressOf AddSumOfTermRecord
         .LoadTableCallback = AddressOf CreateTotalTable
         .CanSort = True
+        .GetCSVFileNameCallback = Function() String.Format("集計データ_月単位_{0}年", FileFormat.GetYear())
+        .GetCSVTitlesCallback = AddressOf GetCSVTitlesOfTotalRecord
+        .GetCSVSubTitlesCallback = AddressOf GetCSVSubTitlesOfTotalRecord
       End With
       .SheetRecordController = c
     End With
 
-    InnerTabPageInfoListInTotalTab.Add(tabDays)
-    InnerTabPageInfoListInTotalTab.Add(tabWeeks)
-    InnerTabPageInfoListInTotalTab.Add(tabMonths)
+    infoList.Add(tabDays)
+    infoList.Add(tabWeeks)
+    infoList.Add(tabMonths)
 
-    SetTabPageName(tabInTotalTab, InnerTabPageInfoListInTotalTab)
+    InnerTabPageInfoListInTotalTab = connectTabPageWithInfo(tabInTotalTab, infoList)
   End Sub
 
-  Private Sub SetTabPageName(tab As TabControl, tabPageInfoList As List(Of TabInfo))
+  Private Function connectTabPageWithInfo(tab As TabControl, tabPageInfoList As List(Of TabInfo)) As List(Of TabInfo)
+    Dim l As New List(Of TabInfo)
+
     If tab.TabPages.Count = tabPageInfoList.Count Then
       For idx As Integer = 0 To tabPageInfoList.Count - 1
-        tab.TabPages.Item(idx).Text = tabPageInfoList(idx).Name
+        Dim info As TabInfo = tabPageInfoList(idx)
+        tab.TabPages.Item(idx).Text = info.Name
+        info.SheetRecordController.TabPage = tab.TabPages.Item(idx)
+        l.Add(info)
       Next
+      Return l
     Else
       Throw New Exception(
         "Excelファイルのシート数とタブページの数が合いません。 / tabPageCount: " &
         tab.TabPages.Count.ToString &
         " tabInfoCount: " & tabPageInfoList.Count)
     End If
-  End Sub
+  End Function
 
   Private Sub InitTableTitles()
     RecordTableForm.lblItem1.Text = ExcelProps.GetValue(WAP.KEY_ITEM_NAME1)
@@ -328,7 +373,7 @@ Public Class MainForm
 
     If CurrentlyShowedSheetRecordManager IsNot Nothing AndAlso CurrentlyShowedSheetRecordManager.AllowSort Then
       Dim manager As SheetRecordManager = CurrentlyShowedSheetRecordManager.Sort(col)
-      LoadTableInnerTabPage(selectedTab, manager)
+      LoadTableInnerTabPage(manager)
     End If
   End Sub
 
@@ -411,7 +456,7 @@ Public Class MainForm
   Private Sub tabMaster_PageChanged(sender As Object, e As EventArgs) Handles tabMaster.SelectedIndexChanged
     Dim idx As Integer = tabMaster.SelectedIndex
     If idx = 0 Then
-      ShowPersonalRecord()
+      ShowPersonalRecord(tabInPersonalTab.SelectedTab)
     ElseIf idx = 1
       ShowTermRecord()
     Else
@@ -420,7 +465,7 @@ Public Class MainForm
   End Sub
 
   Private Sub tabInPersonalTab_PageChanged(sender As Object, e As EventArgs) Handles tabInPersonalTab.SelectedIndexChanged
-    ShowPersonalRecord()
+    ShowPersonalRecord(tabInPersonalTab.SelectedTab)
   End Sub
 
   Private Sub cboxUserInfo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboxUserInfo.SelectedIndexChanged
@@ -471,14 +516,17 @@ Public Class MainForm
     End If
   End Sub
 
-  Private Sub ShowPersonalRecord()
+  Public Sub ShowPersonalRecord(selectedTab As TabPage)
     If tabInPersonalTab.SelectedIndex = tabInPersonalTab.TabCount - 1 Then
-      ShowTotalTableTitles(tabInPersonalTab.SelectedTab, GetOffsetLocationInPersonalTab)
+      'ShowTotalTableTitles(tabInPersonalTab.SelectedTab, GetOffsetLocationInPersonalTab)
+      ShowTotalTableTitles(selectedTab, GetOffsetLocationInPersonalTab)
     Else
-      ShowPersonalTableTitles(tabInPersonalTab.SelectedTab, GetOffsetLocationInPersonalTab)
+      'ShowPersonalTableTitles(tabInPersonalTab.SelectedTab, GetOffsetLocationInPersonalTab)
+      ShowPersonalTableTitles(selectedTab, GetOffsetLocationInPersonalTab)
     End If
 
-    ReadSheetRecord(tabInPersonalTab.SelectedTab, InnerTabPageInfoListInPersonalTab)
+    'ReadSheetRecord(tabInPersonalTab.SelectedTab, InnerTabPageInfoListInPersonalTab)
+    ReadSheetRecord(selectedTab, InnerTabPageInfoListInPersonalTab)
   End Sub
 
   Private Sub ShowTermRecord()
@@ -499,14 +547,14 @@ Public Class MainForm
           SheetRecordController
 
       Dim recManager As SheetRecordManager = New SheetRecordManager(controller)
-      LoadTableInnerTabPage(selectedTabPage, recManager.ReadSheetRecord)
+      LoadTableInnerTabPage(recManager.ReadSheetRecord)
     Catch ex As Exception
       MsgBox.ShowError(ex)
     End Try
   End Sub
 
-  Private Sub LoadTableInnerTabPage(selectedTabPage As TabPage, recordManager As SheetRecordManager)
-    CurrentlyShowedSheetRecordManager = recordManager.LoadTable(selectedTabPage)
+  Private Sub LoadTableInnerTabPage(recordManager As SheetRecordManager)
+    CurrentlyShowedSheetRecordManager = recordManager.LoadTable(Nothing)
   End Sub
 
   Private Sub CreateDailyTableInMonth(tabPage As TabPage, record As SheetRecord, year As Integer, month As Integer)
@@ -516,7 +564,7 @@ Public Class MainForm
         SetNoteCols(RecordTableForm.tblRecord.ColumnCount - 1).
         SetFuncBackColor(GetFuncForGettingRowColorInMonthlyTable(year, month))
 
-    CreateTable(RecordTableForm.tblRecord, record, tableDrawer)
+    CreateTable(RecordTableForm.tblRecord, record, tableDrawer, GetFuncForEmptyHandler)
     ShowPersonalTableRecord(tabPage, GetOffsetLocationInPersonalTab)
   End Sub
 
@@ -527,7 +575,7 @@ Public Class MainForm
         SetNoteCols(TotalRecordTableForm.tblRecord.ColumnCount - 1).
         SetFuncBackColor(Function(row) If(row = record.Count - 1, Color.PaleGreen, Color.Transparent))
 
-    CreateTable(TotalRecordTableForm.tblRecord, record, tableDrawer)
+    CreateTable(TotalRecordTableForm.tblRecord, record, tableDrawer, GetFuncForEmptyHandler())
     ShowTotalTableRecord(tabPage, GetOffsetLocationInPersonalTab)
   End Sub
 
@@ -538,7 +586,7 @@ Public Class MainForm
         SetNoteCols(TermRecordTableForm.tblRecord.ColumnCount - 1).
         SetFuncBackColor(Function(row) If(row = record.Count - 1, Color.PaleGreen, Color.Transparent))
 
-    CreateTable(TermRecordTableForm.tblRecord, record, tableDrawer)
+    CreateTable(TermRecordTableForm.tblRecord, record, tableDrawer, GetFuncForCreatingEventHandlerInTermRecord)
     ShowTermTableRecord(tabPage, GetOffsetLocationInTermTab)
   End Sub
 
@@ -549,7 +597,7 @@ Public Class MainForm
       SetNoteCols(TermRecordTableForm.tblRecord.ColumnCount - 1).
       SetFuncBackColor(GetFuncForGettingRowColorInMonthlyTable(year, month))
 
-    CreateTable(TotalRecordTableForm.tblRecord, record, tableDrawer)
+    CreateTable(TotalRecordTableForm.tblRecord, record, tableDrawer, GetFuncForEmptyHandler())
     ShowTotalTableRecord(tabPage, GetOffsetLocationInTotalTab)
   End Sub
 
@@ -560,11 +608,11 @@ Public Class MainForm
         SetNoteCols(RecordTableForm.tblRecord.ColumnCount - 1).
         SetFuncBackColor(Function(row) If(row = record.Count - 1, Color.PaleGreen, Color.Transparent))
 
-    CreateTable(TotalRecordTableForm.tblRecord, record, tableDrawer)
+    CreateTable(TotalRecordTableForm.tblRecord, record, tableDrawer, GetFuncForEmptyHandler())
     ShowTotalTableRecord(tabPage, GetOffsetLocationInTotalTab)
   End Sub
 
-  Private Sub CreateTable(table As TableLayoutPanel, record As SheetRecord, drawer As TableDrawer)
+  Private Sub CreateTable(table As TableLayoutPanel, record As SheetRecord, drawer As TableDrawer, callback As GetHandlerCallback)
 
     Dim loopRow As Action(Of RowRecord, Integer, Integer) =
       Sub(rec, insertCol, insertRow)
@@ -589,10 +637,10 @@ Public Class MainForm
           Dim control As Control = table.GetControlFromPosition(insertCol, insertRow)
           If control Is Nothing Then
             'TODO セルをダブルクリックしたときのイベントハンドラを設定する
-            Dim panel As Panel = drawer.CreateCell(value, insertCol, insertRow, Nothing)
+            Dim panel As Panel = drawer.CreateCell(value, insertCol, insertRow, callback(insertCol, insertRow, rec.First))
             table.Controls.Add(panel, insertCol, insertRow)
           ElseIf control.Controls.Count = 0
-            Dim panel As Panel = drawer.CreateCell(value, insertCol, insertRow, Nothing)
+            Dim panel As Panel = drawer.CreateCell(value, insertCol, insertRow, callback(insertCol, insertRow, rec.First))
             table.SetCellPosition(panel, table.GetCellPosition(control))
           Else
             control.BackColor = drawer.GetColor(insertRow)
@@ -772,101 +820,111 @@ Public Class MainForm
       End Sub
   End Function
 
-  'Private Function GetActionForCreatingSumTable() As LoadTableCallBack
-  '  Return _
-  '    Function(tabPage)
-  '      Dim r As SheetRecord = GetPersonalRecord(tabPage.Text)
-  '      If r IsNot Nothing Then
-  '        CreateSumTable(tabPage, r)
-  '      End If
-  '      Return r
-  '    End Function
-  'End Function
+  Delegate Function GetHandlerCallback(col As Integer, row As Integer, value As String) As Handler
 
+  Private Function GetFuncForCreatingEventHandlerInTermRecord() As GetHandlerCallback
+    Return _
+      Function(col, row, value)
+        If col = 0 Then
+          Dim h As New Handler
+          With h
+            .DoubleClickCallBack =
+              Sub(sender, e)
+                Dim l As New List(Of TabInfo)
+                For idx As Integer = 0 To ReadRecordTerm.MonthlyItemList.Count
+                  Dim tabInfo As TabInfo = InnerTabPageInfoListInPersonalTab(idx)
+                  Dim c As SheetRecordController = tabInfo.SheetRecordController
+                  c.ReadCallback =
+                    Function()
+                      Return _
+                        UserRecordManager.GetSheetRecord(
+                          value, PersonalForm.tabInPersonalTab.SelectedTab.Text, GetFuncForFilteringImcompleteRecord())
+                    End Function
 
+                  Dim nTabInfo As TabInfo
+                  With nTabInfo
+                    .Name = tabInfo.Name
+                    .SheetRecordController = c
+                  End With
 
-  'Private Function GetActionForCreatingDailyTermTable() As LoadTableCallBack
-  '  Return _
-  '    Function(tabPage)
-  '      Dim y As Integer = dPicDailyTerm.Value.Year
-  '      Dim m As Integer = dPicDailyTerm.Value.Month
-  '      Dim d As Integer = dPicDailyTerm.Value.Day
-  '      Dim r As SheetRecord = UserRecordManager.GetDailyTermRecord(d, m, y)
-  '      CreateTermTable(tabPage, r)
-  '      Return r
-  '    End Function
-  'End Function
+                  l.Add(nTabInfo)
+                Next
 
-  'Private Function GetActionForCreatingWeeklyTermTable() As LoadTableCallBack
-  '  Return _
-  '    Function(tabPage)
-  '      Dim item As WeeklyItem = cboxWeeklyTerm.SelectedItem
-  '      If item IsNot Nothing Then
-  '        Dim w As Integer = item.Week
-  '        Dim m As Integer = item.Month
-  '        Dim y As Integer = item.Year
-  '        Dim r As SheetRecord = UserRecordManager.GetWeeklyTermRecord(w, m, y, GetFuncForFilteringImcompleteRecord())
-  '        CreateTermTable(tabPage, r)
-  '        Return r
-  '      Else
-  '        Return Nothing
-  '      End If
-  '    End Function
-  'End Function
+                Dim tabInfoList As List(Of TabInfo) = connectTabPageWithInfo(PersonalForm.tabInPersonalTab, l)
 
-  'Private Function GetActionForCreatingMonthlyTermTable() As LoadTableCallBack
-  '  Return _
-  '    Function(tabPage)
-  '      Dim item As MonthlyItem = cboxMonthlyTerm.SelectedItem
-  '      If item IsNot Nothing Then
-  '        Dim m As Integer = item.Month
-  '        Dim y As Integer = item.Year
-  '        Dim r As SheetRecord = UserRecordManager.GetMonthlyTermRecord(m, y, GetFuncForFilteringImcompleteRecord())
-  '        CreateTermTable(tabPage, r)
-  '        Return r
-  '      Else
-  '        Return Nothing
-  '      End If
-  '    End Function
-  'End Function
+                PersonalForm.Text = UserInfoList.Find(Function(info) info.GetIdNum = value).GetName
+                PersonalForm.TabPageInfoList = tabInfoList
+                PersonalForm.ShowDialog()
+              End Sub
+          End With
+          Return h
+        Else
+          Return Nothing
+        End If
+      End Function
+  End Function
 
-  'Private Function GetActionForCreatingAllTermTable() As LoadTableCallBack
-  '  Return _
-  '    Function(tabPage)
-  '      Dim r As SheetRecord = UserRecordManager.GetAllTermRecord(FileFormat.GetYear(), GetFuncForFilteringImcompleteRecord())
-  '      CreateTermTable(tabPage, r)
-  '      Return r
-  '    End Function
-  'End Function
+  Private Function GetFuncForEmptyHandler() As GetHandlerCallback
+    Return _
+      Function(col, row, value)
+        Return Nothing
+      End Function
+  End Function
 
-  'Private Function GetActionForCreatingDailyTotalTable() As LoadTableCallBack
-  '  Return _
-  '    Function(tabPage)
-  '      Dim item As MonthlyItem = cboxDailyTotal.SelectedItem
-  '      If item IsNot Nothing Then
-  '        Dim m As Integer = item.Month
-  '        Dim y As Integer = item.Year
-  '        Dim r As SheetRecord = UserRecordManager.GetDailyTotalRecord(m, y, GetFuncForFilteringImcompleteRecord())
-  '        CreateMonthlyTotalTable(tabPage, r, y, m)
-  '        Return r
-  '      Else
-  '        Return Nothing
-  '      End If
-  '    End Function
-  'End Function
+  Private Function GetFuncForGettingCSVFileNameOfPersonal(ym As MonthlyItem) As Func(Of String)
+    Return _
+      Function()
+        Dim user As ExpandedUserInfo = CType(cboxUserInfo.SelectedItem, ExpandedUserInfo)
+        Return String.Format("個人データ{0}月分_{1}_{2}.csv", ym.Month, user.GetIdNum, user.GetName)
+      End Function
+  End Function
 
-  'Private Function GetActionForCreatingPlaneTable(f As Func(Of SheetRecord)) As LoadTableCallBack
-  '  Return _
-  '    Function(tabPage)
-  '      'Dim y As Integer = FileFormat.GetYear()
-  '      'Dim r As SheetRecord = UserRecordManager.GetWeeklyTotalRecord(y, Function(e) True)
-  '      Dim r As SheetRecord = f()
-  '      CreateTotalTable(tabPage, r)
-  '      Return r
-  '    End Function
-  'End Function
+  Private Function GetCSVFileNameOfSumOfPersonal() As String
+    Dim user As ExpandedUserInfo = CType(cboxUserInfo.SelectedItem, ExpandedUserInfo)
+    Return String.Format("個人データ集計_{0}_{1}.csv", user.GetIdNum, user.GetName)
+  End Function
 
+  Private Function GetCSVFileNameOfDailyTerm() As String
+    Dim y As Integer = dPicDailyTerm.Value.Year
+    Dim m As Integer = dPicDailyTerm.Value.Month
+    Dim d As Integer = dPicDailyTerm.Value.Day
+    Return String.Format("日付データ_{0}年{1}月{2}日", y, m, d)
+  End Function
 
+  Private Function GetCSVFileNameOfWeeklyTerm() As String
+    Dim item As WeeklyItem = cboxWeeklyTerm.SelectedItem
+    If item IsNot Nothing Then
+      Dim t As String = item.ToString
+      Dim str As String = ""
+      t.Split(" ").ToList.ForEach(Sub(Text) str = str & Text)
+      Dim y As Integer = item.Year
+      Return String.Format("日付データ_{0}年{1}", y, str)
+    Else
+      Return Nothing
+    End If
+  End Function
+
+  Private Function GetCSVFileNameOfMonthlyTerm() As String
+    Dim item As MonthlyItem = cboxMonthlyTerm.SelectedItem
+    If item IsNot Nothing Then
+      Dim m As Integer = item.Month
+      Dim y As Integer = item.Year
+      Return String.Format("日付データ_{0}年{1}月", y, m)
+    Else
+      Return Nothing
+    End If
+  End Function
+
+  Private Function GetCSVFileNameOfDailyTotal() As String
+    Dim item As MonthlyItem = cboxDailyTotal.SelectedItem
+    If item IsNot Nothing Then
+      Dim m As Integer = item.Month
+      Dim y As Integer = item.Year
+      Return String.Format("集計データ_日単位_{0}年{1}月", y, m)
+    Else
+      Return Nothing
+    End If
+  End Function
 
   Private Function Sort(record As SheetRecord, sortInfo As SortProperties) As SheetRecord
     Dim NONE As Double = If(sortInfo.Asc, Integer.MaxValue, Integer.MinValue)
@@ -900,6 +958,41 @@ Public Class MainForm
           Return If(week = 1 OrElse week = 7, Color.Pink, Color.Transparent)
         End If
       End Function
+  End Function
+
+  Private Function GetCSVTitlesOfPersonalRecord() As String
+    Dim item1 As String = WAP.MANAGER.GetValue(WAP.KEY_ITEM_NAME1)
+    Dim item2 As String = WAP.MANAGER.GetValue(WAP.KEY_ITEM_NAME2)
+    Dim item3 As String = WAP.MANAGER.GetValue(WAP.KEY_ITEM_NAME3)
+    Dim item4 As String = WAP.MANAGER.GetValue(WAP.KEY_ITEM_NAME4)
+    Dim item5 As String = WAP.MANAGER.GetValue(WAP.KEY_ITEM_NAME5)
+    Dim item6 As String = WAP.MANAGER.GetValue(WAP.KEY_ITEM_NAME6)
+    Dim item7 As String = WAP.MANAGER.GetValue(WAP.KEY_ITEM_NAME7)
+    Return String.Format(",,{0},,,{1},,,{2},,,{3},,,{4},,,{5},,,{6},,", item1, item2, item3, item4, item5, item6, item7)
+  End Function
+
+  Private Function GetCSVTitlesOfTotalRecord() As String
+    Return "," & GetCSVTitlesOfPersonalRecord()
+  End Function
+
+  Private Function GetCSVSubTitlesOfPersonalRecord() As String
+    Return "日にち," & GetCSVItems() & ",備考"
+  End Function
+
+  Private Function GetCSVSubTitlesOfTermRecord() As String
+    Return "ID,名前," & GetCSVItems() & ","
+  End Function
+
+  Private Function GetCSVSubTitlesOfTotalRecord() As String
+    Return ",日にち," & GetCSVItems() & ","
+  End Function
+
+  Private Function GetCSVItems() As String
+    Dim csv As String = ""
+    For idx As Integer = 0 To 6
+      csv = csv & ",件数,時間,生産性"
+    Next
+    Return csv.Substring(1)
   End Function
 
   'Private Function GetRowColorInSumTable(row As Integer) As Color
@@ -972,40 +1065,43 @@ Public Class MainForm
     showedTabPage.Controls.Add(scrollPanel)
   End Sub
 
+  Private Sub InitSvaeFileDialog()
+    SaveFileDialog = New SaveFileDialog()
+
+    'はじめのファイル名を指定する
+    SaveFileDialog.FileName = "新しいファイル.csv"
+    'はじめに表示されるフォルダを指定する
+    'SaveFileDialog.InitialDirectory = MP.Details.Sys.App.GetCurrentDirectory
+    '[ファイルの種類]に表示される選択肢を指定する
+    SaveFileDialog.Filter = "csvファイル(*.csv)|*.csv|textファイル(*.txt)|*.txt|すべてのファイル(*.*)|*.*"
+    SaveFileDialog.FilterIndex = 0
+    'タイトルを設定する
+    SaveFileDialog.Title = "保存先のファイルを選択してください"
+    'ダイアログボックスを閉じる前に現在のディレクトリを復元するようにする
+    SaveFileDialog.RestoreDirectory = True
+    '既に存在するファイル名を指定したとき警告する
+    'デフォルトでTrueなので指定する必要はない
+    SaveFileDialog.OverwritePrompt = True
+    '存在しないパスが指定されたとき警告を表示する
+    'デフォルトでTrueなので指定する必要はない
+    SaveFileDialog.CheckPathExists = True
+  End Sub
+
   Private Sub cmdOutputCSV_Click(sender As Object, e As EventArgs) Handles cmdOutputCSV.Click
     If CurrentlyShowedSheetRecordManager Is Nothing Then
       MessageBox.Show("データが表示されていません。")
     Else
-      'SaveFileDialogクラスのインスタンスを作成
-      Dim sfd As New SaveFileDialog()
-
-      'はじめのファイル名を指定する
-      sfd.FileName = "新しいファイル.txt"
-      'はじめに表示されるフォルダを指定する
-      sfd.InitialDirectory = MP.Details.Sys.App.GetCurrentDirectory
-      '[ファイルの種類]に表示される選択肢を指定する
-      sfd.Filter = "textファイル(*.txt)|*.txt|すべてのファイル(*.*)|*.*"
-      sfd.FilterIndex = 0
-      'タイトルを設定する
-      sfd.Title = "保存先のファイルを選択してください"
-      'ダイアログボックスを閉じる前に現在のディレクトリを復元するようにする
-      sfd.RestoreDirectory = True
-      '既に存在するファイル名を指定したとき警告する
-      'デフォルトでTrueなので指定する必要はない
-      sfd.OverwritePrompt = True
-      '存在しないパスが指定されたとき警告を表示する
-      'デフォルトでTrueなので指定する必要はない
-      sfd.CheckPathExists = True
+      SaveFileDialog.FileName = CurrentlyShowedSheetRecordManager.GetCSVFileName()
 
       'ダイアログを表示する
-      If sfd.ShowDialog() = DialogResult.OK Then
+      If SaveFileDialog.ShowDialog() = DialogResult.OK Then
         Dim stream As System.IO.Stream = Nothing
         Dim sw As System.IO.StreamWriter = Nothing
         Try
-          stream = sfd.OpenFile()
+          stream = SaveFileDialog.OpenFile()
           If Not (stream Is Nothing) Then
             'ファイルに書き込む
-            sw = New System.IO.StreamWriter(stream)
+            sw = New System.IO.StreamWriter(stream, System.Text.Encoding.GetEncoding("Shift_JIS"))
             sw.Write(CurrentlyShowedSheetRecordManager.ToCSV)
           End If
         Catch ex As Exception
@@ -1023,10 +1119,14 @@ Public Class MainForm
   End Sub
 
   Public Structure SheetRecordController
+    Dim TabPage As TabPage
     Dim ReadCallback As ReadRecordCallback
     Dim AddSumOfRecordCallback As AddSumOfRowRecordCallback
     Dim LoadTableCallback As LoadTableCallBack
     Dim CanSort As Boolean
+    Dim GetCSVFileNameCallback As Func(Of String)
+    Dim GetCSVTitlesCallback As Func(Of String)
+    Dim GetCSVSubTitlesCallback As Func(Of String)
   End Structure
 
   Public Class SheetRecordManager
@@ -1045,6 +1145,10 @@ Public Class MainForm
       SortProps = p
     End Sub
 
+    Public Function GetTabPage() As TabPage
+      Return Controller.TabPage
+    End Function
+
     Public Function AllowSort() As Boolean
       Return Controller.CanSort
     End Function
@@ -1057,7 +1161,7 @@ Public Class MainForm
     Public Function LoadTable(tabPage As TabPage) As SheetRecordManager
       Dim rec As SheetRecord = GetRecordThatAddSumRow()
       If rec IsNot Nothing Then
-        Controller.LoadTableCallback(tabPage, GetRecordThatAddSumRow())
+        Controller.LoadTableCallback(Controller.TabPage, GetRecordThatAddSumRow())
       End If
       Return Me
     End Function
@@ -1113,13 +1217,26 @@ Public Class MainForm
       End If
     End Function
 
+    Public Function GetCSVFileName() As String
+      Return Controller.GetCSVFileNameCallback()
+    End Function
+
     Public Function ToCSV() As String
       Dim rec As SheetRecord = GetRecordThatAddSumRow()
       If rec IsNot Nothing Then
-        Return RecordConverter.ToCSV(rec)
+        Return _
+          Controller.GetCSVTitlesCallback() & vbCrLf &
+          Controller.GetCSVSubTitlesCallback() & vbCrLf &
+          RecordConverter.ToCSV(rec)
       Else
         Return ""
       End If
+    End Function
+
+    Public Function Clone(tabPage As TabPage) As SheetRecordManager
+      Dim c As SheetRecordController = Controller
+      c.TabPage = tabPage
+      Return New SheetRecordManager(c)
     End Function
   End Class
 

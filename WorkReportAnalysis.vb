@@ -1018,8 +1018,23 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Shared Function ToCSV(record As SheetRecord) As String
+        Dim rec As SheetRecord =
+          record.ConvertAll(
+            Function(row)
+              Return _
+                row.ConvertAll(
+                  Function(e)
+                    If Utils.General.MyChar.IsDouble(e) Then
+                      Dim d As Double = Double.Parse(e)
+                      Return Math.Round(d, 2).ToString
+                    Else
+                      Return e
+                    End If
+                  End Function)
+            End Function)
+
         Return _
-          record.
+          rec.
             ConvertAll(Function(row) row.MkString(",")).
             MkString(vbCrLf)
       End Function
@@ -1415,16 +1430,19 @@ Namespace WorkReportAnalysis
         Return Me
       End Function
 
-      Public Function CreateCell(text As String, insertCol As Integer, insertRow As Integer, Handler As Handler) As Panel
-        Dim panel As Panel = CreatePanel(FuncBackColor(insertRow))
-        Dim label As Label = CreateLabel(text, insertCol, Handler)
+      Public Function CreateCell(text As String, insertCol As Integer, insertRow As Integer, handler As Handler) As Panel
+        Dim panel As Panel = CreatePanel(FuncBackColor(insertRow), handler)
+        Dim label As Label = CreateLabel(text, insertCol, handler)
         panel.Controls.Add(label)
         Return panel
       End Function
 
-      Public Function CreatePanel(backColor As Color) As Panel
+      Public Function CreatePanel(backColor As Color, handler As Handler) As Panel
         Dim panel As Panel = ControlDrawer.CreatePanelInTable(backColor)
         AddHandler panel.Click, AddressOf ClickEvent
+        If handler IsNot Nothing Then
+          AddHandler panel.DoubleClick, AddressOf handler.DoubleClick
+        End If
         Return panel
       End Function
 

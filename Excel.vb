@@ -188,7 +188,7 @@ Namespace Office
         Dim f As Action(Of CellTree, Boolean) =
           Sub(tree, read)
             '本番はコメントアウトを入れ替える
-            'Dim res As String = If(notRead, "", connect(sheet, tree.Cell))
+            'Dim res As String = If(read, connect(sheet, tree.Cell), "")
             Dim res As String = If(read, connect(Nothing, tree.Cell), "")
             If tree.IsCellThatReturnValue Then
               values.Add(res)
