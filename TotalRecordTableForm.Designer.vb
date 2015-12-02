@@ -38,7 +38,7 @@ Partial Class TotalRecordTableForm
     Me.Panel1 = New System.Windows.Forms.Panel()
     Me.lblItem1 = New System.Windows.Forms.Label()
     Me.Panel2 = New System.Windows.Forms.Panel()
-    Me.tblSubTItles = New System.Windows.Forms.TableLayoutPanel()
+    Me.tblSubTitles = New System.Windows.Forms.TableLayoutPanel()
     Me.Panel31 = New System.Windows.Forms.Panel()
     Me.lblIdCol = New System.Windows.Forms.Label()
     Me.Panel30 = New System.Windows.Forms.Panel()
@@ -96,7 +96,7 @@ Partial Class TotalRecordTableForm
     Me.Panel4.SuspendLayout()
     Me.Panel3.SuspendLayout()
     Me.Panel1.SuspendLayout()
-    Me.tblSubTItles.SuspendLayout()
+    Me.tblSubTitles.SuspendLayout()
     Me.Panel31.SuspendLayout()
     Me.Panel30.SuspendLayout()
     Me.Panel29.SuspendLayout()
@@ -303,62 +303,62 @@ Partial Class TotalRecordTableForm
     '
     'tblSubTItles
     '
-    Me.tblSubTItles.BackColor = System.Drawing.SystemColors.Control
-    Me.tblSubTItles.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.[Single]
-    Me.tblSubTItles.ColumnCount = 24
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.820714!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.02091!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620839!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620838!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.616064!))
-    Me.tblSubTItles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.125591!))
-    Me.tblSubTItles.Controls.Add(Me.Panel31, 0, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel30, 22, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel29, 21, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel28, 20, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel27, 19, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel26, 18, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel25, 17, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel24, 16, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel23, 15, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel22, 14, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel21, 13, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel20, 12, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel19, 11, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel18, 10, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel17, 9, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel16, 8, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel15, 7, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel14, 6, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel13, 5, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel12, 4, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel11, 3, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel9, 2, 0)
-    Me.tblSubTItles.Controls.Add(Me.Panel10, 1, 0)
-    Me.tblSubTItles.Location = New System.Drawing.Point(0, 27)
-    Me.tblSubTItles.Name = "tblSubTItles"
-    Me.tblSubTItles.RowCount = 1
-    Me.tblSubTItles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45.0!))
-    Me.tblSubTItles.Size = New System.Drawing.Size(1193, 32)
-    Me.tblSubTItles.TabIndex = 29
+    Me.tblSubTitles.BackColor = System.Drawing.SystemColors.Control
+    Me.tblSubTitles.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.[Single]
+    Me.tblSubTitles.ColumnCount = 24
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.820714!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.02091!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620839!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620838!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.620837!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 3.616064!))
+    Me.tblSubTitles.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.125591!))
+    Me.tblSubTitles.Controls.Add(Me.Panel31, 0, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel30, 22, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel29, 21, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel28, 20, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel27, 19, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel26, 18, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel25, 17, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel24, 16, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel23, 15, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel22, 14, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel21, 13, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel20, 12, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel19, 11, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel18, 10, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel17, 9, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel16, 8, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel15, 7, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel14, 6, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel13, 5, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel12, 4, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel11, 3, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel9, 2, 0)
+    Me.tblSubTitles.Controls.Add(Me.Panel10, 1, 0)
+    Me.tblSubTitles.Location = New System.Drawing.Point(0, 27)
+    Me.tblSubTitles.Name = "tblSubTItles"
+    Me.tblSubTitles.RowCount = 1
+    Me.tblSubTitles.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45.0!))
+    Me.tblSubTitles.Size = New System.Drawing.Size(1193, 32)
+    Me.tblSubTitles.TabIndex = 29
     '
     'Panel31
     '
@@ -962,7 +962,7 @@ Partial Class TotalRecordTableForm
     Me.ClientSize = New System.Drawing.Size(1232, 747)
     Me.Controls.Add(Me.tblSumOfRecord)
     Me.Controls.Add(Me.pnlForTable)
-    Me.Controls.Add(Me.tblSubTItles)
+    Me.Controls.Add(Me.tblSubTitles)
     Me.Controls.Add(Me.tblTitles)
     Me.Name = "TotalRecordTableForm"
     Me.Text = "TotalRecordTableForm"
@@ -974,7 +974,7 @@ Partial Class TotalRecordTableForm
     Me.Panel4.ResumeLayout(False)
     Me.Panel3.ResumeLayout(False)
     Me.Panel1.ResumeLayout(False)
-    Me.tblSubTItles.ResumeLayout(False)
+    Me.tblSubTitles.ResumeLayout(False)
     Me.Panel31.ResumeLayout(False)
     Me.Panel30.ResumeLayout(False)
     Me.Panel29.ResumeLayout(False)
@@ -1019,7 +1019,7 @@ Partial Class TotalRecordTableForm
   Friend WithEvents Panel1 As Panel
   Friend WithEvents lblItem1 As Label
   Friend WithEvents Panel2 As Panel
-  Friend WithEvents tblSubTItles As TableLayoutPanel
+  Friend WithEvents tblSubTitles As TableLayoutPanel
   Friend WithEvents Panel31 As Panel
   Friend WithEvents lblIdCol As Label
   Friend WithEvents Panel30 As Panel

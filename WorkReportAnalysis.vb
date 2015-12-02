@@ -10,10 +10,6 @@ Imports SheetRecord = MP.Utils.MyCollection.Immutable.MyLinkedList(Of MP.Utils.M
 
 Namespace WorkReportAnalysis
   Namespace App
-    'Public Structure ItemTree
-    '  Dim Key As String
-    '  Dim DependedKeys As MyLinkedList(Of ItemTree)
-    'End Structure
 
     Public Class WorkReportAnalysisProperties
       Private Shared SETTING_FILE_NAME As String = "excel.properties"
@@ -23,10 +19,8 @@ Namespace WorkReportAnalysis
       Public Shared KEY_EXCEL_FILE_DIR As String = "ExcelFileDir"
       Public Shared KEY_EXCEL_FILE_NAME_FORMAT As String = "ExcelFileNameFormat"
       Public Shared KEY_SHEET_NAME_FORMAT As String = "SheetNameFormat"
-      Public Shared KEY_SUM_SHEET_NAME_FORMAT As String = "SheetNameFormat2"
+      Public Shared KEY_SUM_SHEET_NAME_FORMAT As String = "SumSheetNameFormat"
       Public Shared KEY_FIRST_DAY_OF_A_MONTH_ROW As String = "FirstDayOfAMonthRow"
-      Public Shared KEY_FIRST_MONTH_OF_SUM_SHEET_ROW As String = "FirstRow2"
-
 
       Public Shared ITEM_COUNT As Integer = 7
       Public Shared ITEM_DETAIL_COUNT As Integer = 3
@@ -110,47 +104,6 @@ Namespace WorkReportAnalysis
         Return l.ToArray
       End Function
 
-      'Public Shared Function ItemTree() As ItemTree
-      '  Return CreateLinkedKeys(KEY_WORKDAY_COL, ItemKeysList())
-      'End Function
-
-      'Private Shared Function CreateLinkedKeys(parentKey As String, childs As String()()) As ItemTree
-      '  Dim f As Func(Of String()(), MyLinkedList(Of ItemTree)) =
-      '    Function(c)
-      '      If c.Count = 0 Then
-      '        Return MyLinkedList(Of ItemTree).Nil
-      '      Else
-      '        Return f(c.Skip(1)).AddFirst(CreateChainKeys(c.First))
-      '      End If
-      '    End Function
-
-      '  Dim tree As ItemTree
-      '  With tree
-      '    .Key = parentKey
-      '    .DependedKeys = f(childs)
-      '  End With
-      '  Return tree
-      'End Function
-
-      'Private Shared Function CreateChainKeys(ParamArray keys As String()) As ItemTree
-      '  Dim f As Func(Of String(), ItemTree) =
-      '    Function(k)
-      '      Dim n As MyLinkedList(Of ItemTree) = MyLinkedList(Of ItemTree).Nil
-      '      If k.Count > 0 Then
-      '        n = n.AddFirst(f(k.Skip(1)))
-      '      End If
-
-      '      Dim t As ItemTree
-      '      With t
-      '        .Key = k.First
-      '        .DependedKeys = n
-      '      End With
-
-      '      Return t
-      '    End Function
-      '  Return f(keys)
-      'End Function
-
       Private Shared Function DefaultSettingProperties() As IDictionary(Of String, String)
         Dim dict As IDictionary(Of String, String) = New Dictionary(Of String, String)
         dict(KEY_YEAR) = "2015"
@@ -161,7 +114,6 @@ Namespace WorkReportAnalysis
         dict(KEY_SUM_SHEET_NAME_FORMAT) = "集計"
 
         dict(KEY_FIRST_DAY_OF_A_MONTH_ROW) = "7"
-        dict(KEY_FIRST_MONTH_OF_SUM_SHEET_ROW) = "12"
 
         dict(KEY_ITEM_NAME1) = "郵政"
         dict(KEY_COL1_OF_ITEM1) = "C"
@@ -221,7 +173,7 @@ Namespace WorkReportAnalysis
         Return String.Format(format, month)
       End Function
 
-      Public Shared Function GetSheetName2() As String
+      Public Shared Function GetSumSheetName() As String
         Return m.GetValue(App.WorkReportAnalysisProperties.KEY_SUM_SHEET_NAME_FORMAT)
       End Function
 
@@ -238,10 +190,6 @@ Namespace WorkReportAnalysis
         Return GetIntger(App.WorkReportAnalysisProperties.KEY_FIRST_DAY_OF_A_MONTH_ROW)
       End Function
 
-      Public Shared Function GetFirstRow2() As Integer
-        Return GetIntger(App.WorkReportAnalysisProperties.KEY_FIRST_MONTH_OF_SUM_SHEET_ROW)
-      End Function
-
       Private Shared Function GetIntger(key As String) As Integer
         Dim value As String = m.GetValue(key)
         If MP.Utils.General.MyChar.IsInteger(value) Then
@@ -251,18 +199,8 @@ Namespace WorkReportAnalysis
         End If
       End Function
 
-      Public Shared Function GetItemCols(ParamArray excludedItemKeys As String()) As List(Of String)
-        Return App.WorkReportAnalysisProperties.AllItemKeys().ToList.
-          FindAll(Function(k) Not excludedItemKeys.Contains(k)).
-          ConvertAll(
-            Function(k)
-              Dim col As String = m.GetValue(k)
-              Return If(Char.IsLetter(CType(col, Char)), col, "")
-            End Function)
-      End Function
-
       Public Shared Function GetItemColsList(ParamArray excludedItemKeys As String()) As List(Of List(Of String))
-        Return _
+        Dim keysList As List(Of List(Of String)) =
           App.WorkReportAnalysisProperties.ItemKeysList.ToList.
             ConvertAll(
               Function(keys)
@@ -273,6 +211,8 @@ Namespace WorkReportAnalysis
                 Next
                 Return l
               End Function)
+        keysList.Add(New List(Of String)(New String() {m.GetValue(WorkReportAnalysisProperties.KEY_NOTE_COL)}))
+        Return keysList
       End Function
 
       Public Shared Function GetYear() As Integer
@@ -291,7 +231,6 @@ Namespace WorkReportAnalysis
       End Property
 
       Private Excel As Excel.ExcelAccessor
-      Private AccessPropList As List(Of Excel.AccessProperties)
       Private AccessPropListWithTree As List(Of Excel.AccessPropertiesWithTree)
 
       Private Shared m As Utils.Common.PropertyManager = App.WorkReportAnalysisProperties.MANAGER
@@ -299,30 +238,15 @@ Namespace WorkReportAnalysis
       Public Sub New(excel As Excel.ExcelAccessor, manager As UserRecordManager)
         _UserRecordManager = manager
         Me.Excel = excel
-        AccessPropList = New List(Of Excel.AccessProperties)
         AccessPropListWithTree = New List(Of Excel.AccessPropertiesWithTree)
 
         Init()
       End Sub
 
       Private Sub Init()
-        AccessPropList.Clear()
 
         Dim term As MyLinkedList(Of MonthlyItem) =
           _UserRecordManager.GetReadRecordTerm.MonthlyItemList
-
-        term.ForEach(
-          Sub(e)
-            Dim p As Excel.AccessProperties
-            With p
-              .RecordKey = UserRecordManager.GetSheetName(e.Month)
-              .SheetName = UserRecordManager.GetSheetName(e.Month)
-              .Cols = App.FileFormat.GetItemCols()
-              .FirstRow = App.FileFormat.GetFirstDayOfAMonthRow()
-              .RowSize = Date.DaysInMonth(e.Year, e.Month) '+ 1
-            End With
-            AccessPropList.Add(p)
-          End Sub)
 
         Dim colTree As Excel.ColTree =
           WorkReportAnalysis.Excel.ExcelAccessor.CreateTreeList(
@@ -347,16 +271,6 @@ Namespace WorkReportAnalysis
             End With
             AccessPropListWithTree.Add(p)
           End Sub)
-
-        'Dim sum As Excel.AccessProperties
-        'With sum
-        '  .RecordKey = UserRecordManager.GetSumSheetName
-        '  .SheetName = UserRecordManager.GetSumSheetName
-        '  .Cols = App.FileFormat.GetItemCols(App.WorkReportAnalysisProperties.KEY_NOTE_COL)
-        '  .FirstRow = App.FileFormat.GetFirstRow2()
-        '  .RowSize = 6 * term.Count '+ 1
-        'End With
-        'AccessPropList.Add(sum)
       End Sub
 
       Public Sub LoadUserRecord()
@@ -387,8 +301,6 @@ Namespace WorkReportAnalysis
           Dim fileName As String = App.FileFormat.GetFilePath(userInfo.GetIdNum())
           Dim userRecord As New Model.UserRecord(userInfo)
 
-          'Excel.Read(fileName, AccessPropList).
-          'ForEach(Sub(res) userRecord.Add(res.SheetName, res))
           Excel.ReadWithTree(fileName, AccessPropListWithTree).
             ForEach(Sub(res) userRecord.Add(res.SheetName, res))
           SyncLock _UserRecordManager
@@ -409,7 +321,7 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Shared Function GetSumSheetName() As String
-        Return App.FileFormat.GetSheetName2
+        Return App.FileFormat.GetSumSheetName
       End Function
 
       Public Sub New(userInfoList As List(Of Model.ExpandedUserInfo), term As ReadRecordTerm)
@@ -629,18 +541,6 @@ Namespace WorkReportAnalysis
         Return SheetRecord.Nil.AddRangeToHead(record)
       End Function
 
-      'Public Function GetAllUserRecord() As MyLinkedList(Of Model.UserRecord)
-      '  Dim go As Func(Of List(Of Model.UserRecord), MyLinkedList(Of Model.UserRecord)) =
-      '    Function(values)
-      '      If values.Count = 0 Then
-      '        Return MyLinkedList(Of Model.UserRecord).Nil()
-      '      Else
-      '        Return go(values.Skip(1)).AddFirst(values.First)
-      '      End If
-      '    End Function
-      '  Return go(UserRecordMap.Values)
-      'End Function
-
       Public Function GetDailyTotalRecord(month As Integer, year As Integer, filter As Func(Of RowRecord, Integer, Boolean)) As SheetRecord
         If Not CheckValidDate(1, 1, month, year) Then
           Return SheetRecord.Nil
@@ -855,15 +755,6 @@ Namespace WorkReportAnalysis
 
       Private IsWeekUnder7Days As Boolean
       Private RecordTerm As ReadRecordTerm
-
-      'Public Shared Function GetWeekNumInMonth(d As Integer, m As Integer, y As Integer) As Integer
-      '  Return GetWeekNumInMonth(New Date(y, m, d))
-      'End Function
-
-      'Public Shared Function GetWeekNumInMonth(day As Date) As Integer
-      '  Dim first As Date = MonthlyItem.GetFirstDateInMonth(day.Month, day.Year)
-      '  Return DatePart("WW", day) - DatePart("ww", first) + 1
-      'End Function
 
       Public Sub New(w As Integer, m As Integer, y As Integer, recordTerm As ReadRecordTerm)
         MyBase.New(w, m, y)
