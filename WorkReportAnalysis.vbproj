@@ -98,10 +98,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="PersonalForm.Designer.vb">
-      <DependentUpon>PersonalForm.vb</DependentUpon>
+    <Compile Include="SubForm.Designer.vb">
+      <DependentUpon>SubForm.vb</DependentUpon>
     </Compile>
-    <Compile Include="PersonalForm.vb">
+    <Compile Include="SubForm.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ProgressBarForm.Designer.vb">
@@ -147,8 +147,8 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="PersonalForm.resx">
-      <DependentUpon>PersonalForm.vb</DependentUpon>
+    <EmbeddedResource Include="SubForm.resx">
+      <DependentUpon>SubForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressBarForm.resx">
       <DependentUpon>ProgressBarForm.vb</DependentUpon>
@@ -172,13 +172,15 @@
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </None>
-    <None Include="My Project\DataSources\MainForm.WeeklyItem.datasource" />
     <None Include="My Project\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="My Project\DataSources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

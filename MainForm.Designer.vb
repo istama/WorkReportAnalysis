@@ -22,7 +22,7 @@ Partial Class MainForm
   'コード エディターを使って変更しないでください。
   <System.Diagnostics.DebuggerStepThrough()>
   Private Sub InitializeComponent()
-    Me.TabPage2 = New System.Windows.Forms.TabPage()
+    Me.TermTab = New System.Windows.Forms.TabPage()
     Me.tabInTermTab = New System.Windows.Forms.TabControl()
     Me.pageDays = New System.Windows.Forms.TabPage()
     Me.dPicDailyTerm = New System.Windows.Forms.DateTimePicker()
@@ -31,7 +31,7 @@ Partial Class MainForm
     Me.pageMonths = New System.Windows.Forms.TabPage()
     Me.cboxMonthlyTerm = New System.Windows.Forms.ComboBox()
     Me.pageYear = New System.Windows.Forms.TabPage()
-    Me.TabPage1 = New System.Windows.Forms.TabPage()
+    Me.PersonalTab = New System.Windows.Forms.TabPage()
     Me.cboxUserInfo = New System.Windows.Forms.ComboBox()
     Me.tabInPersonalTab = New System.Windows.Forms.TabControl()
     Me.page10Month = New System.Windows.Forms.TabPage()
@@ -40,7 +40,7 @@ Partial Class MainForm
     Me.pageSum = New System.Windows.Forms.TabPage()
     Me.btnClose = New System.Windows.Forms.Button()
     Me.tabMaster = New System.Windows.Forms.TabControl()
-    Me.TabPage3 = New System.Windows.Forms.TabPage()
+    Me.TotalTab = New System.Windows.Forms.TabPage()
     Me.tabInTotalTab = New System.Windows.Forms.TabControl()
     Me.pageDailyTotal = New System.Windows.Forms.TabPage()
     Me.cboxDailyTotal = New System.Windows.Forms.ComboBox()
@@ -49,30 +49,30 @@ Partial Class MainForm
     Me.cmdReadAllFile = New System.Windows.Forms.Button()
     Me.chkExcludeIncompleteRecordFromSum = New System.Windows.Forms.CheckBox()
     Me.cmdOutputCSV = New System.Windows.Forms.Button()
-    Me.TabPage2.SuspendLayout()
+    Me.TermTab.SuspendLayout()
     Me.tabInTermTab.SuspendLayout()
     Me.pageDays.SuspendLayout()
     Me.pageWeeks.SuspendLayout()
     Me.pageMonths.SuspendLayout()
-    Me.TabPage1.SuspendLayout()
+    Me.PersonalTab.SuspendLayout()
     Me.tabInPersonalTab.SuspendLayout()
     Me.tabMaster.SuspendLayout()
-    Me.TabPage3.SuspendLayout()
+    Me.TotalTab.SuspendLayout()
     Me.tabInTotalTab.SuspendLayout()
     Me.pageDailyTotal.SuspendLayout()
     Me.SuspendLayout()
     '
-    'TabPage2
+    'TermTab
     '
-    Me.TabPage2.AutoScroll = True
-    Me.TabPage2.BackColor = System.Drawing.SystemColors.Control
-    Me.TabPage2.Controls.Add(Me.tabInTermTab)
-    Me.TabPage2.Location = New System.Drawing.Point(4, 22)
-    Me.TabPage2.Name = "TabPage2"
-    Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-    Me.TabPage2.Size = New System.Drawing.Size(1274, 707)
-    Me.TabPage2.TabIndex = 1
-    Me.TabPage2.Text = "日付データ"
+    Me.TermTab.AutoScroll = True
+    Me.TermTab.BackColor = System.Drawing.SystemColors.Control
+    Me.TermTab.Controls.Add(Me.tabInTermTab)
+    Me.TermTab.Location = New System.Drawing.Point(4, 22)
+    Me.TermTab.Name = "TermTab"
+    Me.TermTab.Padding = New System.Windows.Forms.Padding(3)
+    Me.TermTab.Size = New System.Drawing.Size(1274, 707)
+    Me.TermTab.TabIndex = 1
+    Me.TermTab.Text = "日付データ"
     '
     'tabInTermTab
     '
@@ -154,18 +154,18 @@ Partial Class MainForm
     Me.pageYear.TabIndex = 3
     Me.pageYear.Text = "合計"
     '
-    'TabPage1
+    'PersonalTab
     '
-    Me.TabPage1.AutoScroll = True
-    Me.TabPage1.BackColor = System.Drawing.SystemColors.Control
-    Me.TabPage1.Controls.Add(Me.cboxUserInfo)
-    Me.TabPage1.Controls.Add(Me.tabInPersonalTab)
-    Me.TabPage1.Location = New System.Drawing.Point(4, 22)
-    Me.TabPage1.Name = "TabPage1"
-    Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-    Me.TabPage1.Size = New System.Drawing.Size(1274, 707)
-    Me.TabPage1.TabIndex = 0
-    Me.TabPage1.Text = "個人データ"
+    Me.PersonalTab.AutoScroll = True
+    Me.PersonalTab.BackColor = System.Drawing.SystemColors.Control
+    Me.PersonalTab.Controls.Add(Me.cboxUserInfo)
+    Me.PersonalTab.Controls.Add(Me.tabInPersonalTab)
+    Me.PersonalTab.Location = New System.Drawing.Point(4, 22)
+    Me.PersonalTab.Name = "PersonalTab"
+    Me.PersonalTab.Padding = New System.Windows.Forms.Padding(3)
+    Me.PersonalTab.Size = New System.Drawing.Size(1274, 707)
+    Me.PersonalTab.TabIndex = 0
+    Me.PersonalTab.Text = "個人データ"
     '
     'cboxUserInfo
     '
@@ -237,25 +237,25 @@ Partial Class MainForm
     '
     'tabMaster
     '
-    Me.tabMaster.Controls.Add(Me.TabPage1)
-    Me.tabMaster.Controls.Add(Me.TabPage2)
-    Me.tabMaster.Controls.Add(Me.TabPage3)
+    Me.tabMaster.Controls.Add(Me.PersonalTab)
+    Me.tabMaster.Controls.Add(Me.TermTab)
+    Me.tabMaster.Controls.Add(Me.TotalTab)
     Me.tabMaster.Location = New System.Drawing.Point(0, 0)
     Me.tabMaster.Name = "tabMaster"
     Me.tabMaster.SelectedIndex = 0
     Me.tabMaster.Size = New System.Drawing.Size(1282, 733)
     Me.tabMaster.TabIndex = 0
     '
-    'TabPage3
+    'TotalTab
     '
-    Me.TabPage3.AutoScroll = True
-    Me.TabPage3.Controls.Add(Me.tabInTotalTab)
-    Me.TabPage3.Location = New System.Drawing.Point(4, 22)
-    Me.TabPage3.Name = "TabPage3"
-    Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-    Me.TabPage3.Size = New System.Drawing.Size(1274, 707)
-    Me.TabPage3.TabIndex = 2
-    Me.TabPage3.Text = "集計データ"
+    Me.TotalTab.AutoScroll = True
+    Me.TotalTab.Controls.Add(Me.tabInTotalTab)
+    Me.TotalTab.Location = New System.Drawing.Point(4, 22)
+    Me.TotalTab.Name = "TotalTab"
+    Me.TotalTab.Padding = New System.Windows.Forms.Padding(3)
+    Me.TotalTab.Size = New System.Drawing.Size(1274, 707)
+    Me.TotalTab.TabIndex = 2
+    Me.TotalTab.Text = "集計データ"
     '
     'tabInTotalTab
     '
@@ -351,23 +351,23 @@ Partial Class MainForm
     Me.Controls.Add(Me.tabMaster)
     Me.Name = "MainForm"
     Me.Text = "WorkReportAnalysis"
-    Me.TabPage2.ResumeLayout(False)
+    Me.TermTab.ResumeLayout(False)
     Me.tabInTermTab.ResumeLayout(False)
     Me.pageDays.ResumeLayout(False)
     Me.pageWeeks.ResumeLayout(False)
     Me.pageMonths.ResumeLayout(False)
-    Me.TabPage1.ResumeLayout(False)
+    Me.PersonalTab.ResumeLayout(False)
     Me.tabInPersonalTab.ResumeLayout(False)
     Me.tabMaster.ResumeLayout(False)
-    Me.TabPage3.ResumeLayout(False)
+    Me.TotalTab.ResumeLayout(False)
     Me.tabInTotalTab.ResumeLayout(False)
     Me.pageDailyTotal.ResumeLayout(False)
     Me.ResumeLayout(False)
     Me.PerformLayout()
 
   End Sub
-  Friend WithEvents TabPage2 As TabPage
-  Friend WithEvents TabPage1 As TabPage
+  Friend WithEvents TermTab As TabPage
+  Friend WithEvents PersonalTab As TabPage
   Friend WithEvents cboxUserInfo As ComboBox
   Friend WithEvents tabInPersonalTab As TabControl
   Friend WithEvents page10Month As TabPage
@@ -386,7 +386,7 @@ Partial Class MainForm
   Friend WithEvents cmdReadAllFile As Button
   Friend WithEvents cboxMonthlyTerm As ComboBox
   Friend WithEvents chkExcludeIncompleteRecordFromSum As CheckBox
-  Friend WithEvents TabPage3 As TabPage
+  Friend WithEvents TotalTab As TabPage
   Friend WithEvents tabInTotalTab As TabControl
   Friend WithEvents pageDailyTotal As TabPage
   Friend WithEvents pageWeeklyTotal As TabPage

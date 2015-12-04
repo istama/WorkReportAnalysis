@@ -1288,21 +1288,21 @@ Namespace WorkReportAnalysis
       Private ScrolledPanel As Panel
 
       Private TextCols As List(Of Integer)
-      Private NoteCols As List(Of Integer)
+      'Private NoteCols As List(Of Integer)
 
       Private FuncBackColor As Func(Of Integer, Color)
 
       Public Sub New(scrolledPanel As Panel)
         Me.ScrolledPanel = scrolledPanel
         TextCols = New List(Of Integer)
-        NoteCols = New List(Of Integer)
+        'NoteCols = New List(Of Integer)
         FuncBackColor = Function(row) Color.Transparent
       End Sub
 
       Private Sub New(scrolledPanel As Panel, textCols As List(Of Integer), noteCols As List(Of Integer))
         Me.ScrolledPanel = scrolledPanel
         Me.TextCols = textCols
-        Me.NoteCols = noteCols
+        'Me.NoteCols = noteCols
         FuncBackColor = Function(row) Color.Transparent
       End Sub
 
@@ -1312,7 +1312,7 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Function SetNoteCols(ParamArray cols As Integer()) As TableDrawer
-        NoteCols.AddRange(cols)
+        TextCols.AddRange(cols)
         Return Me
       End Function
 
@@ -1331,9 +1331,9 @@ Namespace WorkReportAnalysis
       Public Function CreatePanel(backColor As Color, handler As Handler) As Panel
         Dim panel As Panel = ControlDrawer.CreatePanelInTable(backColor)
         AddHandler panel.Click, AddressOf ClickEvent
-        If handler IsNot Nothing Then
-          AddHandler panel.DoubleClick, AddressOf handler.DoubleClick
-        End If
+        'If handler IsNot Nothing Then
+        '  AddHandler panel.DoubleClick, AddressOf handler.DoubleClick
+        'End If
         Return panel
       End Function
 
@@ -1341,8 +1341,8 @@ Namespace WorkReportAnalysis
         Dim label As Label
         If TextCols.Contains(insertCol) Then
           label = ControlDrawer.CreateTextLabelInTable(text)
-        ElseIf NoteCols.Contains(insertCol)
-          label = ControlDrawer.CreateNoteLabelInTable(text)
+          'ElseIf NoteCols.Contains(insertCol)
+          '  label = ControlDrawer.CreateNoteLabelInTable(text)
         Else
           label = ControlDrawer.CreateNumberLabelInTable(text)
         End If
@@ -1366,20 +1366,20 @@ Namespace WorkReportAnalysis
 
     Public Class ControlDrawer
       Public Shared Function CreateTextPanelInTable(text As String, backColor As Color) As Panel
-        Return Create(text, DockStyle.Left, backColor, False)
+        Return Create(text, DockStyle.Left, backColor)
       End Function
 
       Public Shared Function CreateNumberPanelInTable(numText As String, backColor As Color) As Panel
-        Return Create(numText, DockStyle.Right, backColor, False)
+        Return Create(numText, DockStyle.Right, backColor)
       End Function
 
-      Public Shared Function CreateNotePanelInTable(text As String, backColor As Color) As Panel
-        Return Create(text, DockStyle.Left, backColor, True)
-      End Function
+      'Public Shared Function CreateNotePanelInTable(text As String, backColor As Color) As Panel
+      '  Return Create(text, DockStyle.Left, backColor)
+      'End Function
 
-      Private Shared Function Create(text As String, dock As DockStyle, backColor As Color, useToolTip As Boolean) As Panel
+      Private Shared Function Create(text As String, dock As DockStyle, backColor As Color) As Panel
         Dim panel As Panel = CreatePanelInTable(backColor)
-        Dim label As Label = CreateLabelInTable(text, dock, useToolTip)
+        Dim label As Label = CreateLabelInTable(text, dock)
         panel.Controls.Add(label)
         Return panel
       End Function
@@ -1393,28 +1393,31 @@ Namespace WorkReportAnalysis
       End Function
 
       Public Shared Function CreateTextLabelInTable(text As String) As Label
-        Return CreateLabelInTable(text, DockStyle.Left, False)
+        'Return CreateLabelInTable(text, DockStyle.Left, False)
+        Return CreateLabelInTable(text, ContentAlignment.MiddleLeft)
       End Function
 
       Public Shared Function CreateNumberLabelInTable(numText As String) As Label
-        Return CreateLabelInTable(numText, DockStyle.Right, False)
+        'Return CreateLabelInTable(numText, DockStyle.Right, False)
+        Return CreateLabelInTable(numText, ContentAlignment.MiddleRight)
       End Function
 
-      Public Shared Function CreateNoteLabelInTable(text As String) As Label
-        Return CreateLabelInTable(text, DockStyle.Left, True)
-      End Function
+      'Public Shared Function CreateNoteLabelInTable(text As String) As Label
+      '  'Return CreateLabelInTable(text, DockStyle.Left, True)
+      '  Return CreateLabelInTable(text, DockStyle.Fill, True)
+      'End Function
 
-      Public Shared Function CreateLabelInTable(text As String, dock As DockStyle, useToolTip As Boolean) As Label
+      Public Shared Function CreateLabelInTable(text As String, align As ContentAlignment) As Label
         Dim label As Label = New Label()
         label.Text = text
-        label.AutoSize = True
-        label.Dock = dock
-        label.TextAlign = ContentAlignment.MiddleCenter
+        label.AutoSize = False 'True
+        label.Dock = DockStyle.Fill
+        label.TextAlign = align
         AddHandler label.Click, AddressOf ClickEvent
-        If useToolTip Then
-          Dim tip As ToolTip = New ToolTip()
-          tip.SetToolTip(label, text)
-        End If
+        'If useToolTip Then
+        '  Dim tip As ToolTip = New ToolTip()
+        '  tip.SetToolTip(label, text)
+        'End If
         Return label
       End Function
 
