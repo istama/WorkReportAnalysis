@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{DC0908B3-D6EB-42D2-BDBE-BEB75AD38A07}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>WinExe</OutputType>
+    <MyType>WindowsForms</MyType>
+    <RootNamespace>WorkReportAnalysis</RootNamespace>
+    <AssemblyName>WorkReportAnalysis</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG=1,TRACE=1</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE=1</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\NSubstitute.1.10.0.0\lib\net40\NSubstitute.dll</HintPath>
+    </Reference>
+    <Reference Include="NUnit.Framework">
+      <HintPath>$(SharpDevelopBinPath)\Tools\NUnit\NUnit.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.vb" />
+    <Compile Include="Properties\Settings.Designer.vb">
+      <DependentUpon>Settings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="src\data\UserRecordBuffer.vb" />
+    <Compile Include="src\data\UserRecordLoader.vb" />
+    <Compile Include="src\data\UserRecordManager.vb" />
+    <Compile Include="src\data\UserRecord.vb" />
+    <Compile Include="src\data\UserRecordReader.vb" />
+    <Compile Include="src\ExcelProperties.vb" />
+    <Compile Include="src\gridview\GridTable.vb" />
+    <Compile Include="src\gridview\GridViewCellStyles.vb" />
+    <Compile Include="src\gridview\TabPageUtils.vb" />
+    <Compile Include="src\loader\Loader.vb" />
+    <Compile Include="src\loader\ProgressBarForm.Designer.vb">
+      <DependentUpon>ProgressBarForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="src\loader\ProgressBarForm.vb" />
+    <Compile Include="src\loader\ThreadObserver.vb" />
+    <Compile Include="src\MainForm.DateDataGridView.vb">
+      <DependentUpon>MainForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="src\MainForm.Designer.vb">
+      <DependentUpon>MainForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="src\MainForm.PersoanlDataGridView.vb">
+      <DependentUpon>MainForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="src\MainForm.TallyDataGridView.vb">
+      <DependentUpon>MainForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="src\MainForm.vb" />
+    <Compile Include="src\MsgBox.vb" />
+    <Compile Include="src\MyProperties.vb" />
+    <Compile Include="src\Program.vb" />
+    <Compile Include="src\_unneed\DateTerm.vb" />
+    <Compile Include="src\_unneed\_ColumnNode.vb" />
+    <Compile Include="src\_unneed\_ExcelReader.vb" />
+    <Compile Include="src\_unneed\_Loader.vb" />
+    <Compile Include="src\_unneed\_UserFileAccessor.vb" />
+    <Compile Include="src\_unneed\_UserRecord.vb" />
+    <Compile Include="src\_unneed\_UserRecordManager.vb" />
+    <Compile Include="src\_unneed\_UserRecordReader.vb" />
+    <Compile Include="test\data\TestColumnNode.vb" />
+    <Compile Include="test\data\TestExcelReader.vb" />
+    <Compile Include="test\data\TestLoader.vb" />
+    <Compile Include="test\data\TestUserRecord.vb" />
+    <Compile Include="test\data\TestUserRecordReader.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="bin\Debug\userinfo.txt" />
+    <None Include="bin\Release\excel.properties" />
+    <None Include="bin\Release\userinfo.txt" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin" />
+    <Folder Include="bin\Debug" />
+    <Folder Include="bin\Release" />
+    <Folder Include="src" />
+    <Folder Include="src\data" />
+    <Folder Include="src\gridview" />
+    <Folder Include="src\loader" />
+    <Folder Include="src\_unneed" />
+    <Folder Include="test" />
+    <Folder Include="test\data" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\loader\ProgressBarForm.resx">
+      <DependentUpon>ProgressBarForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\MainForm.resx">
+      <DependentUpon>MainForm.Designer.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.vbproj">
+      <Project>{8E3151EE-DB54-4B12-94A2-26EA627B4785}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+</Project>
