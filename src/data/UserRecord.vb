@@ -11,16 +11,24 @@ Imports Common.COM
 Imports Common.Extensions
 Imports WorkReportAnalysis
 
+''' <summary>
+''' ユーザのレコードを格納する。
+''' </summary>
 Public NotInheritable Class UserRecord
   Public Const NAME_COL_NAME As String = "名前"
   Public Const DATE_COL_NAME As String = "日にち"
   
+  ''' ユーザのIDの数値
   Private ReadOnly idNumber As String
+  ''' ユーザ名
   Private ReadOnly name As String
   
+  ''' Excelにアクセスするのに必要な列のツリー
   Private ReadOnly columnNodeTree As ExcelColumnNode
+  ''' このクラスが保持するのデータの期間
   Private ReadOnly dateTerm As DateTerm
   
+  ''' 各月ごとに分割されたデータを持つオブジェクト
   Private ReadOnly record As New ConcurrentDictionary(Of Integer, DataTable)
   
   Public Sub New(userinfo As UserInfo, recordColumnsInfo As UserRecordColumnsInfo, properties As ExcelProperties)
@@ -43,10 +51,12 @@ Public NotInheritable Class UserRecord
       Sub(m)
         Dim table As DataTable = CreateDataTable(String.Empty)  
         Dim d As DateTime = m.BeginDate
-        For day As Integer = 1 To DateTime.DaysInMonth(d.Year, d.Month)
-          Dim newRow As DataRow = table.NewRow
-          table.Rows.Add(newRow)
-        Next
+        Enumerable.Range(1, DateTime.DaysInMonth(d.Year, d.Month)).ForEach(
+          Sub(day)
+            Dim newRow As DataRow = table.NewRow
+            table.Rows.Add(newRow)
+        End Sub)
+        
         dict.TryAdd(d.Month, table)
       End Sub)
     
