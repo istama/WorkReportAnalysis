@@ -12,10 +12,6 @@ Imports Common.Extensions
 Imports WorkReportAnalysis
 
 Public NotInheritable Class UserRecord
-  Public Const WORKDAY_COL_NAME   As String = "出勤日"
-  Public Const WORKCOUNT_COL_NAME As String = "件数"
-  Public Const WORKTIME_COL_NAME  As String = "作業時間"
-  
   Public Const NAME_COL_NAME As String = "名前"
   Public Const DATE_COL_NAME As String = "日にち"
   
@@ -27,13 +23,12 @@ Public NotInheritable Class UserRecord
   
   Private ReadOnly record As New ConcurrentDictionary(Of Integer, DataTable)
   
-  Public Sub New(userinfo As UserInfo, properties As ExcelProperties)
+  Public Sub New(userinfo As UserInfo, recordColumnsInfo As UserRecordColumnsInfo, properties As ExcelProperties)
     If userinfo   Is Nothing Then Throw New ArgumentNullException("userinfo is null")
-    If properties Is Nothing Then Throw New ArgumentNullException("properties is null")
     
     Me.idNumber       = userinfo.GetSimpleId
     Me.name           = userinfo.GetName
-    Me.columnNodeTree = CreateColumnNodeTree(properties)
+    Me.columnNodeTree = CreateColumnNodeTree(recordColumnsInfo)
     Me.dateTerm       = New DateTerm(properties.BeginDate, properties.EndDate)
     Me.record         = CreateDataTables(Me.dateTerm)
   End Sub
@@ -352,39 +347,44 @@ Public NotInheritable Class UserRecord
   ''' <summary>
   ''' Excelプロパティの列設定から木構造の列コレクションを作成する。
   ''' </summary>
-  Private Function CreateColumnNodeTree(properties As ExcelProperties) As ExcelColumnNode
-    Dim rootNode As New ExcelColumnNode(properties.WorkDayCol(), WORKDAY_COL_NAME, True)
+  Private Function CreateColumnNodeTree(colsInfo As UserRecordColumnsInfo) As ExcelColumnNode
+    ' 出勤日の列ノードを作成し、ノードツリーのルートとする
+    Dim rootNode As New ExcelColumnNode(colsInfo.workDayCol, colsInfo.workDayColName, True)
     
     ' 各作業項目の列ノードを追加する
-    Dim idx As Integer = 1
-    While True
-      Dim param As ExcelProperties.WorkItemParams = properties.GetWorkItemParams(idx)
-      If param.Name = String.Empty Then
-        Exit While
-      End If
-      
-      Dim cntColNode As Nullable(Of ExcelColumnNode)
-      If param.WorkCountCol <> String.Empty Then
-        cntColNode = New ExcelColumnNode(param.WorkCountCol, param.Name & WORKCOUNT_COL_NAME)
-        rootNode.AddChild(cntColNode.Value)
-      End If
-      
-      If param.WorkTimeCol <> String.Empty Then
-        Dim timeColNode As New ExcelColumnNode(param.WorkTimeCol, param.Name & WORKTIME_COL_NAME)
+    colsInfo.WorkItemList.ForEach(
+      Sub(item)
+        Dim cntColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkCountCol, item.WorkCountColName)
         If cntColNode.HasValue Then
-          cntColNode.Value.AddChild(timeColNode)
-        Else
-          rootNode.AddChild(timeColNode)          
+          rootNode.AddChild(cntColNode.Value)
         End If
-      End If
-      
-      idx += 1
-    End While
+        
+        Dim timeColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkTimeCol, item.WorkTimeColName)
+        If timeColNode.HasValue Then
+          If cntColNode.HasValue Then
+            cntColNode.Value.AddChild(timeColNode.Value)
+          Else
+            rootNode.AddChild(timeColNode.Value)  
+          End If
+        End If        
+        
+      End Sub)
     
     ' 備考の列ノードを追加する
-    rootNode.AddChild(New ExcelColumnNode(properties.NoteCol, properties.NoteName))
+    Dim noteCol As ExcelColumnNode? = CreateExcelColumnNode(colsInfo.noteCol, colsInfo.noteColName)
+    If noteCol.HasValue Then
+      rootNode.AddChild(noteCol.Value)
+    End If
     
     Return rootNode
+  End Function
+  
+  Private Function CreateExcelColumnNode(col As String, name As String) As ExcelColumnNode?
+    If col <> String.Empty AndAlso name <> String.Empty Then
+      Return New ExcelColumnNode(col, name)
+    Else
+      Return Nothing
+    End If
   End Function
   
   Private Function GetTermInAMonth(month As Integer) As DateTerm
