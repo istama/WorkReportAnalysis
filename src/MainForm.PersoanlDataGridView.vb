@@ -107,12 +107,12 @@ Public Partial Class MainForm
   		If userInfo IsNot Nothing Then
   		  If month >= 1 AndAlso month <= 12 Then 
   		    Dim table As DataTable = Me.userRecordManager.GetDailyRecordLabelingDate(userInfo, Me.dateTerm.BeginDate.Year, month)
-          Dim totalRow As DataRow = table.NewRow
-          totalRow(UserRecord.DATE_COL_NAME) = "合計"
-          For Each row As DataRow In table.Rows
-            totalRow.PlusByDouble(row)
-          Next
-          table.Rows.Add(totalRow)
+'          Dim totalRow As DataRow = table.NewRow
+'          totalRow(UserRecord.DATE_COL_NAME) = "合計"
+'          For Each row As DataRow In table.Rows
+'            totalRow.PlusByDouble(row)
+'          Next
+'          table.Rows.Add(totalRow)
           
           grid.DataSource = table
   		  End If

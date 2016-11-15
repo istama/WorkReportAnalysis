@@ -110,12 +110,12 @@ Public Partial Class MainForm
 '  		End If
       If grid IsNot Nothing AndAlso term.EndDate <> #01/01/1900# Then
         Dim table As DataTable = Me.userRecordManager.GetTallyRecordOfEachUser(term)
-        Dim totalRow As DataRow = table.NewRow
-        totalRow(UserRecord.NAME_COL_NAME) = "合計"
-        For Each row As DataRow In table.Rows
-          totalRow.PlusByDouble(row)
-        Next
-        table.Rows.Add(totalRow)
+'        Dim totalRow As DataRow = table.NewRow
+'        totalRow(UserRecord.NAME_COL_NAME) = "合計"
+'        For Each row As DataRow In table.Rows
+'          totalRow.PlusByDouble(row)
+'        Next
+'        table.Rows.Add(totalRow)
         grid.DataSource = table
       End If
 		Catch ex As Exception
