@@ -15,6 +15,9 @@ Imports Common.IO
 Public Class UserRecordBuffer
   Private ReadOnly properties As ExcelProperties
   
+  ''' レコードの列名
+  Private ReadOnly recordColumnsInfo As UserRecordColumnsInfo
+  
   ''' 全ユーザのレコードを格納するテーブル
   Private ReadOnly userRecordDictionary As New ConcurrentDictionary(Of String, UserRecord)
   ''' 全ユーザのレコードの値を日付ごとに集計したテーブルを月ごとに格納したテーブル
@@ -26,7 +29,9 @@ Public Class UserRecordBuffer
     If properties Is Nothing Then Throw New ArgumentNullException("properties is null")
     
     Me.properties = properties
-    Me.totalRecord = New UserRecord(New UserInfo("total", "999", "xxx"), Me.properties)
+    Me.recordColumnsInfo = New UserRecordColumnsInfo(properties)
+    
+    Me.totalRecord = New UserRecord(New UserInfo("total", "999", "xxx"), Me.recordColumnsInfo, properties)
   End Sub
   
   ''' <summary>
@@ -36,7 +41,7 @@ Public Class UserRecordBuffer
   Public Function CreateUserRecord(userInfo As UserInfo) As UserRecord
     If userInfo   Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     
-    Return New UserRecord(userInfo, Me.properties)
+    Return New UserRecord(userInfo, Me.recordColumnsInfo, Me.properties)
   End Function
 
   ''' <summary>
