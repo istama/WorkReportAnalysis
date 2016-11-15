@@ -15,6 +15,8 @@ Public Partial Class MainForm
   ''' DataGridViewの各セルの表示サイズを設定する。
   ''' </summary>
   Public Sub SetViewSize(view As DataGridView, recordColumnsInfo As UserRecordColumnsInfo)
+    If view Is Nothing Then Throw New NullReferenceException("view is null")
+    
     ' 列ヘッダーのサイズが要素に合わせて自動に設定されるようにする
     view.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
     ' 各列のサイズが要素に合わせて自動に設定されるようにする
