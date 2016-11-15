@@ -15,9 +15,6 @@ Imports WorkReportAnalysis
 ''' ユーザのレコードを格納する。
 ''' </summary>
 Public NotInheritable Class UserRecord
-  Public Const NAME_COL_NAME As String = "名前"
-  Public Const DATE_COL_NAME As String = "日にち"
-  
   ''' ユーザのIDの数値
   Private ReadOnly idNumber As String
   ''' ユーザ名
@@ -105,13 +102,13 @@ Public NotInheritable Class UserRecord
   ''' １列目に日付をつけて指定した期間の１日単位のデータを取得する。
   ''' </summary>
   Public Function GetDailyDataTableLabelingDate(dateTerm As DateTerm, f As Func(Of dateTerm, String)) As DataTable
-    Dim table As DataTable = CreateDataTable(DATE_COL_NAME)
+    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetDailyDataTable(term, table)
     
     Dim idx As Integer = 0
     For Each t As DateTerm In term.DailyTerms
-      table.Rows(idx)(DATE_COL_NAME) = f(t)
+      table.Rows(idx)(UserRecordColumnsInfo.DATE_COL_NAME) = f(t)
       idx += 1
     Next
     
@@ -122,12 +119,12 @@ Public NotInheritable Class UserRecord
   ''' １列目にユーザ名をつけて指定した期間の１日単位のデータを取得する。
   ''' </summary>
   Public Function GetDailyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(NAME_COL_NAME)
+    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetDailyDataTable(term, table)
     
     For Each row As DataRow In table.Rows
-      row(NAME_COL_NAME) = Me.name
+      row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
     Next
     
     Return table
@@ -156,7 +153,7 @@ Public NotInheritable Class UserRecord
   ''' １列目に日付をつけて指定した期間の１週間単位のデータを取得する。
   ''' </summary>
   Public Function GetWeeklyDataTableLabelingDate(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(DATE_COL_NAME)
+    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetWeeklyDataTable(term, table)
     
@@ -187,12 +184,12 @@ Public NotInheritable Class UserRecord
   ''' １列目にユーザ名をつけて指定した期間の１週間単位のデータを取得する。
   ''' </summary>
   Public Function GetWeeklyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(NAME_COL_NAME)
+    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetWeeklyDataTable(term, table)
     
     For Each row As DataRow In table.Rows
-      row(NAME_COL_NAME) = Me.name
+      row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
     Next
     
     Return table
@@ -220,13 +217,13 @@ Public NotInheritable Class UserRecord
   ''' １列目に日付をつけて指定した期間の１ヶ月単位のデータを取得する。
   ''' </summary>
   Public Function GetMonthlyDataTableLabelingDate(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(DATE_COL_NAME)
+    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetMonthlyDataTable(term, table)
     
     Dim idx As Integer = 0
     For Each t As DateTerm In term.MonthlyTerms(Function(b, e) b.Month & "月")
-      table.Rows(idx)(DATE_COL_NAME) = t.Label
+      table.Rows(idx)(UserRecordColumnsInfo.DATE_COL_NAME) = t.Label
       idx += 1
     Next
     
@@ -237,12 +234,12 @@ Public NotInheritable Class UserRecord
   ''' １列目にユーザ名をつけて指定した期間の１ヶ月単位のデータを取得する。
   ''' </summary>
   Public Function GetMonthlyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(NAME_COL_NAME)
+    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetMonthlyDataTable(term, table)
     
     For Each row As DataRow In table.Rows
-      row(NAME_COL_NAME) = Me.name
+      row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
     Next
     
     Return table
@@ -346,9 +343,9 @@ Public NotInheritable Class UserRecord
   
   Private Function ToStringFromFirstColumnItemType(type As UserRecordFirstColumnItemType) As String
     If type = UserRecordFirstColumnItemType.UserName Then
-      Return NAME_COL_NAME
+      Return UserRecordColumnsInfo.NAME_COL_NAME
     ElseIf type = UserRecordFirstColumnItemType.DataDate
-      Return DATE_COL_NAME
+      Return UserRecordColumnsInfo.DATE_COL_NAME
     Else
       Return String.Empty
     End If

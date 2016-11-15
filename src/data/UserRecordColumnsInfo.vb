@@ -6,7 +6,9 @@
 ''' レコードの列名を持つ構造体。
 ''' </summary>
 Public Structure UserRecordColumnsInfo
-  Public Const WORKDAY_COL_NAME   As String = "出勤日"
+  Public Const WORKDAY_COL_NAME As String = "出勤日"
+  Public Const NAME_COL_NAME    As String = "名前"
+  Public Const DATE_COL_NAME    As String = "日にち"
   
   ''' 各作業項目ごとの列情報を格納するリスト 
   Private ReadOnly workItems As List(Of WorkItemColumnsInfo)
