@@ -35,6 +35,10 @@ Public Class UserRecordManager
     Return Me.userRecordLoader
   End Function
   
+  Public Function GetUserRecordColumnsInfo() As UserRecordColumnsInfo
+    Return Me.recordColumnsInfo
+  End Function
+  
   ''' <summary>
   ''' 指定したユーザの指定した月のレコードを取得する。
   ''' </summary>
