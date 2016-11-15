@@ -115,6 +115,8 @@ Public Partial Class MainForm
 '          table.Rows.Add(totalRow)
           
           grid.DataSource = table
+          SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
+          SetColor(grid, Me.dateTerm.BeginDate.Year, month)
   		  End If
   		End If
     Catch ex As Exception
