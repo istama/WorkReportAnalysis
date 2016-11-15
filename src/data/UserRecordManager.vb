@@ -80,6 +80,31 @@ Public Class UserRecordManager
   End Function
   
   ''' <summary>
+  ''' 指定したユーザの集計レコードを取得する。
+  ''' </summary>
+  Public Function GetSumRecord(userInfo As UserInfo) As DataTable
+    If userInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
+    Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
+    
+    ' 1週間ごとの集計テーブルを取得
+    Dim weeklySumTable As DataTable  = record.GetWeeklyDataTableLabelingDate(record.GetRecordDateTerm)
+    Dim monthlySumTable As DataTable = record.GetMonthlyDataTableLabelingDate(record.GetRecordDateTerm)
+    AddTotalRowToTable(monthlySumTable, UserRecordColumnsInfo.DATE_COL_NAME)
+    
+    ' weeklySumTableの後ろの行にmonthlySumTableの行を追加する
+    For Each row As DataRow In monthlySumTable.Rows
+      Dim newRow As DataRow = weeklySumTable.NewRow
+      For Each col As DataColumn In weeklySumTable.Columns
+        newRow(col.ColumnName) = row(col.ColumnName)
+      Next
+      
+      weeklySumTable.Rows.Add(newRow)
+    Next
+    
+    Return AddColumnOfProductivityToRecord(weeklySumTable)
+  End Function
+  
+  ''' <summary>
   ''' 各ユーザごとの指定した期間の集計レコードを集めたテーブルを取得する。
   ''' </summary>
   Public Function GetTallyRecordOfEachUser(dateTerm As DateTerm) As DataTable
