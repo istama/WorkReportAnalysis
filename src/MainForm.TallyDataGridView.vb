@@ -48,6 +48,8 @@ Public Partial Class MainForm
         Dim term As DateTerm = DirectCast(Me.cboxTallyMonthly.SelectedValue, DateTerm)
         Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserDailyRecord(term)
         grid.DataSource = table
+        
+        SetColor(grid, term.BeginDate.Year, term.BeginDate.Month)
   '			LoadTallyTable(termList, userDataList, newTable, Me.chkBoxExcludeData.Checked)
   '			grid.DataSource = newTable
   '			Dim lastRow As Integer = Me.gridViewCellStyles.SetDailyStyle(grid, 0, dTerm)
@@ -55,6 +57,8 @@ Public Partial Class MainForm
   		ElseIf pageName = "週"
         Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserWeeklyRecord(Me.dateTerm)
         grid.DataSource = table
+        
+        SetColorToOnlyTotalRow(grid)
   '			Dim termList As List(Of DateTerm) = Me.dateTerm.WeeklyTerms
   '			LoadTallyTable(termList, userDataList, newTable, Me.chkBoxExcludeData.Checked)
   '			grid.DataSource = newTable
@@ -63,6 +67,8 @@ Public Partial Class MainForm
   		ElseIf pageName = "月"
         Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserMonthlyRecord(Me.dateTerm)
         grid.DataSource = table
+        
+        SetColorToOnlyTotalRow(grid)
   '			Dim termList As List(Of DateTerm) = Me.dateTerm.MonthlyTerms
   '			LoadTallyTable(termList, userDataList, newTable, Me.chkBoxExcludeData.Checked)
   '			grid.DataSource = newTable
@@ -71,6 +77,8 @@ Public Partial Class MainForm
   		Else
   			Return
   		End If
+  		
+  		SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
     Catch ex As Exception
       MsgBox.ShowError(ex)      
     End Try
