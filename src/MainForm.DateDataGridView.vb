@@ -117,6 +117,8 @@ Public Partial Class MainForm
 '        Next
 '        table.Rows.Add(totalRow)
         grid.DataSource = table
+        SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
+        SetColorToOnlyTotalRow(grid)
       End If
 		Catch ex As Exception
 		  MsgBox.ShowError(ex)
