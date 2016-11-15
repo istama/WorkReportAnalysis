@@ -171,11 +171,11 @@ Public NotInheritable Class UserRecord
         Return str
       End Function      
     
-'    Dim idx As Integer = 0
-'    For Each t As DateTerm In term.WeeklyTerms(DayOfWeek.Saturday, Function(b,e) String.Empty)
-'      table.Rows(idx)(DATE_COL_NAME) = t.Label
-'      idx += 1
-'    Next
+    Dim idx As Integer = 0
+    For Each t As DateTerm In term.WeeklyTerms(DayOfWeek.Saturday, f)
+      table.Rows(idx)(UserRecordColumnsInfo.DATE_COL_NAME) = t.Label
+      idx += 1
+    Next
     
     Return table
   End Function
