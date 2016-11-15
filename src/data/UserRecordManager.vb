@@ -7,6 +7,7 @@ Imports System.Collections.Concurrent
 Imports Common.Account
 Imports Common.Util
 Imports Common.IO
+Imports Common.Extensions
 
 ''' <summary>
 ''' ユーザレコードを一元管理し、アプリケーション上に表示する表形式に加工して返す。
@@ -41,7 +42,10 @@ Public Class UserRecordManager
     If userInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
     
-    Return AddColumnOfProductivityToRecord(record.GetDailyDataTable(year, month))
+    Dim table As DataTable = record.GetDailyDataTable(year, month) 
+    AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
+    
+    Return AddColumnOfProductivityToRecord(table)
     'Return record.GetDailyDataTable(year, month)
   End Function
   
@@ -52,7 +56,10 @@ Public Class UserRecordManager
     If UserInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
     
-    Return AddColumnOfProductivityToRecord(record.GetWeeklyDataTableLabelingDate(dateTerm))
+    Dim table As DataTable = record.GetWeeklyDataTableLabelingDate(dateTerm)
+    AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
+    
+    Return AddColumnOfProductivityToRecord(table)
   End Function
   
   ''' <summary>
@@ -62,7 +69,10 @@ Public Class UserRecordManager
     If UserInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
     
-    Return AddColumnOfProductivityToRecord(record.GetMonthlyDataTableLabelingDate(dateTerm)) 
+    Dim table As DataTable = record.GetMonthlyDataTableLabelingDate(dateTerm)
+    AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
+    
+    Return AddColumnOfProductivityToRecord(table)
   End Function
   
   ''' <summary>
@@ -70,16 +80,18 @@ Public Class UserRecordManager
   ''' </summary>
   Public Function GetTallyRecordOfEachUser(dateTerm As DateTerm) As DataTable
     Dim unionRecord As UserRecord = Me.userRecordBuffer.CreateUserRecord(Me.unionUser)
-    Dim newTable As DataTable = unionRecord.CreateDataTable(UserRecord.NAME_COL_NAME)
+    Dim newTable As DataTable = unionRecord.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     
     Me.userRecordBuffer.GetUserRecordAll.ForEach(
       Sub(record)
         Dim newRow As DataRow = newTable.NewRow 
         
-        newRow(UserRecord.NAME_COL_NAME) = record.GetIdNumber & " " & record.GetName
+        newRow(UserRecordColumnsInfo.NAME_COL_NAME) = record.GetIdNumber & " " & record.GetName
         record.GetTotalDataRow(dateTerm, newRow)
         newTable.Rows.Add(newRow)
       End Sub)
+    
+    AddTotalRowToTable(newTable, UserRecordColumnsInfo.NAME_COL_NAME)
     
     Return AddColumnOfProductivityToRecord(newTable)
   End Function
@@ -87,20 +99,41 @@ Public Class UserRecordManager
   Public Function GetTotalOfAllUserDailyRecord(dateTerm As DateTerm) As DataTable
     Dim totalRecord As UserRecord = Me.userRecordBuffer.GetTotalRecord
     
-    Return AddColumnOfProductivityToRecord(totalRecord.GetDailyDataTableLabelingDate(dateTerm, Function(t) t.BeginDate.Day & "日"))
+    Dim table As DataTable = totalRecord.GetDailyDataTableLabelingDate(dateTerm, Function(t) t.BeginDate.Day & "日")
+    AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
+    
+    Return AddColumnOfProductivityToRecord(table)
   End Function
   
   Public Function GetTotalOfAllUserWeeklyRecord(dateTerm As DateTerm) As DataTable
     Dim totalRecord As UserRecord = Me.userRecordBuffer.GetTotalRecord
     
-    Return AddColumnOfProductivityToRecord(totalRecord.GetWeeklyDataTableLabelingDate(dateTerm))
+    Dim table As DataTable = totalRecord.GetWeeklyDataTableLabelingDate(dateTerm)
+    AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME) 
+    
+    Return AddColumnOfProductivityToRecord(table)
   End Function
   
   Public Function GetTotalOfAllUserMonthlyRecord(dateTerm As DateTerm) As DataTable
     Dim totalRecord As UserRecord = Me.userRecordBuffer.GetTotalRecord
     
-    Return AddColumnOfProductivityToRecord(totalRecord.GetMonthlyDataTableLabelingDate(dateTerm))    
+    Dim table As DataTable = totalRecord.GetMonthlyDataTableLabelingDate(dateTerm)
+    AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
+    
+    Return AddColumnOfProductivityToRecord(table)
   End Function
+  
+  ''' <summary>
+  ''' 合計行を追加する。
+  ''' </summary>
+  Private Sub AddTotalRowToTable(table As DataTable, firstColumnName As String)
+    Dim totalRow As DataRow = table.NewRow
+    totalRow(firstColumnName) = "合計"
+    For Each row As DataRow In table.Rows
+      totalRow.PlusByDouble(row)
+    Next
+    table.Rows.Add(totalRow)
+  End Sub
   
   ''' <summary>
   ''' ユーザデータに生産性の列を追加して返す。
