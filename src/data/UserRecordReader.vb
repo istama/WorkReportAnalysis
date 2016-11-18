@@ -63,8 +63,20 @@ Public Class UserRecordReader
             Dim dataRow As DataRow = table.Rows(day - m.BeginDate.Day)
             dict.Keys.ForEach(
               Sub(k)
-                'Log.out(userRecord.GetName & " " & t.BeginDate.Month.ToString & "/" & day.ToString & " " & k & ":" & dict(k)) 
-                dataRow(k) = dict(k)
+                'Log.out(userRecord.GetName & " " & m.BeginDate.Month.ToString & "/" & day.ToString & " " & k & ":" & dict(k)) 
+                If table.Columns(k).DataType = GetType(Integer) Then
+                  Dim v As Integer
+                  If Integer.TryParse(dict(k), v) Then
+                    dataRow(k) = v
+                  End If
+                ElseIf table.Columns(k).DataType = GetType(Double) Then
+                  Dim v As Double
+                  If Double.TryParse(dict(k), v) Then
+                    dataRow(k) = v
+                  End If
+                Else
+                  dataRow(k) = dict(k)
+                End If
               End Sub)
           Next
         End Sub)

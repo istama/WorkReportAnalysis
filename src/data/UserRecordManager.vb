@@ -46,9 +46,18 @@ Public Class UserRecordManager
     If userInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
     
-    Dim table As DataTable = record.GetDailyDataTable(year, month) 
+    Dim table As DataTable = record.GetDailyDataTableForAMonth(year, month) 
+    
+'    For Each col As DataColumn In table.Columns
+'      Log.out("Manager : " & col.ColumnName & " " & col.DataType.ToString)
+'    Next
+    
     AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
     
+'    For Each col As DataColumn In table.Columns
+'      Log.out("Manager : " & col.ColumnName & " " & col.DataType.ToString)
+'    Next
+
     Return AddColumnOfProductivityToRecord(table)
     'Return record.GetDailyDataTable(year, month)
   End Function
@@ -168,35 +177,8 @@ Public Class UserRecordManager
   ''' ユーザデータに生産性の列を追加して返す。
   ''' </summary>
   Private Function AddColumnOfProductivityToRecord(table As DataTable) As DataTable
-    Dim newTable As New DataTable
-    
-    ' 新しいテーブルに「名前」もしくは「日にち」の列を追加
-    newTable.Columns.Add(table.Columns(0).ColumnName)
-    
-    ' 新しいテーブルに作業項目の列を追加
-    Dim workItemCnt As Integer = 1
-    For Each item As WorkItemColumnsInfo In Me.recordColumnsInfo.WorkItemList
-      Dim isThereCntColName As Boolean = False
-      Dim isThereTimeColName As Boolean = False
-      If Not String.IsNullOrWhiteSpace(item.WorkCountColName) Then
-        Log.out(item.WorkCountColName)
-        newTable.Columns.Add(item.WorkCountColName)
-        isThereCntColName = True
-      End If
-      If Not String.IsNullOrWhiteSpace(item.WorkTimeColName) Then
-        Log.out(item.WorkTimeColName)
-        newTable.Columns.Add(item.WorkTimeColName)
-        isThereTimeColName = True
-      End If
-      If isThereCntColName AndAlso isThereTimeColName Then
-        Log.out(item.WorkProductivityColName)
-        newTable.Columns.Add(item.WorkProductivityColName)
-      End If
-    Next
-    
-    ' 新しいテーブルに備考の列を追加
-    newTable.Columns.Add(Me.recordColumnsInfo.noteColName)
-    
+    Dim newTable As DataTable = Me.recordColumnsInfo.CreateDataTable(table.Columns(0).ColumnName)
+
     ' データをコピー
     For Each row As DataRow In table.Rows
       Dim newRow As DataRow = newTable.NewRow
@@ -206,20 +188,20 @@ Public Class UserRecordManager
       
       ' 生産性を計算
       For Each item As WorkItemColumnsInfo In Me.recordColumnsInfo.WorkItemList
-        Dim cntColName As String  = item.WorkCountColName
-        Dim timeColName As String = item.WorkTimeColName
+        Dim cntColName As String  = item.WorkCountColInfo.Name
+        Dim timeColName As String = item.WorkTimeColInfo.Name
         If cntColName <> String.Empty AndAlso timeColName <> String.Empty Then
           Dim cntValue As Object = row(cntColName)
           Dim timeValue As Object = row(timeColName)
           If Not System.Convert.IsDBNull(cntValue) AndAlso Not System.Convert.IsDBNull(timeValue) Then
-            Dim cnt As Double
-            Dim time As Double
-            If Double.TryParse(DIrectCast(cntValue, String), cnt) AndAlso Double.TryParse(DirectCast(timeValue, String), time) Then
+            Dim cnt As Integer = DirectCast(cntValue, Integer)
+            Dim time As Double = DirectCast(timeValue, Double)
+            'If Double.TryParse(DIrectCast(cntValue, String), cnt) AndAlso Double.TryParse(DirectCast(timeValue, String), time) Then
               If time <> 0 Then
                 Dim productivity As Double = cnt / time
-                newRow(item.WorkProductivityColName) = Math.Round(productivity, 2).ToString
+                newRow(item.WorkProductivityColInfo.Name) = Math.Round(productivity, 2)
               End If
-            End If
+            'End If
           End If
         End If
       Next

@@ -36,6 +36,8 @@ Public Partial Class MainForm
     			
     			' １ページ目は既に用意されているのでページを作成しない
     			If isPageOne Then
+    			  'AddHandler Me.gridMonth10InPersonal.ColumnHeaderMouseClick, AddressOf SortDataGridView
+    			  
     				Me.tabInPersonalTab.TabPages.Item(0).Text = pageName
     				isPageOne = False				
     			Else
@@ -67,6 +69,9 @@ Public Partial Class MainForm
 		grid.Dock     = DockStyle.Fill
 		grid.ScrollBars = ScrollBars.Both
 		grid.AllowUserToAddRows = False
+		
+		'AddHandler grid.ColumnHeaderMouseClick, AddressOf SortDataGridView
+		
 		page.Controls.Add(grid)
 		
 		Return page

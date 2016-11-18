@@ -2,6 +2,8 @@
 ' 日付: 2016/11/15
 '
 Imports Common.Util
+Imports System.Data
+Imports Common.IO
 
 Public Partial Class MainForm
   ''' DataGridViewにおける各作業項目の列のサイズ
@@ -22,21 +24,21 @@ Public Partial Class MainForm
     ' 各列のサイズが要素に合わせて自動に設定されるようにする
     view.Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
     
-    For Each col In recordColumnsInfo.WorkItemList
-      If Not String.IsNullOrWhiteSpace(col.WorkCountColName) Then
-        view.Columns(col.WorkCountColName).Width = WORKITEM_COLUMN_SIZE
+    For Each item In recordColumnsInfo.WorkItemList
+      If Not String.IsNullOrWhiteSpace(item.WorkCountColInfo.name) Then
+        view.Columns(item.WorkCountColInfo.name).Width = WORKITEM_COLUMN_SIZE
       End If
       
-      If Not String.IsNullOrWhiteSpace(col.WorkTimeColName) Then
-        view.Columns(col.WorkTimeColName).Width = WORKITEM_COLUMN_SIZE
+      If Not String.IsNullOrWhiteSpace(item.WorkTimeColInfo.name) Then
+        view.Columns(item.WorkTimeColInfo.name).Width = WORKITEM_COLUMN_SIZE
       End If
       
-      If Not String.IsNullOrWhiteSpace(col.WorkProductivityColName) Then
-        view.Columns(col.WorkProductivityColName).Width = WORKITEM_COLUMN_SIZE
+      If Not String.IsNullOrWhiteSpace(item.WorkProductivityColInfo.name) Then
+        view.Columns(item.WorkProductivityColInfo.name).Width = WORKITEM_COLUMN_SIZE
       End If
     Next
     
-    view.Columns(recordColumnsInfo.noteColName).AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
+    view.Columns(recordColumnsInfo.noteColInfo.Name).AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
   End Sub
   
   ''' <summary>
@@ -76,5 +78,21 @@ Public Partial Class MainForm
   ''' </summary>
   Public Sub SetColorToOnlyTotalRow(view As DataGridView)
     view.Rows(view.Rows.Count - 1).DefaultCellStyle.BackColor = TOTAL_ROW_COLOR
+  End Sub
+  
+  ''' <summary>
+  ''' DataGridViewをソートする。
+  ''' </summary>
+  Public Sub SortDataGridView(sender As Object, e As DataGridViewCellMouseEventArgs)
+    Dim grid As DataGridView = DirectCast(sender, DataGridView)
+    Dim table As DataTable = DirectCast(grid.DataSource, DataTable)
+    
+    For Each col As DataColumn In table.Columns
+      Log.out(col.ColumnName & " : " & col.DataType.ToString)
+    Next
+    
+    Dim view As DataView = table.DefaultView
+    
+    view.Sort = table.Columns(e.ColumnIndex).ColumnName
   End Sub
 End Class

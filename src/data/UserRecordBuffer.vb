@@ -134,7 +134,7 @@ Public Class UserRecordBuffer
       record.GetRecordDateTerm.MonthlyTerms.ForEach(
         Sub(term)
           Dim d As DateTime = term.BeginDate
-          Dim userTable  As DataTable = record.GetDailyDataTable(d.Year, d.Month)
+          Dim userTable  As DataTable = record.GetDailyDataTableForAMonth(d.Year, d.Month)
           Dim totalTable As DataTable = Me.totalRecord.GetRecord(d.Month)
           
           For idx As Integer = term.BeginDate.Day - 1 To term.EndDate.Day - 1

@@ -20,6 +20,8 @@ Public NotInheritable Class UserRecord
   ''' ユーザ名
   Private ReadOnly name As String
   
+  ''' このレコードの列情報
+  Private ReadOnly columnsInfo As UserRecordColumnsInfo
   ''' Excelにアクセスするのに必要な列のツリー
   Private ReadOnly columnNodeTree As ExcelColumnNode
   ''' このクラスが保持するのデータの期間
@@ -33,6 +35,7 @@ Public NotInheritable Class UserRecord
     
     Me.idNumber       = userinfo.GetSimpleId
     Me.name           = userinfo.GetName
+    Me.columnsInfo    = recordColumnsInfo
     Me.columnNodeTree = CreateColumnNodeTree(recordColumnsInfo)
     Me.dateTerm       = New DateTerm(properties.BeginDate, properties.EndDate)
     Me.record         = CreateDataTables(Me.dateTerm)
@@ -91,7 +94,7 @@ Public NotInheritable Class UserRecord
   ''' <summary>
   ''' 指定した月の１日単位のデータを取得する。
   ''' </summary>
-  Public Function GetDailyDataTable(year As Integer, month As Integer) As DataTable
+  Public Function GetDailyDataTableForAMonth(year As Integer, month As Integer) As DataTable
     Dim first As New DateTime(year, month, 1)
     Dim _end As New DateTime(year, month, Date.DaysInMonth(year, month))
     
@@ -318,27 +321,7 @@ Public NotInheritable Class UserRecord
   ''' テーブルを生成する。
   ''' </summary>
   Public Function CreateDataTable(firstColumnName As String) As DataTable
-    Dim table As New DataTable
-    If firstColumnName IsNot Nothing AndAlso firstColumnName <> String.Empty Then
-      table.Columns.Add(CreateColumn(firstColumnName))
-    End If
-    
-    For Each col As DataColumn In Me.columnNodeTree.ToDataColumnCollection
-      table.Columns.Add(Me.CreateColumn(col.ColumnName))
-    Next
-    
-    Return table
-  End Function
-  
-  ''' <summary>
-  ''' 列を作成する。
-  ''' </summary>
-  Private Function CreateColumn(name As String) As DataColumn
-    Dim col As New DataColumn
-    col.ColumnName = name
-    col.AutoIncrement = False
-		
-		Return col
+    Return Me.columnsInfo.CreateDataTable(firstColumnName)
   End Function
   
   Private Function ToStringFromFirstColumnItemType(type As UserRecordFirstColumnItemType) As String
@@ -356,17 +339,17 @@ Public NotInheritable Class UserRecord
   ''' </summary>
   Private Function CreateColumnNodeTree(colsInfo As UserRecordColumnsInfo) As ExcelColumnNode
     ' 出勤日の列ノードを作成し、ノードツリーのルートとする
-    Dim rootNode As New ExcelColumnNode(colsInfo.workDayCol, colsInfo.workDayColName, True)
+    Dim rootNode As New ExcelColumnNode(colsInfo.workDayColInfo.col, colsInfo.workDayColInfo.name, colsInfo.workDayColInfo.type, True)
     
     ' 各作業項目の列ノードを追加する
     colsInfo.WorkItemList.ForEach(
       Sub(item)
-        Dim cntColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkCountCol, item.WorkCountColName)
+        Dim cntColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkCountColInfo)
         If cntColNode.HasValue Then
           rootNode.AddChild(cntColNode.Value)
         End If
         
-        Dim timeColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkTimeCol, item.WorkTimeColName)
+        Dim timeColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkTimeColInfo)
         If timeColNode.HasValue Then
           If cntColNode.HasValue Then
             cntColNode.Value.AddChild(timeColNode.Value)
@@ -378,7 +361,7 @@ Public NotInheritable Class UserRecord
       End Sub)
     
     ' 備考の列ノードを追加する
-    Dim noteCol As ExcelColumnNode? = CreateExcelColumnNode(colsInfo.noteCol, colsInfo.noteColName)
+    Dim noteCol As ExcelColumnNode? = CreateExcelColumnNode(colsInfo.noteColInfo)
     If noteCol.HasValue Then
       rootNode.AddChild(noteCol.Value)
     End If
@@ -386,17 +369,15 @@ Public NotInheritable Class UserRecord
     Return rootNode
   End Function
   
-  Private Function CreateExcelColumnNode(col As String, name As String) As ExcelColumnNode?
-    If col <> String.Empty AndAlso name <> String.Empty Then
-      Return New ExcelColumnNode(col, name)
+  Private Function CreateExcelColumnNode(colInfo As ColumnInfo) As ExcelColumnNode?
+    If colInfo.col <> String.Empty AndAlso colInfo.name <> String.Empty Then
+      'Log.out("create excel colnode:: col: " & colInfo.col & " name: " & colInfo.name & " type: " & colInfo.Type.ToString)
+      Return New ExcelColumnNode(colInfo.col, colInfo.name, colInfo.type)
     Else
       Return Nothing
     End If
   End Function
   
-  Private Function GetTermInAMonth(month As Integer) As DateTerm
-    
-  End Function
 End Class
 
 Public Enum UserRecordFirstColumnItemType
