@@ -63,6 +63,10 @@ Public Class UserRecordReader
             Dim dataRow As DataRow = table.Rows(day - m.BeginDate.Day)
             dict.Keys.ForEach(
               Sub(k)
+                If String.IsNullOrWhiteSpace(dict(k)) Then
+                  Return
+                End If
+              
                 'Log.out(userRecord.GetName & " " & m.BeginDate.Month.ToString & "/" & day.ToString & " " & k & ":" & dict(k)) 
                 If table.Columns(k).DataType = GetType(Integer) Then
                   Dim v As Integer
