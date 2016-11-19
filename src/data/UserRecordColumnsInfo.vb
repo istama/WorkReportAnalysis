@@ -15,6 +15,10 @@ Public Structure ColumnInfo
   Public ReadOnly type As Type
   
   Public Sub New(name As String, col As String, type As Type)
+    If name Is Nothing Then Throw New ArgumentNullException("name is null")
+    If col  Is Nothing Then Throw New ArgumentNullException("col is null")
+    If type Is Nothing Then Throw New ArgumentNullException("type is null")
+    
     Me.name = name
     Me.col  = col
     Me.type = type
@@ -37,7 +41,8 @@ Public Structure ColumnInfo
     col.DataType = type
 		
 		Return col
-  End Function  
+  End Function
+
 End Structure
 
 ''' <summary>
