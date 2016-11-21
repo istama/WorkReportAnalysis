@@ -90,7 +90,7 @@ Public Class ExcelProperties
     While True
       Dim params As WorkItemParams = GetWorkItemParams(idx)
       idx += 1
-      If Not String.IsNullOrEmpty(params.Name) AndAlso Not String.IsNullOrEmpty(params.WorkCountCol) AndAlso Not String.IsNullOrEmpty(params.WorkTimeCol) Then
+      If Not String.IsNullOrEmpty(params.Name) Then
         Yield params
       Else
         Exit While
