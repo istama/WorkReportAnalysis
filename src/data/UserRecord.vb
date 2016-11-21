@@ -338,45 +338,46 @@ Public NotInheritable Class UserRecord
   ''' Excelプロパティの列設定から木構造の列コレクションを作成する。
   ''' </summary>
   Private Function CreateColumnNodeTree(colsInfo As UserRecordColumnsInfo) As ExcelColumnNode
-    ' 出勤日の列ノードを作成し、ノードツリーのルートとする
-    Dim rootNode As New ExcelColumnNode(colsInfo.workDayColInfo.col, colsInfo.workDayColInfo.name, colsInfo.workDayColInfo.type, True)
-    
-    ' 各作業項目の列ノードを追加する
-    colsInfo.WorkItemList.ForEach(
-      Sub(item)
-        Dim cntColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkCountColInfo)
-        If cntColNode.HasValue Then
-          rootNode.AddChild(cntColNode.Value)
-        End If
-        
-        Dim timeColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkTimeColInfo)
-        If timeColNode.HasValue Then
-          If cntColNode.HasValue Then
-            cntColNode.Value.AddChild(timeColNode.Value)
-          Else
-            rootNode.AddChild(timeColNode.Value)  
-          End If
-        End If        
-        
-      End Sub)
-    
-    ' 備考の列ノードを追加する
-    Dim noteCol As ExcelColumnNode? = CreateExcelColumnNode(colsInfo.noteColInfo)
-    If noteCol.HasValue Then
-      rootNode.AddChild(noteCol.Value)
-    End If
-    
-    Return rootNode
+    Return colsInfo.CreateExcelColumnNodeTree()
+'    ' 出勤日の列ノードを作成し、ノードツリーのルートとする
+'    Dim rootNode As New ExcelColumnNode(colsInfo.workDayColInfo.col, colsInfo.workDayColInfo.name, colsInfo.workDayColInfo.type, True)
+'    
+'    ' 各作業項目の列ノードを追加する
+'    colsInfo.WorkItemList.ForEach(
+'      Sub(item)
+'        Dim cntColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkCountColInfo)
+'        If cntColNode.HasValue Then
+'          rootNode.AddChild(cntColNode.Value)
+'        End If
+'        
+'        Dim timeColNode As ExcelColumnNode? = CreateExcelColumnNode(item.WorkTimeColInfo)
+'        If timeColNode.HasValue Then
+'          If cntColNode.HasValue Then
+'            cntColNode.Value.AddChild(timeColNode.Value)
+'          Else
+'            rootNode.AddChild(timeColNode.Value)  
+'          End If
+'        End If        
+'        
+'      End Sub)
+'    
+'    ' 備考の列ノードを追加する
+'    Dim noteCol As ExcelColumnNode? = CreateExcelColumnNode(colsInfo.noteColInfo)
+'    If noteCol.HasValue Then
+'      rootNode.AddChild(noteCol.Value)
+'    End If
+'    
+'    Return rootNode
   End Function
   
-  Private Function CreateExcelColumnNode(colInfo As ColumnInfo) As ExcelColumnNode?
-    If colInfo.col <> String.Empty AndAlso colInfo.name <> String.Empty Then
-      'Log.out("create excel colnode:: col: " & colInfo.col & " name: " & colInfo.name & " type: " & colInfo.Type.ToString)
-      Return New ExcelColumnNode(colInfo.col, colInfo.name, colInfo.type)
-    Else
-      Return Nothing
-    End If
-  End Function
+'  Private Function CreateExcelColumnNode(colInfo As ColumnInfo) As ExcelColumnNode?
+'    If colInfo.col <> String.Empty AndAlso colInfo.name <> String.Empty Then
+'      'Log.out("create excel colnode:: col: " & colInfo.col & " name: " & colInfo.name & " type: " & colInfo.Type.ToString)
+'      Return New ExcelColumnNode(colInfo.col, colInfo.name, colInfo.type)
+'    Else
+'      Return Nothing
+'    End If
+'  End Function
   
 End Class
 
