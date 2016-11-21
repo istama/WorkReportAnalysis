@@ -55,7 +55,7 @@ Public Structure ColumnInfo
   ''' </summary> 
   Public Function CreateExcelColumnNode() As ExcelColumnNode?
     If col <> String.Empty AndAlso name <> String.Empty Then
-      Return New ExcelColumnNode(col, name, type, containedToDataTable)
+      Return New ExcelColumnNode(col, name, containedToDataTable)
     Else
       Return Nothing
     End If
