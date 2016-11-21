@@ -81,27 +81,10 @@ Public Class ExcelProperties
     Return True
   End Function
   
+
   ''' <summary>
-  ''' 作業項目に関するプロパティ値を取得する。
-  ''' 取得する作業項目をインデックスで指定する。
-  ''' 存在しないインデックスを渡した場合はすべて空文字がセットされた構造体を返す。
+  ''' 作業項目に関するプロパティ値のコレクションを返す。
   ''' </summary>
-  ''' <param name="index"></param>
-  ''' <returns></returns>
-  Public Function GetWorkItemParams(index As Integer) As WorkItemParams
-    If index < 1 Then Throw New ArgumentException("インデックスは１以上を指定してください。 / " + index.ToString)
-    
-    Dim params As WorkItemParams
-    With params
-      .Id           = index
-      .Name         = GetValue(KEY_ITEM_NAME     + index.ToString).GetOrDefault(String.Empty)
-      .WorkCountCol = GetAndCheckCol(KEY_WORKCOUNT_COL + index.ToString)
-      .WorkTimeCol  = GetAndCheckCol(KEY_WORKTIME_COL  + index.ToString)
-    End With
-    
-    Return params
-  End Function
-  
   Public Iterator Function GetWorkItemParamsEnumerable() As IEnumerable(Of WorkItemParams)
     Dim idx As Integer = 1
     While True
@@ -113,6 +96,27 @@ Public Class ExcelProperties
         Exit While
       End If
     End While
+  End Function
+  
+  ''' <summary>
+  ''' 作業項目に関するプロパティ値を取得する。
+  ''' 取得する作業項目をインデックスで指定する。
+  ''' 存在しないインデックスを渡した場合はすべて空文字がセットされた構造体を返す。
+  ''' </summary>
+  ''' <param name="index"></param>
+  ''' <returns></returns>
+  Private Function GetWorkItemParams(index As Integer) As WorkItemParams
+    If index < 1 Then Throw New ArgumentException("インデックスは１以上を指定してください。 / " + index.ToString)
+    
+    Dim params As WorkItemParams
+    With params
+      .Id           = index
+      .Name         = GetValue(KEY_ITEM_NAME     + index.ToString).GetOrDefault(String.Empty)
+      .WorkCountCol = GetAndCheckCol(KEY_WORKCOUNT_COL + index.ToString)
+      .WorkTimeCol  = GetAndCheckCol(KEY_WORKTIME_COL  + index.ToString)
+    End With
+    
+    Return params
   End Function
   
   ''' <summary>
