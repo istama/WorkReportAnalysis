@@ -35,7 +35,7 @@ Public Class ExcelProperties
   Public Const KEY_NOTE_NAME       = "NoteName"
   Public Const KEY_NOTE_COL        = "NoteCol"
   
-  Public Const KEY_WORKDAY_COL     = "WorkDay"
+  Public Const KEY_WORKDAY_COL     = "WorkDayCol"
   
   ''' <summary>
   ''' コンストラクタ。
@@ -67,7 +67,7 @@ Public Class ExcelProperties
     p.Add(KEY_NOTE_NAME, "Note")
     p.Add(KEY_NOTE_COL,  "X")
     
-    p.Add(KEY_WORKDAY_COL, "Y")
+    p.Add(KEY_WORKDAY_COL, "")
     
     Return p
   End Function
@@ -100,6 +100,19 @@ Public Class ExcelProperties
     End With
     
     Return params
+  End Function
+  
+  Public Iterator Function GetWorkItemParamsEnumerable() As IEnumerable(Of WorkItemParams)
+    Dim idx As Integer = 1
+    While True
+      Dim params As WorkItemParams = GetWorkItemParams(idx)
+      idx += 1
+      If Not String.IsNullOrEmpty(params.Name) AndAlso Not String.IsNullOrEmpty(params.WorkCountCol) AndAlso Not String.IsNullOrEmpty(params.WorkTimeCol) Then
+        Yield params
+      Else
+        Exit While
+      End If
+    End While
   End Function
   
   ''' <summary>
