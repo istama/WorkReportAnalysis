@@ -120,12 +120,14 @@ Public Partial Class MainForm
 '          table.Rows.Add(totalRow)
           
           grid.DataSource = table
+          HoldFirstColumn(grid)
           SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
           SetColor(grid, Me.dateTerm.BeginDate.Year, month)
   		  Else
   		    ' 集計ページを表示する
   		    Dim table As DataTable = Me.userRecordManager.GetSumRecord(userInfo)
   		    grid.DataSource = table
+  		    HoldFirstColumn(grid)
   		    SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
   		    SetColorToOnlyTotalRow(grid)
   		  End If

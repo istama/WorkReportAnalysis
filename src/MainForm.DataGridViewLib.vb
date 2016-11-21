@@ -1,8 +1,9 @@
 ﻿'
 ' 日付: 2016/11/15
 '
-Imports Common.Util
+Imports System.Linq
 Imports System.Data
+Imports Common.Util
 Imports Common.IO
 
 Public Partial Class MainForm
@@ -12,6 +13,13 @@ Public Partial Class MainForm
   Private ReadOnly HOLYDAY_ROW_COLOR As Color = Color.LightPink
   ''' DataGridViewにおける合計行の色
   Private ReadOnly TOTAL_ROW_COLOR   As Color = Color.LightGreen
+  
+  ''' <summary>
+  ''' 最初の列を横スクロール時に移動しないよう固定する。
+  ''' </summary>
+  Public Sub HoldFirstColumn(view As DataGridView)
+    view.Columns(0).Frozen = True    
+  End Sub
   
   ''' <summary>
   ''' DataGridViewの各セルの表示サイズを設定する。
@@ -87,12 +95,100 @@ Public Partial Class MainForm
     Dim grid As DataGridView = DirectCast(sender, DataGridView)
     Dim table As DataTable = DirectCast(grid.DataSource, DataTable)
     
-    For Each col As DataColumn In table.Columns
-      Log.out(col.ColumnName & " : " & col.DataType.ToString)
+    Dim list As New List(Of DataRow)
+    For Each dataRow As DataRow In table.Rows
+      list.Add(dataRow)
     Next
     
-    Dim view As DataView = table.DefaultView
+    list.Sort(New DataRowCompare(table, e.ColumnIndex, True))
+    grid.DataSource = list.CopyToDataTable()
     
-    view.Sort = table.Columns(e.ColumnIndex).ColumnName
+'    Dim view As DataView = table.DefaultView
+'    
+'    view.Sort = table.Columns(e.ColumnIndex).ColumnName
   End Sub
+End Class
+
+Public Class DataRowCompare
+  Implements IComparer(Of DataRow)
+  
+  Private ReadOnly table As DataTable
+  Private ReadOnly index As Integer
+  Private ReadOnly isAsc As Boolean
+  
+  
+  Public Sub New(table As DataTable, index As Integer, isAsc As Boolean)
+    Me.table = table
+    Me.index = index
+    Me.isAsc = isAsc
+  End Sub
+  
+  Public Function Compare(x As DataRow, y As DataRow) As Integer Implements IComparer(Of DataRow).Compare
+    ' 値がない行はソートの後方へ
+    If System.Convert.IsDBNull(x(Me.index)) Then
+      Return BackValue()
+    ElseIf System.Convert.IsDBNull(y(Me.index))
+      Return BackValue()
+    End If
+    
+    Dim type As Type = Me.table.Columns(Me.index).DataType
+    If type = GetType(String) Then
+      If Me.index = 0 Then
+        Dim xv As Integer = HeadNumber(DirectCast(x(Me.index), String))
+        Dim yv As Integer = HeadNumber(DirectCast(y(Me.index), String))
+        
+        If yv = -1 Then
+          Return BackValue()
+        ElseIf xv = -1 
+          Return BackValue()
+        End If
+        
+        Return xv - yv
+      Else
+        Return DirectCast(x(Me.index), String).CompareTo(DirectCast(y(Me.index), String))
+      End If
+    ElseIf type = GetType(Integer)
+      'Return DirectCast(x(Me.index), Integer) - DirectCast(y(Me.index), Integer)
+      Return DirectCast(x(Me.index), Integer).CompareTo(DirectCast(y(Me.index), Integer))
+    ElseIf type = GetType(Double)
+      Return DirectCast(x(Me.index), Double).CompareTo(DirectCast(y(Me.index), Double))
+    Else
+      Throw New InvalidCastException("DataTableに無効な型の値があります。")
+    End If
+  End Function
+  
+  ''' <summary>
+  ''' 昇順でも降順でも後ろにソートするための値。
+  ''' </summary>
+  Private Function BackValue() As Integer
+    If Me.isAsc Then
+      Return 1
+    Else
+      Return -1
+    End If
+  End Function
+  
+  ''' <summary>
+  ''' 文字列の先頭に数字があれば、それを数値に変換して返す。
+  ''' </summary>
+  Private Function HeadNumber(text As String) As Integer
+    If String.IsNullOrWhiteSpace(text) Then 
+      Return -1
+    End If
+    
+    ' 先頭から数字の文字列のみを取り出す
+    Dim chars As IEnumerable(Of Char) =
+      text.TakeWhile(Function(c) Asc(c) >= Asc("0"c) AndAlso Asc(c) <= Asc("9"c))
+    
+    If chars.Count = 0 Then 
+      Return -1
+    End If
+    
+    ' 数値に変換し、桁数をかける
+    Dim nums As IEnumerable(Of Integer) =
+      chars.Select(Function(c, idx) Integer.Parse(c) * CType(Math.Pow(10, chars.Count - idx - 1), Integer))
+    
+    ' 合計を返す
+    Return nums.Sum
+  End Function
 End Class

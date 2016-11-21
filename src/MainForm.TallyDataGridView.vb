@@ -78,6 +78,7 @@ Public Partial Class MainForm
   			Return
   		End If
   		
+  		HoldFirstColumn(grid)
   		SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
     Catch ex As Exception
       MsgBox.ShowError(ex)      
