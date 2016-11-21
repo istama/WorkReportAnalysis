@@ -2,6 +2,7 @@
 ' 日付: 2016/11/14
 '
 Imports System.Data
+Imports Common.COM
 
 ''' <summary>
 ''' レコードの列の情報。
@@ -13,8 +14,10 @@ Public Structure ColumnInfo
   Public ReadOnly col  As String
   ''' 値の型
   Public ReadOnly type As Type
+  ''' この列をExcel読み込み時に結果に含めるかどうか
+  Private ReadOnly containedToDataTable As Boolean
   
-  Public Sub New(name As String, col As String, type As Type)
+  Public Sub New(name As String, col As String, type As Type, Optional containedToDataTable As Boolean=True)
     If name Is Nothing Then Throw New ArgumentNullException("name is null")
     If col  Is Nothing Then Throw New ArgumentNullException("col is null")
     If type Is Nothing Then Throw New ArgumentNullException("type is null")
@@ -22,6 +25,7 @@ Public Structure ColumnInfo
     Me.name = name
     Me.col  = col
     Me.type = type
+    Me.containedToDataTable = containedToDataTable
   End Sub
   
   ''' <summary>
@@ -42,7 +46,17 @@ Public Structure ColumnInfo
 		
 		Return col
   End Function
-
+  
+  ''' <summary>
+  ''' Excelを読み込むための列ノードを作成する。
+  ''' </summary> 
+  Public Function CreateExcelColumnNode() As ExcelColumnNode?
+    If col <> String.Empty AndAlso name <> String.Empty Then
+      Return New ExcelColumnNode(col, name, type, containedToDataTable)
+    Else
+      Return Nothing
+    End If
+  End Function
 End Structure
 
 ''' <summary>
@@ -82,7 +96,7 @@ Public Structure UserRecordColumnsInfo
     End While
     
     Me.noteColInfo = New ColumnInfo(properties.NoteName, properties.NoteCol, GetType(String))
-    Me.workDayColInfo = New ColumnInfo(WORKDAY_COL_NAME, properties.WorkDayCol, GetType(String))
+    Me.workDayColInfo = New ColumnInfo(WORKDAY_COL_NAME, properties.WorkDayCol, GetType(String), False)
   End Sub
   
   Public Function WorkItemList() As IList(Of WorkItemColumnsInfo)
@@ -128,6 +142,32 @@ Public Structure UserRecordColumnsInfo
     table.Columns.Add(Me.noteColInfo.CreateDataColumn)
     
     Return table
+  End Function
+  
+  ''' <summary>
+  ''' Excelを読み込むための列ノードのツリーを作成する。
+  ''' </summary>
+  Public Function CreateExcelColumnNodeTree() As ExcelColumnNode
+    Dim rootNode As ExcelColumnNode? = Me.workDayColInfo.CreateExcelColumnNode()
+    
+    If Not rootNode.HasValue Then
+      Throw New InvalidOperationException("excel.propertiesにWorkDayColの値が設定されていません。")  
+    End If
+    
+    Me.WorkItems.ForEach(
+      Sub(item)
+        Dim node As ExcelColumnNode? = item.CreateExcelColumnNodeTree()
+        If node.HasValue Then
+          rootNode.Value.AddChild(node.Value)
+        End If
+      End Sub)
+    
+    Dim noteNode As ExcelColumnNode? = Me.noteColInfo.CreateExcelColumnNode()
+    If noteNode.HasValue Then
+      rootNode.Value.AddChild(noteNode)
+    End If
+    
+    Return rootNode.Value
   End Function
 End Structure
 
@@ -198,6 +238,25 @@ Public Structure WorkItemColumnsInfo
       Return Nothing
     Else
       Return New WorkItemColumnsInfo(params)
+    End If
+  End Function
+  
+  ''' <summary>
+  ''' Excelの列ノードのツリーを作成する。
+  ''' </summary>
+  Public Function CreateExcelColumnNodeTree() As ExcelColumnNode?
+    Dim cntNode As ExcelColumnNode? = Me.WorkCountColInfo.CreateExcelColumnNode()
+    Dim timeNode As ExcelColumnNode? = Me.WorkTimeColInfo.CreateExcelColumnNode()
+    If cntNode.HasValue Then
+      If timeNode.HasValue Then
+        cntNode.Value.AddChild(timeNode.Value)
+      End If
+      
+      Return cntNode
+    ElseIf timeNode.HasValue
+      Return timeNode
+    Else
+      Return NOthing  
     End If
   End Function
 End Structure
