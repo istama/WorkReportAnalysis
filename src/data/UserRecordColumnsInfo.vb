@@ -2,7 +2,10 @@
 ' 日付: 2016/11/14
 '
 Imports System.Data
+Imports System.Linq
 Imports Common.COM
+Imports Common.Extensions
+Imports Common.IO
 
 ''' <summary>
 ''' レコードの列の情報。
@@ -78,22 +81,18 @@ Public Structure UserRecordColumnsInfo
   Public Sub New(properties As ExcelProperties)
     If properties Is Nothing Then Throw New NullReferenceException("properties is null")
     
-    Me.workItems = New List(Of WorkItemColumnsInfo)
+    Dim items = New List(Of WorkItemColumnsInfo)
     
-    Dim idx As Integer = 1
-    While True 
-      ' Excelのプロパティから新しい作業項目の設定が取得できたなら
-      ' そこから列名を生成しリストに格納する。
-      ' 取得できなかったらループを抜ける。
-      Dim params As ExcelProperties.WorkItemParams = properties.GetWorkItemParams(idx)
-      Dim colInfo As WorkItemColumnsInfo? = WorkItemColumnsInfo.Create(params)
-      If colInfo.HasValue Then
-        Me.workItems.Add(colInfo.Value)
-        idx += 1
-      Else
-        Exit While
-      End If
-    End While
+    ' 作業項目のExcelの設定から列情報の構造体を作成しリストにセットする
+    properties.GetWorkItemParamsEnumerable().ForEach(
+      Sub(params)
+        Dim colInfo As WorkItemColumnsInfo? = WorkItemColumnsInfo.Create(params)
+        If colInfo.HasValue Then
+          items.Add(colInfo.Value)
+        End If      
+      End Sub)
+    
+    Me.workItems = items
     
     Me.noteColInfo = New ColumnInfo(properties.NoteName, properties.NoteCol, GetType(String))
     Me.workDayColInfo = New ColumnInfo(WORKDAY_COL_NAME, properties.WorkDayCol, GetType(String), False)
@@ -164,7 +163,7 @@ Public Structure UserRecordColumnsInfo
     
     Dim noteNode As ExcelColumnNode? = Me.noteColInfo.CreateExcelColumnNode()
     If noteNode.HasValue Then
-      rootNode.Value.AddChild(noteNode)
+      rootNode.Value.AddChild(noteNode.Value)
     End If
     
     Return rootNode.Value
