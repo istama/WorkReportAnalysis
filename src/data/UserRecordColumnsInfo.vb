@@ -70,8 +70,7 @@ Public Structure UserRecordColumnsInfo
   Public Const NAME_COL_NAME    As String = "名前"
   Public Const DATE_COL_NAME    As String = "日にち"
   
-  ''' 各作業項目ごとの列情報を格納するリスト 
-  Private ReadOnly workItems As List(Of WorkItemColumnsInfo)
+  Private ReadOnly properties As ExcelProperties
   
   ''' 備考欄の列情報
   Public ReadOnly noteColInfo As ColumnInfo
@@ -81,25 +80,22 @@ Public Structure UserRecordColumnsInfo
   Public Sub New(properties As ExcelProperties)
     If properties Is Nothing Then Throw New NullReferenceException("properties is null")
     
-    Dim items = New List(Of WorkItemColumnsInfo)
-    
-    ' 作業項目のExcelの設定から列情報の構造体を作成しリストにセットする
-    properties.GetWorkItemParamsEnumerable().ForEach(
-      Sub(params)
-        Dim colInfo As WorkItemColumnsInfo? = WorkItemColumnsInfo.Create(params)
-        If colInfo.HasValue Then
-          items.Add(colInfo.Value)
-        End If      
-      End Sub)
-    
-    Me.workItems = items
+    Me.properties = properties
     
     Me.noteColInfo = New ColumnInfo(properties.NoteName, properties.NoteCol, GetType(String))
     Me.workDayColInfo = New ColumnInfo(WORKDAY_COL_NAME, properties.WorkDayCol, GetType(String), False)
   End Sub
   
-  Public Function WorkItemList() As IList(Of WorkItemColumnsInfo)
-    Return New Collections.ObjectModel.ReadOnlyCollection(Of WorkItemColumnsInfo)(Me.workItems)
+  ''' <summary>
+  ''' 作業項目のコレクションを返す。
+  ''' </summary>
+  Public Iterator Function WorkItemList() As IEnumerable(Of WorkItemColumnsInfo)
+    For Each col As WorkItemColumnsInfo? In _
+      Me.properties.GetWorkItemParamsEnumerable().
+      Select(Function(params) WorkItemColumnsInfo.Create(params)).
+      Where(Function(colInfo) colInfo.HasValue)
+      Yield col.Value
+    Next
   End Function
   
   ''' <summary>
@@ -122,7 +118,7 @@ Public Structure UserRecordColumnsInfo
     End If
     
     ' 作業項目の列を追加する
-    workItems.ForEach(
+    WorkItemList().ForEach(
       Sub(item)
         If Not String.IsNullOrWhiteSpace(item.WorkCountColInfo.Name) Then
           table.Columns.Add(item.WorkCountColInfo.CreateDataColumn())
@@ -153,7 +149,7 @@ Public Structure UserRecordColumnsInfo
       Throw New InvalidOperationException("excel.propertiesにWorkDayColの値が設定されていません。")  
     End If
     
-    Me.WorkItems.ForEach(
+    WorkItemList().ForEach(
       Sub(item)
         Dim node As ExcelColumnNode? = item.CreateExcelColumnNodeTree()
         If node.HasValue Then
