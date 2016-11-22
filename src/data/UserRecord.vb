@@ -22,8 +22,6 @@ Public NotInheritable Class UserRecord
   
   ''' このレコードの列情報
   Private ReadOnly columnsInfo As UserRecordColumnsInfo
-  ''' Excelにアクセスするのに必要な列のツリー
-  Private ReadOnly columnNodeTree As ExcelColumnNode
   ''' このクラスが保持するのデータの期間
   Private ReadOnly dateTerm As DateTerm
   
@@ -36,7 +34,6 @@ Public NotInheritable Class UserRecord
     Me.idNumber       = userinfo.GetSimpleId
     Me.name           = userinfo.GetName
     Me.columnsInfo    = recordColumnsInfo
-    Me.columnNodeTree = CreateColumnNodeTree(recordColumnsInfo)
     Me.dateTerm       = New DateTerm(properties.BeginDate, properties.EndDate)
     Me.record         = CreateDataTables(Me.dateTerm)
   End Sub
@@ -72,7 +69,7 @@ Public NotInheritable Class UserRecord
   End Function
   
   Public Function GetCulumnNodeTree As ExcelColumnNode
-    Return Me.columnNodeTree
+    Return Me.columnsInfo.CreateExcelColumnNodeTree
   End Function
   
   Public Function GetRecordDateTerm() As DateTerm
