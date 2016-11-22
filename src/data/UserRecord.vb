@@ -46,7 +46,7 @@ Public NotInheritable Class UserRecord
     
     dateTerm.MonthlyTerms.ForEach(
       Sub(m)
-        Dim table As DataTable = CreateDataTable(String.Empty)  
+        Dim table As DataTable = Me.columnsInfo.CreateDataTable(Nothing)
         Dim d As DateTime = m.BeginDate
         Enumerable.Range(1, DateTime.DaysInMonth(d.Year, d.Month)).ForEach(
           Sub(day)
@@ -102,7 +102,7 @@ Public NotInheritable Class UserRecord
   ''' １列目に日付をつけて指定した期間の１日単位のデータを取得する。
   ''' </summary>
   Public Function GetDailyDataTableLabelingDate(dateTerm As DateTerm, f As Func(Of dateTerm, String)) As DataTable
-    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
+    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetDailyDataTable(term, table)
     
@@ -119,7 +119,7 @@ Public NotInheritable Class UserRecord
   ''' １列目にユーザ名をつけて指定した期間の１日単位のデータを取得する。
   ''' </summary>
   Public Function GetDailyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
+    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetDailyDataTable(term, table)
     
@@ -153,7 +153,7 @@ Public NotInheritable Class UserRecord
   ''' １列目に日付をつけて指定した期間の１週間単位のデータを取得する。
   ''' </summary>
   Public Function GetWeeklyDataTableLabelingDate(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
+    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetWeeklyDataTable(term, table)
     
@@ -184,7 +184,7 @@ Public NotInheritable Class UserRecord
   ''' １列目にユーザ名をつけて指定した期間の１週間単位のデータを取得する。
   ''' </summary>
   Public Function GetWeeklyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
+    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetWeeklyDataTable(term, table)
     
@@ -203,7 +203,7 @@ Public NotInheritable Class UserRecord
     
     dateTerm.WeeklyTerms.ForEach(
       Sub(w)
-        Dim tmpTable As DataTable = CreateDataTable(String.Empty)
+        Dim tmpTable As DataTable = Me.columnsInfo.CreateDataTable(String.Empty)
         GetDailyDataTable(w, tmpTable)
       
         Dim newRow As DataRow = newTable.NewRow
@@ -217,7 +217,7 @@ Public NotInheritable Class UserRecord
   ''' １列目に日付をつけて指定した期間の１ヶ月単位のデータを取得する。
   ''' </summary>
   Public Function GetMonthlyDataTableLabelingDate(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
+    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetMonthlyDataTable(term, table)
     
@@ -234,7 +234,7 @@ Public NotInheritable Class UserRecord
   ''' １列目にユーザ名をつけて指定した期間の１ヶ月単位のデータを取得する。
   ''' </summary>
   Public Function GetMonthlyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
+    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetMonthlyDataTable(term, table)
     
@@ -253,7 +253,7 @@ Public NotInheritable Class UserRecord
     
      dateTerm.MonthlyTerms.ForEach(
       Sub(m)
-        Dim tmpTable As DataTable = CreateDataTable(String.Empty)
+        Dim tmpTable As DataTable = Me.columnsInfo.CreateDataTable(String.Empty)
         GetDailyDataTable(m, tmpTable)
       
         Dim newRow As DataRow = newTable.NewRow
@@ -267,7 +267,7 @@ Public NotInheritable Class UserRecord
   ''' 指定した期間の行の集計を返す。
   ''' </summary>
   Public Sub GetTotalDataRow(dateTerm As DateTerm, resultRow As DataRow)
-    Dim table As DataTable = CreateDataTable(String.Empty)
+    Dim table As DataTable = Me.columnsInfo.CreateDataTable(String.Empty)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetDailyDataTable(term, table)
     
@@ -312,13 +312,6 @@ Public NotInheritable Class UserRecord
     End If
     
     Return New DateTerm(beginDate, endDate)
-  End Function
-  
-  ''' <summary>
-  ''' テーブルを生成する。
-  ''' </summary>
-  Public Function CreateDataTable(firstColumnName As String) As DataTable
-    Return Me.columnsInfo.CreateDataTable(firstColumnName)
   End Function
   
   Private Function ToStringFromFirstColumnItemType(type As UserRecordFirstColumnItemType) As String
