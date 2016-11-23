@@ -31,11 +31,11 @@ Public Module DataTableExtensions
         Dim existsCntCol As Boolean = Not String.IsNullOrEmpty(cntColName)
         Dim existsTimeCol As Boolean = Not String.IsNullOrEmpty(timeColName)
         
-        If existsCntCol AndAlso (Not table.Columns.Contains(cntColName) OrElse sumRow.Table.Columns.Contains(cntColName)) Then
+        If existsCntCol AndAlso (Not table.Columns.Contains(cntColName) OrElse Not sumRow.HasColumn(cntColName)) Then
           Throw New ArgumentException("テーブルに存在しない列名です。 / " & cntColName)          
         End If
         
-        If existsTimeCol AndAlso (Not table.Columns.Contains(timeColName) OrElse sumRow.Table.Columns.Contains(timeColName)) Then
+        If existsTimeCol AndAlso (Not table.Columns.Contains(timeColName) OrElse Not sumRow.HasColumn(timeColName)) Then
           Throw New ArgumentException("テーブルに存在しない列名です。 / " & timeColName)          
         End If
         
@@ -47,35 +47,16 @@ Public Module DataTableExtensions
             Return row
           End Function
         )._Where(
-          Function(row) existsCntCol AndAlso (Not existsTimeCol OrElse DirectCast(row(timeColName), Double) > 0.0)
+          Function(row) existsCntCol AndAlso (Not existsTimeCol OrElse Not row.IsNull(timeColName) AndAlso DirectCast(row(timeColName), Double) > 0.0)
         ).ForEach(
           Function(row) plusInt(row, sumRow, cntColName)
         )
-          
-        
-'        For Each row As DataRow In table.Rows
-'          If existsTimeCol Then
-'            If Not System.Convert.IsDBNull(row(timeColName)) Then
-'              Dim time As Double = DirectCast(row(timeColName), Double)
-'              If time > 0.0 Then
-'                plusDouble(row, sumRow, timeColName)
-'                
-'                If existsCntCol Then
-'                  plusInt(row, sumRow, cntColName)
-'                End If
-'              End If
-'            End If
-'          ElseIf existsCntCol Then
-'            plusInt(row, sumRow, cntColName)
-'          End If
-'        Next
-          
       End Sub)    
   End Sub
   
   Private Sub calcTotal(table As DataTable, sumRow As DataRow, colInfo As ColumnInfo)
     If Not String.IsNullOrEmpty(colInfo.Name) Then
-      If table.Columns.Contains(colInfo.Name) AndAlso sumRow.Table.Columns.Contains(colInfo.Name) Then
+      If table.Columns.Contains(colInfo.Name) AndAlso sumRow.HasColumn(colInfo.Name) Then
         If colInfo.type = GetType(Integer) Then
           table.Rows.ForEach(Sub(row) plusInt(row, sumRow, colInfo.Name))
         ElseIf colInfo.type = GetType(Double)
@@ -88,8 +69,8 @@ Public Module DataTableExtensions
   End Sub
   
   Private Function plusInt(valueRow As DataRow, addedRow As DataRow, colName As String) As Boolean
-    If Not System.Convert.IsDBNull(valueRow(colName)) Then
-      If System.Convert.IsDBNull(addedRow(colName)) Then
+    If Not valueRow.IsNull(colName) Then
+      If addedRow.IsNull(colName) Then
         addedRow(colName) = DirectCast(valueRow(colName), Integer)
       Else
         addedRow(colName) = DirectCast(addedRow(colName), Integer) + DirectCast(valueRow(colName), Integer)
@@ -102,8 +83,8 @@ Public Module DataTableExtensions
   End Function
   
   Private Function plusDouble(valueRow As DataRow, addedRow As DataRow, colName As String) As Boolean
-    If Not System.Convert.IsDBNull(valueRow(colName)) Then
-      If System.Convert.IsDBNull(addedRow(colName)) Then
+    If Not valueRow.IsNull(colName) Then
+      If addedRow.IsNull(colName) Then
         addedRow(colName) = DirectCast(valueRow(colName), Double)
       Else
         addedRow(colName) = DirectCast(addedRow(colName), Double) + DirectCast(valueRow(colName), Double)
