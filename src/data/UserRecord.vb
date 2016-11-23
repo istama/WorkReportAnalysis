@@ -207,7 +207,7 @@ Public NotInheritable Class UserRecord
         GetDailyDataTable(w, tmpTable)
       
         Dim newRow As DataRow = newTable.NewRow
-        CalcTallyDataTable(tmpTable, newRow)
+        tmpTable.Sum(newRow, Me.columnsInfo)
         
         newTable.Rows.Add(newRow)
       ENd Sub)
@@ -257,7 +257,7 @@ Public NotInheritable Class UserRecord
         GetDailyDataTable(m, tmpTable)
       
         Dim newRow As DataRow = newTable.NewRow
-        CalcTallyDataTable(tmpTable, newRow)
+        tmpTable.Sum(newRow, Me.columnsInfo)
         
         newTable.Rows.Add(newRow)
       ENd Sub)   
@@ -271,16 +271,7 @@ Public NotInheritable Class UserRecord
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetDailyDataTable(term, table)
     
-    CalcTallyDataTable(table, resultRow)
-  End Sub
-  
-  ''' <summary>
-  ''' 指定したテーブルを集計した行を返す。
-  ''' </summary>
-  Public Sub CalcTallyDataTable(table As DataTable, sumRow As DataRow)
-    For Each row As DataRow In table.Rows
-      sumRow.PlusByDouble(row)
-    Next
+    table.Sum(resultRow, Me.columnsInfo)
   End Sub
   
   ''' <summary>
