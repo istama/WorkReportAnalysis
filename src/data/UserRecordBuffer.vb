@@ -22,6 +22,10 @@ Public Class UserRecordBuffer
   Private ReadOnly userRecordDictionary As New ConcurrentDictionary(Of String, UserRecord)
   ''' 全ユーザのレコードの値を日付ごとに集計したテーブルを月ごとに格納したテーブル
   Private ReadOnly totalRecord As UserRecord
+  ''' 全ユーザのレコードの値を日付ごとに集計したテーブルを月ごとに格納したテーブル
+  ''' ただし作業時間が０の作業件数は集計に含めない
+  Private ReadOnly totalRecordExceptedWorkCountOfZeroWorkTimeIs As UserRecord
+  
   ''' 集計テーブルに加算したユーザのリスト
   Private ReadOnly addedUserListToTotalRecord As New List(Of String)
   
@@ -32,6 +36,7 @@ Public Class UserRecordBuffer
     Me.recordColumnsInfo = New UserRecordColumnsInfo(properties)
     
     Me.totalRecord = New UserRecord(New UserInfo("total", "999", "xxx"), Me.recordColumnsInfo, properties)
+    Me.totalRecordExceptedWorkCountOfZeroWorkTimeIs = New UserRecord(New UserInfo("total", "999", "xxx"), Me.recordColumnsInfo, properties)
   End Sub
   
   ''' <summary>
@@ -84,6 +89,13 @@ Public Class UserRecordBuffer
   End Function
   
   ''' <summary>
+  ''' 作業時間が０の作業件数が除かれた集計レコードを取得する。
+  ''' </summary>
+  Public Function GetTotalRecordExceptedWorkCountOfZeroWorkTimeIs() As UserRecord
+    Return Me.totalRecordExceptedWorkCountOfZeroWorkTimeIs
+  End Function
+  
+  ''' <summary>
   ''' 集計レコードに加算する。
   ''' 無事、加算できた場合はTrueを返す。
   ''' すでに加算されたユーザなら何もせずにFalseを返す。
@@ -130,12 +142,10 @@ Public Class UserRecordBuffer
           Dim d As DateTime = term.BeginDate
           Dim userTable  As DataTable = record.GetDailyDataTableForAMonth(d.Year, d.Month)
           Dim totalTable As DataTable = Me.totalRecord.GetRecord(d.Month)
+          Dim totalTableE As DataTable = Me.totalRecordExceptedWorkCountOfZeroWorkTimeIs.GetRecord(d.Month)
           
-          For idx As Integer = term.BeginDate.Day - 1 To term.EndDate.Day - 1
-            Dim totalRow = totalTable.Rows(idx)
-            f(totalRow, userTable.Rows(idx))
-            'Log.out("user : " & userInfo.GetSimpleId & " idx: " & idx.ToString & " total Row: " & totalRow.Item(1).ToString) 
-          Next
+          userTable.Plus(totalTable, Me.recordColumnsInfo)
+          userTable.PlusExceptingWorkCountOfZerpWorkTimeIs(totalTableE, Me.recordColumnsInfo)
         End Sub)
     Else
       Throw New ArithmeticException("指定したユーザのレコードは存在しません。 / userInfo: " & userInfo.GetName)
