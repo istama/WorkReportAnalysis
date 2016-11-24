@@ -69,7 +69,7 @@ Public Class UserRecordManager
     If UserInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
     
-    Dim table As DataTable = record.GetWeeklyDataTableLabelingDate(dateTerm)
+    Dim table As DataTable = record.GetWeeklyDataTableLabelingDate(dateTerm, False)
     AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
     
     Return AddColumnOfProductivityToRecord(table)
@@ -82,7 +82,7 @@ Public Class UserRecordManager
     If UserInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
     
-    Dim table As DataTable = record.GetMonthlyDataTableLabelingDate(dateTerm)
+    Dim table As DataTable = record.GetMonthlyDataTableLabelingDate(dateTerm, False)
     AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
     
     Return AddColumnOfProductivityToRecord(table)
@@ -91,13 +91,13 @@ Public Class UserRecordManager
   ''' <summary>
   ''' 指定したユーザの集計レコードを取得する。
   ''' </summary>
-  Public Function GetSumRecord(userInfo As UserInfo) As DataTable
+  Public Function GetSumRecord(userInfo As UserInfo, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
     If userInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
     
     ' 1週間ごとの集計テーブルを取得
-    Dim weeklySumTable As DataTable  = record.GetWeeklyDataTableLabelingDate(record.GetRecordDateTerm)
-    Dim monthlySumTable As DataTable = record.GetMonthlyDataTableLabelingDate(record.GetRecordDateTerm)
+    Dim weeklySumTable As DataTable  = record.GetWeeklyDataTableLabelingDate(record.GetRecordDateTerm, exceptsWorkCountOfZeroWorkTimeIs)
+    Dim monthlySumTable As DataTable = record.GetMonthlyDataTableLabelingDate(record.GetRecordDateTerm, exceptsWorkCountOfZeroWorkTimeIs)
     AddTotalRowToTable(monthlySumTable, UserRecordColumnsInfo.DATE_COL_NAME)
     
     ' weeklySumTableの後ろの行にmonthlySumTableの行を追加する
@@ -116,16 +116,16 @@ Public Class UserRecordManager
   ''' <summary>
   ''' 各ユーザごとの指定した期間の集計レコードを集めたテーブルを取得する。
   ''' </summary>
-  Public Function GetTallyRecordOfEachUser(dateTerm As DateTerm) As DataTable
+  Public Function GetTallyRecordOfEachUser(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
     Dim unionRecord As UserRecord = Me.userRecordBuffer.CreateUserRecord(Me.unionUser)
-    Dim newTable As DataTable = unionRecord.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
+    Dim newTable As DataTable = Me.recordColumnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     
     Me.userRecordBuffer.GetUserRecordAll.ForEach(
       Sub(record)
         Dim newRow As DataRow = newTable.NewRow 
         
         newRow(UserRecordColumnsInfo.NAME_COL_NAME) = record.GetIdNumber & " " & record.GetName
-        record.GetTotalDataRow(dateTerm, newRow)
+        record.GetTotalDataRow(dateTerm, newRow, exceptsWorkCountOfZeroWorkTimeIs)
         newTable.Rows.Add(newRow)
       End Sub)
     
@@ -134,8 +134,13 @@ Public Class UserRecordManager
     Return AddColumnOfProductivityToRecord(newTable)
   End Function
   
-  Public Function GetTotalOfAllUserDailyRecord(dateTerm As DateTerm) As DataTable
-    Dim totalRecord As UserRecord = Me.userRecordBuffer.GetTotalRecord
+  Public Function GetTotalOfAllUserDailyRecord(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
+    Dim totalRecord As UserRecord
+    If exceptsWorkCountOfZeroWorkTimeIs Then
+      totalRecord = Me.userRecordBuffer.GetTotalRecordExceptedWorkCountOfZeroWorkTimeIs
+    Else
+      totalRecord = Me.userRecordBuffer.GetTotalRecord  
+    End If
     
     Dim table As DataTable = totalRecord.GetDailyDataTableLabelingDate(dateTerm, Function(t) t.BeginDate.Day & "日")
     AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
@@ -143,19 +148,29 @@ Public Class UserRecordManager
     Return AddColumnOfProductivityToRecord(table)
   End Function
   
-  Public Function GetTotalOfAllUserWeeklyRecord(dateTerm As DateTerm) As DataTable
-    Dim totalRecord As UserRecord = Me.userRecordBuffer.GetTotalRecord
+  Public Function GetTotalOfAllUserWeeklyRecord(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
+    Dim totalRecord As UserRecord
+    If exceptsWorkCountOfZeroWorkTimeIs Then
+      totalRecord = Me.userRecordBuffer.GetTotalRecordExceptedWorkCountOfZeroWorkTimeIs
+    Else
+      totalRecord = Me.userRecordBuffer.GetTotalRecord  
+    End If
     
-    Dim table As DataTable = totalRecord.GetWeeklyDataTableLabelingDate(dateTerm)
+    Dim table As DataTable = totalRecord.GetWeeklyDataTableLabelingDate(dateTerm, False)
     AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME) 
     
     Return AddColumnOfProductivityToRecord(table)
   End Function
   
-  Public Function GetTotalOfAllUserMonthlyRecord(dateTerm As DateTerm) As DataTable
-    Dim totalRecord As UserRecord = Me.userRecordBuffer.GetTotalRecord
+  Public Function GetTotalOfAllUserMonthlyRecord(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
+    Dim totalRecord As UserRecord
+    If exceptsWorkCountOfZeroWorkTimeIs Then
+      totalRecord = Me.userRecordBuffer.GetTotalRecordExceptedWorkCountOfZeroWorkTimeIs
+    Else
+      totalRecord = Me.userRecordBuffer.GetTotalRecord  
+    End If
     
-    Dim table As DataTable = totalRecord.GetMonthlyDataTableLabelingDate(dateTerm)
+    Dim table As DataTable = totalRecord.GetMonthlyDataTableLabelingDate(dateTerm, False)
     AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
     
     Return AddColumnOfProductivityToRecord(table)
