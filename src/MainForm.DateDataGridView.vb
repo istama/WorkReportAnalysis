@@ -109,7 +109,7 @@ Public Partial Class MainForm
 '  		  grid.DataSource = table
 '  		End If
       If grid IsNot Nothing AndAlso term.EndDate <> #01/01/1900# Then
-        Dim table As DataTable = Me.userRecordManager.GetTallyRecordOfEachUser(term)
+        Dim table As DataTable = Me.userRecordManager.GetTallyRecordOfEachUser(term, Me.chkBoxExcludeData.Checked)
 '        Dim totalRow As DataRow = table.NewRow
 '        totalRow(UserRecord.NAME_COL_NAME) = "合計"
 '        For Each row As DataRow In table.Rows
