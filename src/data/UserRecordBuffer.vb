@@ -64,22 +64,16 @@ Public Class UserRecordBuffer
   ''' すべてのユーザのレコードを取得する。
   ''' </summary>
   ''' <returns></returns>
-  Public Function GetUserRecordAll() As List(Of UserRecord)
-    Dim list As New List(Of UserRecord)
-    
+  Public Iterator Function GetUserRecordAll() As IEnumerable(Of UserRecord)
     Dim idArray As String() = Me.userRecordDictionary.Keys.ToArray
     Array.Sort(idArray)
     
-    Array.ForEach(
-      idArray,
-      Sub(id)
-        Dim record As UserRecord = Nothing
-        If Me.userRecordDictionary.TryGetValue(id, record) Then
-          list.Add(record)
-        End If
-      End Sub)
-    
-    Return list
+    For Each id As String In idArray
+      Dim record As UserRecord = Nothing
+      If Me.userRecordDictionary.TryGetValue(id, record) Then
+        Yield record
+      End If
+    Next
   End Function
   
   ''' <summary>
