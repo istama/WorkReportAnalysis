@@ -46,7 +46,7 @@ Public Partial Class MainForm
     Try
       If pageName = "日" Then
         Dim term As DateTerm = DirectCast(Me.cboxTallyMonthly.SelectedValue, DateTerm)
-        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserDailyRecord(term)
+        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserDailyRecord(term, Me.chkBoxExcludeData.Checked)
         grid.DataSource = table
         
         SetColor(grid, term.BeginDate.Year, term.BeginDate.Month)
@@ -55,7 +55,7 @@ Public Partial Class MainForm
   '			Dim lastRow As Integer = Me.gridViewCellStyles.SetDailyStyle(grid, 0, dTerm)
   '			Me.gridViewCellStyles.SetMonthlyTotalStyle(grid, lastRow + 1, "合計")
   		ElseIf pageName = "週"
-        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserWeeklyRecord(Me.dateTerm)
+        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserWeeklyRecord(Me.dateTerm, Me.chkBoxExcludeData.Checked)
         grid.DataSource = table
         
         SetColorToOnlyTotalRow(grid)
@@ -65,7 +65,7 @@ Public Partial Class MainForm
   '			Dim lastRow As Integer = Me.gridViewCellStyles.SetWeeklyStyle(grid, 0, Me.dateTerm)
   '			Me.gridViewCellStyles.SetAllTotalStyle(grid, lastRow + 1, "合計")			
   		ElseIf pageName = "月"
-        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserMonthlyRecord(Me.dateTerm)
+        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserMonthlyRecord(Me.dateTerm, Me.chkBoxExcludeData.Checked)
         grid.DataSource = table
         
         SetColorToOnlyTotalRow(grid)
