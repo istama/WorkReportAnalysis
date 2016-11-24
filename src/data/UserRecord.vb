@@ -116,21 +116,6 @@ Public NotInheritable Class UserRecord
   End Function
   
   ''' <summary>
-  ''' １列目にユーザ名をつけて指定した期間の１日単位のデータを取得する。
-  ''' </summary>
-  Public Function GetDailyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
-    Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetDailyDataTable(term, table)
-    
-    For Each row As DataRow In table.Rows
-      row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
-    Next
-    
-    Return table
-  End Function
-  
-  ''' <summary>
   ''' 指定した期間の１日単位のデータを取得する。
   ''' </summary>
   Private Sub GetDailyDataTable(dateTerm As DateTerm, newTable As DataTable)
@@ -181,21 +166,6 @@ Public NotInheritable Class UserRecord
   End Function
   
   ''' <summary>
-  ''' １列目にユーザ名をつけて指定した期間の１週間単位のデータを取得する。
-  ''' </summary>
-  Public Function GetWeeklyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
-    Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetWeeklyDataTable(term, table, True)
-    
-    For Each row As DataRow In table.Rows
-      row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
-    Next
-    
-    Return table
-  End Function
-  
-  ''' <summary>
   ''' 指定した期間の１週間単位のデータを取得する。
   ''' </summary>
   Private Sub GetWeeklyDataTable(dateTerm As DateTerm, newTable As DataTable, exceptsWorkCountOfZeroWorkTimeIs As Boolean)
@@ -229,21 +199,6 @@ Public NotInheritable Class UserRecord
     For Each t As DateTerm In term.MonthlyTerms(Function(b, e) b.Month & "月")
       table.Rows(idx)(UserRecordColumnsInfo.DATE_COL_NAME) = t.Label
       idx += 1
-    Next
-    
-    Return table
-  End Function
-  
-  ''' <summary>
-  ''' １列目にユーザ名をつけて指定した期間の１ヶ月単位のデータを取得する。
-  ''' </summary>
-  Public Function GetMonthlyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
-    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
-    Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetMonthlyDataTable(term, table, False)
-    
-    For Each row As DataRow In table.Rows
-      row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
     Next
     
     Return table
