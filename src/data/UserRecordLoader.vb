@@ -9,7 +9,7 @@ Imports Common.COM
 Imports Common.IO
 
 Public Class UserRecordLoader
-  Private ReadOnly excel As Excel3
+  Private ReadOnly excel As Excel4
   
   Private ReadOnly userRecordBuffer As UserRecordBuffer 
   Private ReadOnly userRecordReader As UserRecordReader
@@ -20,17 +20,21 @@ Public Class UserRecordLoader
     If properties Is Nothing Then Throw New ArgumentNullException("properties is null")
     If userRecordBuffer Is Nothing Then Throw New ArgumentNullException("userRecordBuffer is null ")
     
-    Me.excel = New Excel3()
+    Me.excel = New Excel4()
     Me.userRecordBuffer = userRecordBuffer
     Me.userRecordReader = New UserRecordReader(properties, Me.excel)
   End Sub
   
   Public Sub Init()
-    'Me.excel.init
+    #If Debug = False Then
+      Me.excel.init
+    #End If
   End Sub
   
   Public Sub Quit()
-    'Me.excel.Quit
+    #If Debug = False Then
+      Me.excel.Quit
+    #End If
   End Sub
   
   Public Sub Wait
