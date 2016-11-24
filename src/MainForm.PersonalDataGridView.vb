@@ -111,7 +111,8 @@ Public Partial Class MainForm
   		Dim userInfo As UserInfo = DirectCast(Me.cboxUserName.SelectedValue, UserInfo)
   		If userInfo IsNot Nothing Then
   		  If month >= 1 AndAlso month <= 12 Then 
-  		    Dim table As DataTable = Me.userRecordManager.GetDailyRecordLabelingDate(userInfo, Me.dateTerm.BeginDate.Year, month)
+  		    Dim table As DataTable =
+  		      Me.userRecordManager.GetDailyRecordLabelingDate(userInfo, Me.dateTerm.BeginDate.Year, month)
 '          Dim totalRow As DataRow = table.NewRow
 '          totalRow(UserRecord.DATE_COL_NAME) = "合計"
 '          For Each row As DataRow In table.Rows
@@ -125,7 +126,7 @@ Public Partial Class MainForm
           SetColor(grid, Me.dateTerm.BeginDate.Year, month)
   		  Else
   		    ' 集計ページを表示する
-  		    Dim table As DataTable = Me.userRecordManager.GetSumRecord(userInfo)
+  		    Dim table As DataTable = Me.userRecordManager.GetSumRecord(userInfo, Me.chkBoxExcludeData.Checked)
   		    grid.DataSource = table
   		    HoldFirstColumn(grid)
   		    SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
