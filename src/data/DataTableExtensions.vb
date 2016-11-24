@@ -2,6 +2,7 @@
 ' 日付: 2016/11/23
 '
 Imports System.Data
+Imports System.Linq
 Imports Common.Extensions
 
 Public Module DataTableExtensions
@@ -39,60 +40,52 @@ Public Module DataTableExtensions
           Throw New ArgumentException("テーブルに存在しない列名です。 / " & timeColName)          
         End If
         
-        table.Rows.Convert(
-          Function(row)
-            If existsTimeCol Then
-              plusDouble(row, sumRow, timeColName)
-            End If
-            Return row
-          End Function
-        )._Where(
-          Function(row) existsCntCol AndAlso (Not existsTimeCol OrElse Not row.IsNull(timeColName) AndAlso DirectCast(row(timeColName), Double) > 0.0)
-        ).ForEach(
-          Function(row) plusInt(row, sumRow, cntColName)
-        )
+        ' 作業件数の合計を求める
+        ' 作業時間が０の場合は合計に含めない
+        If existsCntCol Then
+          Dim sum As Integer =
+            table.Rows.ToEnumerable().
+              Where(Function(row) Not row.IsNull(cntColName)).
+              Where(Function(row) Not existsTimeCol OrElse Not row.IsNull(timeColName) AndAlso row.ToDouble(timeColName) > 0.0).
+              Sum(Function(row) row.ToInt(cntColName))
+          
+          sumRow(cntColName) = sum
+        End If
+        
+        ' 作業時間の合計を求める
+        If existsTimeCol Then
+          Dim sum As Double =
+            table.Rows.ToEnumerable().
+              Where(Function(row) Not row.IsNull(timeColName)).
+              Sum(Function(row) row.ToDouble(timeColName))
+          
+          sumRow(timeColName) = sum
+        End If
       End Sub)    
   End Sub
   
   Private Sub calcTotal(table As DataTable, sumRow As DataRow, colInfo As ColumnInfo)
-    If Not String.IsNullOrEmpty(colInfo.Name) Then
-      If table.Columns.Contains(colInfo.Name) AndAlso sumRow.HasColumn(colInfo.Name) Then
-        If colInfo.type = GetType(Integer) Then
-          table.Rows.ForEach(Sub(row) plusInt(row, sumRow, colInfo.Name))
-        ElseIf colInfo.type = GetType(Double)
-          table.Rows.ForEach(Sub(row) plusDouble(row, sumRow, colInfo.Name))
-        End If
-      Else
-        Throw New ArgumentException("テーブルに存在しない列名です。 / " & colInfo.Name)          
-      End If
-    End If    
+    If String.IsNullOrEmpty(colInfo.name) Then Return    
+    
+    If Not table.Columns.Contains(colInfo.Name) OrElse Not sumRow.HasColumn(colInfo.Name) Then
+      Throw New ArgumentException("テーブルに存在しない列名です。 / " & colInfo.Name)
+    End If
+    
+    If colInfo.type = GetType(Integer) Then
+      Dim sum As Integer = 
+        table.Rows.ToEnumerable().
+          Where(Function(row) Not row.IsNull(colInfo.name)).
+          Sum(Function(row) row.ToInt(colInfo.name))
+      
+      sumRow(colInfo.name) = sum
+    ElseIf colInfo.type = GetType(Double) Then
+      Dim sum As Double = 
+        table.Rows.ToEnumerable().
+          Where(Function(row) Not row.IsNull(colInfo.name)).
+          Sum(Function(row) row.ToDouble(colInfo.name))
+      
+      sumRow(colInfo.name) = sum      
+    End If
   End Sub
   
-  Private Function plusInt(valueRow As DataRow, addedRow As DataRow, colName As String) As Boolean
-    If Not valueRow.IsNull(colName) Then
-      If addedRow.IsNull(colName) Then
-        addedRow(colName) = DirectCast(valueRow(colName), Integer)
-      Else
-        addedRow(colName) = DirectCast(addedRow(colName), Integer) + DirectCast(valueRow(colName), Integer)
-      End If
-      
-      Return True
-    Else
-      Return False
-    End IF
-  End Function
-  
-  Private Function plusDouble(valueRow As DataRow, addedRow As DataRow, colName As String) As Boolean
-    If Not valueRow.IsNull(colName) Then
-      If addedRow.IsNull(colName) Then
-        addedRow(colName) = DirectCast(valueRow(colName), Double)
-      Else
-        addedRow(colName) = DirectCast(addedRow(colName), Double) + DirectCast(valueRow(colName), Double)
-      End If
-      
-      Return True
-    Else
-      Return False
-    End IF
-  End Function
 End Module
