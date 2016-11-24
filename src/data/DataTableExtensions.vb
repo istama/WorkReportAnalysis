@@ -88,4 +88,77 @@ Public Module DataTableExtensions
     End If
   End Sub
   
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Sub Plus(table As DataTable, addedTable As DataTable, columnsInfo As UserRecordColumnsInfo)
+    columnsInfo.WorkItemList.ForEach(
+      Sub(item)
+        Dim cntColName As String = item.WorkCountColInfo.Name
+        Dim timeColName As String = item.WorkTimeColInfo.Name
+        Dim existsCntCol As Boolean = Not String.IsNullOrEmpty(cntColName)
+        Dim existsTimeCol As Boolean = Not String.IsNullOrEmpty(timeColName)
+        
+        If existsCntCol AndAlso (Not table.Columns.Contains(cntColName) OrElse Not addedTable.Columns.Contains(cntColName)) Then
+          Throw New ArgumentException("テーブルに存在しない列名です。 / " & cntColName)          
+        End If
+        
+        If existsTimeCol AndAlso (Not table.Columns.Contains(timeColName) OrElse Not addedTable.Columns.Contains(timeColName)) Then
+          Throw New ArgumentException("テーブルに存在しない列名です。 / " & timeColName)          
+        End If
+        
+        
+        table.Rows.ToEnumerable().ForEach(
+          Sub(row, idx)
+            If idx >= addedTable.Rows.Count Then
+              Return
+            End If
+            
+            Dim addedRow As DataRow = addedTable.Rows(idx)
+            
+            If existsCntCol Then
+              addedRow(cntColName) = addedRow.ToIntOrDefault(cntColName, 0) + row.ToIntOrDefault(cntColName, 0)
+            End If
+            
+            If existsTimeCol Then
+              addedRow(timeColName) = addedRow.ToDoubleOrDefault(timeColName, 0) + row.ToDoubleOrDefault(timeColName, 0)
+            End If
+          End Sub)
+      End Sub)
+  End Sub
+  
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Sub PlusExceptingWorkCountOfZerpWorkTimeIs(table As DataTable, addedTable As DataTable, columnsInfo As UserRecordColumnsInfo)
+    columnsInfo.WorkItemList.ForEach(
+      Sub(item)
+        Dim cntColName As String = item.WorkCountColInfo.Name
+        Dim timeColName As String = item.WorkTimeColInfo.Name
+        Dim existsCntCol As Boolean = Not String.IsNullOrEmpty(cntColName)
+        Dim existsTimeCol As Boolean = Not String.IsNullOrEmpty(timeColName)
+        
+        If existsCntCol AndAlso (Not table.Columns.Contains(cntColName) OrElse Not addedTable.Columns.Contains(cntColName)) Then
+          Throw New ArgumentException("テーブルに存在しない列名です。 / " & cntColName)          
+        End If
+        
+        If existsTimeCol AndAlso (Not table.Columns.Contains(timeColName) OrElse Not addedTable.Columns.Contains(timeColName)) Then
+          Throw New ArgumentException("テーブルに存在しない列名です。 / " & timeColName)          
+        End If
+        
+        
+        table.Rows.ToEnumerable().ForEach(
+          Sub(row, idx)
+            If idx >= addedTable.Rows.Count Then
+              Return
+            End If
+            
+            Dim addedRow As DataRow = addedTable.Rows(idx)
+            
+            If existsCntCol AndAlso (Not existsTimeCol OrElse row.ToDoubleOrDefault(timeColName, 0) > 0) Then
+              addedRow(cntColName) = addedRow.ToIntOrDefault(cntColName, 0) + row.ToIntOrDefault(cntColName, 0)
+            End If
+            
+            If existsTimeCol Then
+              addedRow(timeColName) = addedRow.ToDoubleOrDefault(timeColName, 0) + row.ToDoubleOrDefault(timeColName, 0)
+            End If
+          End Sub)
+      End Sub)    
+  End Sub
 End Module
