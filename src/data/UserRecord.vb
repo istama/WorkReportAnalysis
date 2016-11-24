@@ -152,10 +152,10 @@ Public NotInheritable Class UserRecord
   ''' <summary>
   ''' １列目に日付をつけて指定した期間の１週間単位のデータを取得する。
   ''' </summary>
-  Public Function GetWeeklyDataTableLabelingDate(dateTerm As DateTerm) As DataTable
+  Public Function GetWeeklyDataTableLabelingDate(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
     Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetWeeklyDataTable(term, table)
+    GetWeeklyDataTable(term, table, exceptsWorkCountOfZeroWorkTimeIs)
     
     Dim weekCountInMonth = DateUtils.GetWeekCountInMonth(term.BeginDate, DayOfWeek.Saturday)
     Dim f As Func(Of DateTime, DateTime, String) =
@@ -186,7 +186,7 @@ Public NotInheritable Class UserRecord
   Public Function GetWeeklyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
     Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetWeeklyDataTable(term, table)
+    GetWeeklyDataTable(term, table, True)
     
     For Each row As DataRow In table.Rows
       row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
@@ -198,7 +198,7 @@ Public NotInheritable Class UserRecord
   ''' <summary>
   ''' 指定した期間の１週間単位のデータを取得する。
   ''' </summary>
-  Private Sub GetWeeklyDataTable(dateTerm As DateTerm, newTable As DataTable)
+  Private Sub GetWeeklyDataTable(dateTerm As DateTerm, newTable As DataTable, exceptsWorkCountOfZeroWorkTimeIs As Boolean)
     If newTable Is Nothing Then Throw New ArgumentNullException("newTable is Null") 
     
     dateTerm.WeeklyTerms.ForEach(
@@ -207,7 +207,11 @@ Public NotInheritable Class UserRecord
         GetDailyDataTable(w, tmpTable)
       
         Dim newRow As DataRow = newTable.NewRow
-        tmpTable.Sum(newRow, Me.columnsInfo)
+        If exceptsWorkCountOfZeroWorkTimeIs Then
+          tmpTable.SumExceptWorkCountOfZeroWorkTimeIs(newRow, columnsInfo)          
+        Else
+          tmpTable.Sum(newRow, Me.columnsInfo)  
+        End If
         
         newTable.Rows.Add(newRow)
       ENd Sub)
@@ -216,10 +220,10 @@ Public NotInheritable Class UserRecord
   ''' <summary>
   ''' １列目に日付をつけて指定した期間の１ヶ月単位のデータを取得する。
   ''' </summary>
-  Public Function GetMonthlyDataTableLabelingDate(dateTerm As DateTerm) As DataTable
+  Public Function GetMonthlyDataTableLabelingDate(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
     Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetMonthlyDataTable(term, table)
+    GetMonthlyDataTable(term, table, exceptsWorkCountOfZeroWorkTimeIs)
     
     Dim idx As Integer = 0
     For Each t As DateTerm In term.MonthlyTerms(Function(b, e) b.Month & "月")
@@ -236,7 +240,7 @@ Public NotInheritable Class UserRecord
   Public Function GetMonthlyDataTableLabelingUserName(dateTerm As DateTerm) As DataTable
     Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetMonthlyDataTable(term, table)
+    GetMonthlyDataTable(term, table, False)
     
     For Each row As DataRow In table.Rows
       row(UserRecordColumnsInfo.NAME_COL_NAME) = Me.name
@@ -248,7 +252,7 @@ Public NotInheritable Class UserRecord
   ''' <summary>
   ''' 指定した期間の１ヶ月単位のデータを取得する。
   ''' </summary>
-  Public Sub GetMonthlyDataTable(dateTerm As DateTerm, newTable As DataTable)
+  Public Sub GetMonthlyDataTable(dateTerm As DateTerm, newTable As DataTable, exceptsWorkCountOfZeroWorkTimeIs As Boolean)
     If newTable Is Nothing Then Throw New ArgumentNullException("newTable is Null") 
     
      dateTerm.MonthlyTerms.ForEach(
@@ -257,7 +261,11 @@ Public NotInheritable Class UserRecord
         GetDailyDataTable(m, tmpTable)
       
         Dim newRow As DataRow = newTable.NewRow
-        tmpTable.Sum(newRow, Me.columnsInfo)
+        If exceptsWorkCountOfZeroWorkTimeIs Then
+          tmpTable.SumExceptWorkCountOfZeroWorkTimeIs(newRow, Me.columnsInfo)
+        Else
+          tmpTable.Sum(newRow, Me.columnsInfo)  
+        End If
         
         newTable.Rows.Add(newRow)
       ENd Sub)   
@@ -266,12 +274,16 @@ Public NotInheritable Class UserRecord
   ''' <summary>
   ''' 指定した期間の行の集計を返す。
   ''' </summary>
-  Public Sub GetTotalDataRow(dateTerm As DateTerm, resultRow As DataRow)
+  Public Sub GetTotalDataRow(dateTerm As DateTerm, resultRow As DataRow, exceptsWorkCountOfZeroWorkTimeIs As Boolean)
     Dim table As DataTable = Me.columnsInfo.CreateDataTable(String.Empty)
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
     GetDailyDataTable(term, table)
     
-    table.Sum(resultRow, Me.columnsInfo)
+    If exceptsWorkCountOfZeroWorkTimeIs Then
+      table.SumExceptWorkCountOfZeroWorkTimeIs(resultRow, Me.columnsInfo)
+    Else
+      table.Sum(resultRow, Me.columnsInfo)
+    End If
   End Sub
   
   ''' <summary>
