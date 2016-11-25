@@ -35,8 +35,6 @@ Public Partial Class MainForm
   ' このアプリケーションで取り扱うデータの期間
 	Private dateTerm As DateTerm
 	
-	Private gridViewCellStyles As MyGridViewCellStyles
-	
 	Public Sub New()
 		Me.InitializeComponent()
 		Me.initialized = False
@@ -241,6 +239,15 @@ Public Partial Class MainForm
 		ShowGridView()
 	End Sub
 	
+  ''' <summary>
+  ''' CSV出力ボタンがクリックされた場合に発生するイベント
+  ''' </summary>
+	Sub BtnOutputCsvClick(sender As Object, e As EventArgs)
+	  If initialized = False Then Return
+	  
+	  MsgBox.Show(GetShowingDataName(), "")
+	End Sub
+	
 	''' <summary>
 	''' 閉じるボタンがクリックされた場合に発生するイベント。
 	''' </summary>
@@ -254,5 +261,6 @@ Public Partial Class MainForm
   ''' </summary>
   Sub MainFormClosing(sender As Object, e As System.ComponentModel.CancelEventArgs)
   End Sub
+  
 End Class
 

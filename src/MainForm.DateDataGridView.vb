@@ -101,7 +101,7 @@ Public Partial Class MainForm
 	''' </summary>
 	Function GetShowingDataGridViewInDateDataPage() As DataGridView
 	  Dim tabPage As TabPage = Me.tabInDateTab.SelectedTab
-		Return TabPageUtils.GetDataGridView(tabPage)
+		Return GetDataGridView(tabPage)
 	End Function
 	
 	''' <summary>
@@ -132,7 +132,7 @@ Public Partial Class MainForm
 	    Dim d As DateTime = Me.dateTimePickerInDatePage.Value
 	    Return New DateTerm(d, d, d.Day.ToString & "日")
 	  ElseIf pageName = "週" OrElse pageName = "月"
-	    Dim cbox As ComboBox = TabPageUtils.GetComboBox(tabPage)
+	    Dim cbox As ComboBox = GetComboBox(tabPage)
 			Return DirectCast(cbox.SelectedValue, DateTerm)
 	  Else
 	    Return Me.dateTerm

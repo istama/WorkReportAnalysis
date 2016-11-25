@@ -126,7 +126,7 @@ Public Partial Class MainForm
 	''' </summary>
 	Function GetShowingDataGridViewInPersonalDataPage() As DataGridView
 	  Dim tabPage As TabPage = Me.tabInPersonalTab.SelectedTab
-		Return TabPageUtils.GetDataGridView(tabPage)
+		Return GetDataGridView(tabPage)
 	End Function
 	
 	''' <summary>

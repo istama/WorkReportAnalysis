@@ -71,7 +71,7 @@ Public Partial Class MainForm
 	''' </summary>
 	Function GetShowingDataGridViewInTallyDataPage() As DataGridView
 	  Dim tabPage As TabPage = Me.tabInTallyTab.SelectedTab
-		Return TabPageUtils.GetDataGridView(tabPage)
+		Return GetDataGridView(tabPage)
 	End Function
 	
 	''' <summary>

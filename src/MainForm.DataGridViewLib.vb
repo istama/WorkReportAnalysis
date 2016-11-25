@@ -20,11 +20,11 @@ Public Partial Class MainForm
   Private Function GetShowingGridView() As DataGridView
 		Dim pageName = Me.tabRoot.SelectedTab.Text
 		If pageName = TABPAGE_NAME_PERSONAL Then
-			Return TabPageUtils.GetDataGridView(Me.tabInPersonalTab.SelectedTab)
+			Return Me.GetDataGridView(Me.tabInPersonalTab.SelectedTab)
 		ElseIf pageName = TABPAGE_NAME_DATE
-			Return TabPageUtils.GetDataGridView(Me.tabInDateTab.SelectedTab)
+			Return Me.GetDataGridView(Me.tabInDateTab.SelectedTab)
 		ElseIf pageName = TABPAGE_NAME_TOTAL
-		  Return TabPageUtils.GetDataGridView(Me.tabInTallyTab.SelectedTab)
+		  Return Me.GetDataGridView(Me.tabInTallyTab.SelectedTab)
 		Else
 		  Return Nothing
 		End If		
@@ -139,6 +139,42 @@ Public Partial Class MainForm
 '    
 '    view.Sort = table.Columns(e.ColumnIndex).ColumnName
   End Sub
+  
+	Public Function GetDataGridView(tabPage As TabPage) As DataGridView
+		Dim grid As DataGridView = Nothing
+		For i = 0 To tabPage.Controls.Count
+			grid = TryCast(tabPage.Controls.Item(i), DataGridView)
+			If grid IsNot Nothing Then
+				Exit For
+			End If
+		Next
+		
+		Return grid
+	End Function
+	
+	Public Function GetComboBox(tabPage As TabPage) As ComboBox
+		Dim cbox As ComboBox = Nothing
+		For i = 0 To tabPage.Controls.Count
+			cbox = TryCast(tabPage.Controls.Item(i), ComboBox)
+			If cbox IsNot Nothing Then
+				Exit For
+			End If
+		Next
+		
+		Return cbox		
+	End Function
+	
+	Public Function GetDateTimePicker(tabPage As TabPage) As DateTimePicker
+		Dim dPicker As DateTimePicker = Nothing
+		For i = 0 To tabPage.Controls.Count
+			dPicker = TryCast(tabPage.Controls.Item(i), DateTimePicker)
+			If dPicker IsNot Nothing Then
+				Exit For
+			End If
+		Next
+		
+		Return dPicker		
+	End Function	
 End Class
 
 Public Class DataRowCompare
@@ -223,4 +259,6 @@ Public Class DataRowCompare
     ' 合計を返す
     Return nums.Sum
   End Function
+  
+
 End Class
