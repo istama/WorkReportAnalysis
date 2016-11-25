@@ -9,6 +9,8 @@ Public Class Loader
   Private userRecordManager As UserRecordManager
   Private userRecordLoader As UserRecordLoader
   
+  Private _cancel As Boolean = False
+  
   Public Sub New(userRecordManager As UserRecordManager, userInfoManager As UserInfoManager, properties As ExcelProperties)
     If userRecordManager Is Nothing Then Throw New ArgumentNullException("userREcordManager is null")
     If userInfoManager Is Nothing Then Throw New ArgumentNullException("userInfoManager is null")
@@ -41,6 +43,10 @@ Public Class Loader
     ' 全ユーザのレコードを読み込む
     Me.userInfoManager.UserInfoList.ForEach(
       Sub(ui)
+        If Me._cancel Then
+          Return
+        End If
+        
         Me.userRecordLoader.Load(
           ui,
           Sub(record) observer.ReportProgress(record.GetIdNumber & " " & record.GetName)
@@ -56,6 +62,7 @@ Public Class Loader
   ''' </summary>
   Public Sub Cancel()
     Me.userRecordLoader.Cancel
+    Me._cancel = True
   End Sub
   
 End Class
