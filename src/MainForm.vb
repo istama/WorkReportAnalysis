@@ -25,13 +25,8 @@ Public Partial Class MainForm
 	
 	' ユーザ情報管理オブジェクト
 	Private userInfoManager As UserInfoManager
-	
 	Private userRecordManager As UserRecordManager
 	
-'	Private userFileAccessor As UserFileAccessor
-'	Private userInfoList As List(Of UserInfo)
-'	Private userRecordManager As UserRecordManager
-'	
   ' このアプリケーションで取り扱うデータの期間
 	Private dateTerm As DateTerm
 	
@@ -53,17 +48,7 @@ Public Partial Class MainForm
 	    
 	    LoadExcel()
 	    
-'		  
-'			userFileAccessor  = New UserFileAccessor(properties)
-'			userInfoList      = userFileAccessor.ReadAllUserInfo
-'			
-'			userRecordManager = userFileAccessor.ReadAllUserRecord(userInfoList)
-'			
 			dateTerm = New DateTerm(Me.excelProperties.BeginDate, Me.excelProperties.EndDate)
-'			gridViewCellStyles = New MyGridViewCellStyles(Color.Pink, Color.PaleGreen, Color.LightBlue)
-'			
-'			
-
 
       ' 各コンボボックスの要素を初期化
 			InitTabRoot()
@@ -72,15 +57,12 @@ Public Partial Class MainForm
 			InitDateDataGridView()
 			InitTallyDataGridView()
 
-'			InitCBox()
-'			InitPersonalDataGridView()
-'			
-'			' ウィンドウを最大化する
+			' ウィンドウを最大化する
 			Me.WindowState = FormWindowState.Maximized
-'			
+			
 			Me.initialized = True
-'			
-'			' アプリケーション画面の表示時に一番最初に表示されるユーザレコード
+			
+			' アプリケーション画面の表示時に一番最初に表示されるユーザレコード
 			CboxUserNameSelectedIndexChanged(Me.cboxUserName, New EventArgs)
 		Catch ex As Exception
 			MsgBox.ShowError(ex)
@@ -106,16 +88,6 @@ Public Partial Class MainForm
 		Me.tabRoot.TabPages(1).Text = TABPAGE_NAME_DATE
 		Me.tabRoot.TabPages(2).Text = TABPAGE_NAME_TOTAL
 	End Sub
-	
-	''' <summary>
-	''' 各コンボボックスの要素を初期化する。
-	''' </summary>
-'	Private Sub InitCBox()
-'		'InitCBoxDaily()					' 日付データの日にちのコンボボックスを初期化
-'		'InitCBoxWeekly()				' 日付データの週のコンボボックスを初期化
-'		InitCBoxMonthly()				' 日付データの月のコンボボックスを初期化
-'		InitCBoxTallyMonthly()	' 集計データの月のコンボボックスを初期化
-'	End Sub
 	
 	''' <summary>
 	''' ユーザ名のコンボボックスの要素を初期化する。
@@ -161,15 +133,6 @@ Public Partial Class MainForm
 			cbox.ValueMember   = VALUE	    
     End If
 	End Sub
-	
-
-	
-	''' <summary>
-	''' 集計データの月選択のコンボボックスの要素を初期化する。
-	''' </summary>	
-'	Private Sub InitCBoxTallyMonthly()
-'		InitCBoxMonthly(Me.cboxTallyMonthly)
-'	End Sub
 	
 	''' <summary>
 	''' １番外側のタブページが選択された場合に発生するイベント。
