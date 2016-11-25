@@ -186,7 +186,7 @@ Public Structure WorkItemColumnsInfo
     If params.WorkCountCol <> String.Empty Then
       Me.WorkCountColInfo =
         New ColumnInfo(
-          params.Name & vbCrLf & WORKCOUNT_COL_NAME,
+          params.Name & WORKCOUNT_COL_NAME,
           params.WorkCountCol,
           GetType(Integer))
     Else
@@ -201,7 +201,7 @@ Public Structure WorkItemColumnsInfo
     If params.WorkTimeCol <> String.Empty Then
       Me.WorkTimeColInfo =
         New ColumnInfo(
-          params.Name & vbCrLf & WORKTIME_COL_NAME,
+          params.Name & WORKTIME_COL_NAME,
           params.WorkTimeCol,
           GetType(Double))
     Else
@@ -216,7 +216,7 @@ Public Structure WorkItemColumnsInfo
     If params.WorkCountCol <> String.Empty AndAlso params.WorkTimeCol <> String.Empty Then
       Me.WorkProductivityColInfo =
         New ColumnInfo(
-          params.Name & vbCrLf & WORKPRODUCTIVITY_COL_NAME,
+          params.Name & WORKPRODUCTIVITY_COL_NAME,
           String.Empty,
           GetType(Double))
     Else
