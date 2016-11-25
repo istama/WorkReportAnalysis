@@ -94,14 +94,7 @@ Public Partial Class MainForm
 		Dim pageName As String = tabPage.Text
 		
 		' 現在ページの月を取得する
-		Dim month As Integer = -1
-		For m As Integer = 1 To 12
-		  If pageName = Me.excelProperties.SheetName(m) Then
-		    month = m
-		    Exit For
-		  End If
-		Next
-		
+		Dim month As Integer = GetSelectedPageMonthInPersonalDataPage()
 '		
 '		Dim isDepending As Boolean = Me.chkBoxExcludeData.Checked
 '		
@@ -161,6 +154,23 @@ Public Partial Class MainForm
 '		' セルの幅、高さを自動調整
 '		MyGridViewCellStyles.AutoResizeAllCell(grid)
 	End Sub
+	
+	''' <summary>
+	''' 現在選択されているページの月を取得する。
+	''' 月データのページでない場合は-1を返す。
+	''' </summary>
+	Private Function GetSelectedPageMonthInPersonalDataPage() As Integer
+		Dim tabPage As TabPage = Me.tabInPersonalTab.SelectedTab
+		
+		' 現在ページの月を取得する
+		Dim currentTerm As DateTerm = Nothing
+		Dim month As Integer = -1
+		If Me.pageNameAndTermDictionary.TryGetValue(tabPage.Text, currentTerm) Then
+		  month = currentTerm.BeginDate.Month
+		End If
+		
+		Return month
+	End Function
 	
 	Private Sub DataGridView_ColumnHeaderMouseClick(sender As Object, e As EventArgs)
 '		Dim grid As DataGridView = DirectCast(sender, DataGridView)
