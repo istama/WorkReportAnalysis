@@ -28,57 +28,56 @@ Partial Class ProgressBarForm
 	''' not be able to load this method if it was changed manually.
 	''' </summary>
 	Private Sub InitializeComponent()
-		Me.pBar = New System.Windows.Forms.ProgressBar()
-		Me.btnCancel = New System.Windows.Forms.Button()
-		Me.lblMsg = New System.Windows.Forms.Label()
-		Me.backgroundWorker1 = New System.ComponentModel.BackgroundWorker()
-		Me.SuspendLayout
-		'
-		'pBar
-		'
-		Me.pBar.Location = New System.Drawing.Point(13, 29)
-		Me.pBar.Name = "pBar"
-		Me.pBar.Size = New System.Drawing.Size(259, 23)
-		Me.pBar.TabIndex = 0
-		'
-		'btnCancel
-		'
-		Me.btnCancel.Location = New System.Drawing.Point(197, 58)
-		Me.btnCancel.Name = "btnCancel"
-		Me.btnCancel.Size = New System.Drawing.Size(75, 23)
-		Me.btnCancel.TabIndex = 1
-		Me.btnCancel.Text = "キャンセル"
-		Me.btnCancel.UseVisualStyleBackColor = true
-		AddHandler Me.btnCancel.Click, AddressOf Me.BtnCancelClick
-		'
-		'lblMsg
-		'
-		Me.lblMsg.AutoSize = true
-		Me.lblMsg.Location = New System.Drawing.Point(13, 9)
-		Me.lblMsg.Name = "lblMsg"
-		Me.lblMsg.Size = New System.Drawing.Size(35, 12)
-		Me.lblMsg.TabIndex = 2
-		Me.lblMsg.Text = "label1"
-		'
-		'backgroundWorker1
-		'
-		AddHandler Me.backgroundWorker1.DoWork, AddressOf Me.BackgroundWorker1DoWork
-		AddHandler Me.backgroundWorker1.RunWorkerCompleted, AddressOf Me.BackgroundWorker1RunWorkerCompleted
-		'
-		'ProgressBarForm
-		'
-		Me.AutoScaleDimensions = New System.Drawing.SizeF(6!, 12!)
-		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.ClientSize = New System.Drawing.Size(284, 90)
-		Me.Controls.Add(Me.lblMsg)
-		Me.Controls.Add(Me.btnCancel)
-		Me.Controls.Add(Me.pBar)
-		Me.MaximizeBox = false
-		Me.Name = "ProgressBarForm"
-		Me.Text = "読み込み中..."
-		AddHandler Load, AddressOf Me.ProgressBarFormLoad
-		Me.ResumeLayout(false)
-		Me.PerformLayout
+	  Me.pBar = New System.Windows.Forms.ProgressBar()
+	  Me.btnCancel = New System.Windows.Forms.Button()
+	  Me.lblMsg = New System.Windows.Forms.Label()
+	  Me.backgroundWorker1 = New System.ComponentModel.BackgroundWorker()
+	  Me.SuspendLayout
+	  '
+	  'pBar
+	  '
+	  Me.pBar.Location = New System.Drawing.Point(13, 29)
+	  Me.pBar.Name = "pBar"
+	  Me.pBar.Size = New System.Drawing.Size(259, 23)
+	  Me.pBar.TabIndex = 0
+	  '
+	  'btnCancel
+	  '
+	  Me.btnCancel.Location = New System.Drawing.Point(197, 58)
+	  Me.btnCancel.Name = "btnCancel"
+	  Me.btnCancel.Size = New System.Drawing.Size(75, 23)
+	  Me.btnCancel.TabIndex = 1
+	  Me.btnCancel.Text = "キャンセル"
+	  Me.btnCancel.UseVisualStyleBackColor = true
+	  AddHandler Me.btnCancel.Click, AddressOf Me.BtnCancelClick
+	  '
+	  'lblMsg
+	  '
+	  Me.lblMsg.AutoSize = true
+	  Me.lblMsg.Location = New System.Drawing.Point(13, 9)
+	  Me.lblMsg.Name = "lblMsg"
+	  Me.lblMsg.Size = New System.Drawing.Size(0, 12)
+	  Me.lblMsg.TabIndex = 2
+	  '
+	  'backgroundWorker1
+	  '
+	  AddHandler Me.backgroundWorker1.DoWork, AddressOf Me.BackgroundWorker1DoWork
+	  AddHandler Me.backgroundWorker1.RunWorkerCompleted, AddressOf Me.BackgroundWorker1RunWorkerCompleted
+	  '
+	  'ProgressBarForm
+	  '
+	  Me.AutoScaleDimensions = New System.Drawing.SizeF(6!, 12!)
+	  Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+	  Me.ClientSize = New System.Drawing.Size(284, 90)
+	  Me.Controls.Add(Me.lblMsg)
+	  Me.Controls.Add(Me.btnCancel)
+	  Me.Controls.Add(Me.pBar)
+	  Me.MaximizeBox = false
+	  Me.Name = "ProgressBarForm"
+	  Me.Text = "読み込み中..."
+	  AddHandler Load, AddressOf Me.ProgressBarFormLoad
+	  Me.ResumeLayout(false)
+	  Me.PerformLayout
 	End Sub
 	Private backgroundWorker1 As System.ComponentModel.BackgroundWorker
 	Private lblMsg As System.Windows.Forms.Label
