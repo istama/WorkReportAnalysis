@@ -89,10 +89,9 @@ Public Partial Class MainForm
 	''' 指定したページのGridViewを表示する。
 	''' </summary>
 	Private Sub ShowPersonalDataGridView()
-		Dim tabPage As TabPage = Me.tabInPersonalTab.SelectedTab
-		Dim grid As DataGridView = TabPageUtils.GetDataGridView(tabPage)
-		Dim pageName As String = tabPage.Text
-		
+    ' 現在ページのDataGridViewを取得する。
+    Dim grid As DataGridView = GetShowingDataGridViewInPersonalDataPage()
+
 		' 現在ページの月を取得する
 		Dim month As Integer = GetSelectedPageMonthInPersonalDataPage()
 '		
@@ -154,6 +153,14 @@ Public Partial Class MainForm
 '		' セルの幅、高さを自動調整
 '		MyGridViewCellStyles.AutoResizeAllCell(grid)
 	End Sub
+	
+	''' <summary>
+	''' 現在表示されているページのDataGridViewを返す。
+	''' </summary>
+	Function GetShowingDataGridViewInPersonalDataPage() As DataGridView
+	  Dim tabPage As TabPage = Me.tabInPersonalTab.SelectedTab
+		Return TabPageUtils.GetDataGridView(tabPage)
+	End Function
 	
 	''' <summary>
 	''' 現在選択されているページの月を取得する。
