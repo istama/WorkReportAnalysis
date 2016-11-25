@@ -35,6 +35,9 @@ Public Partial Class MainForm
   ' このアプリケーションで取り扱うデータの期間
 	Private dateTerm As DateTerm
 	
+	' ファイル保存ダイアログ
+	Private saveFileDialog As New MySaveFileDialog
+	
 	Public Sub New()
 		Me.InitializeComponent()
 		Me.initialized = False
@@ -245,7 +248,25 @@ Public Partial Class MainForm
 	Sub BtnOutputCsvClick(sender As Object, e As EventArgs)
 	  If initialized = False Then Return
 	  
-	  MsgBox.Show(GetShowingDataName(), "")
+	  ' 現在表示されているDataGridViewを取得する
+	  Dim grid As DataGridView = GetShowingDataGridView()
+	  If grid IsNot Nothing Then
+	    Dim table As DataTable = DirectCast(grid.DataSource, DataTable)
+	    
+	    ' 現在表示されているデータの名前を取得する
+	    Dim fileName As String         = GetShowingDataName() & ".csv"
+	    ' 保存ダイアログを開き、OKが押されたら出力ストリームを取得する
+	    Dim stream   As SaveFileStream = Me.saveFileDialog.Save(fileName)
+	    If stream IsNot Nothing Then
+	      Try
+	        ' DataTableをCSVに変換してファイルに出力する
+	        stream.Open()
+	        table.ToCSV().ForEach(Sub(csv) stream.Write(csv))
+	      Finally
+	        stream.Close()
+	      End Try
+	    End If
+  	End If
 	End Sub
 	
 	''' <summary>
