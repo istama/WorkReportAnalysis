@@ -84,22 +84,23 @@ Public Partial Class MainForm
 '			Return
 '		End If
 '		
-		Dim term As New DateTerm(#01/01/1900#, #01/01/1900#)
-		If tabPage.Text = "日" Then
-			Dim datePicker As DateTimePicker = TabPageUtils.GetDateTimePicker(tabPage)
-			If datePicker IsNot Nothing Then 
-				term = New DateTerm(datePicker.Value, datePicker.Value, datePicker.Value.Day.ToString & "日")
-			End If
-			
-			Log.out("picked date: " & term.ToString)
-		ElseIf tabPage.Text = "週" OrElse tabPage.Text = "月"
-			Dim cbox As ComboBox = TabPageUtils.GetComboBox(tabPage)
-			If cbox IsNot Nothing Then
-				term = DirectCast(cbox.SelectedValue, DateTerm)
-			End If
-		ElseIf tabPage.Text = "合計"
-			term = Me.dateTerm
-		End If		
+    Dim term As DateTerm = GetShowingDataDateTerm()
+'		Dim term As New DateTerm(#01/01/1900#, #01/01/1900#)
+'		If tabPage.Text = "日" Then
+'			Dim datePicker As DateTimePicker = TabPageUtils.GetDateTimePicker(tabPage)
+'			If datePicker IsNot Nothing Then 
+'				term = New DateTerm(datePicker.Value, datePicker.Value, datePicker.Value.Day.ToString & "日")
+'			End If
+'			
+'			Log.out("picked date: " & term.ToString)
+'		ElseIf tabPage.Text = "週" OrElse tabPage.Text = "月"
+'			Dim cbox As ComboBox = TabPageUtils.GetComboBox(tabPage)
+'			If cbox IsNot Nothing Then
+'				term = DirectCast(cbox.SelectedValue, DateTerm)
+'			End If
+'		ElseIf tabPage.Text = "合計"
+'			term = Me.dateTerm
+'		End If		
 		
 		Try
   		Dim grid As DataGridView = GetShowingDataGridViewInDateDataPage()
@@ -146,6 +147,41 @@ Public Partial Class MainForm
 	Function GetShowingDataGridViewInDateDataPage() As DataGridView
 	  Dim tabPage As TabPage = Me.tabInDateTab.SelectedTab
 		Return TabPageUtils.GetDataGridView(tabPage)
+	End Function
+	
+	''' <summary>
+	''' 現在表示されているデータの名前を取得する
+	''' </summary>
+	''' <returns></returns>
+	Function GetShowingDataNameInDateDataPage() As String
+	  Dim term As DateTerm = GetShowingDataDateTerm()
+	  
+	  Dim pageName As String = Me.tabInDateTab.SelectedTab.Text
+	  If pageName = "日" Then
+	    Dim d As DateTime = term.BeginDate
+	    Return "日付データ_" & d.ToString("yyMMdd")
+	  ElseIf pageName = "週" OrElse pageName = "月"
+	    Return "日付データ_" & term.Label
+	  Else
+	    Return "各ユーザ合計"	    
+	  End If
+	End Function
+	
+	''' <summary>
+	''' 現在表示されているデータの期間を取得する。
+	''' </summary>
+	Private Function GetShowingDataDateTerm() As DateTerm
+	  Dim tabPage As TabPage = Me.tabInDateTab.SelectedTab
+	  Dim pageName As String = tabPage.Text
+	  If pageName = "日" Then
+	    Dim d As DateTime = Me.dateTimePickerInDatePage.Value
+	    Return New DateTerm(d, d, d.Day.ToString & "日")
+	  ElseIf pageName = "週" OrElse pageName = "月"
+	    Dim cbox As ComboBox = TabPageUtils.GetComboBox(tabPage)
+			Return DirectCast(cbox.SelectedValue, DateTerm)
+	  Else
+	    Return Me.dateTerm
+	  End If	  
 	End Function
 	
 	''' <summary>
