@@ -15,6 +15,38 @@ Public Partial Class MainForm
   Private ReadOnly TOTAL_ROW_COLOR   As Color = Color.LightGreen
   
   ''' <summary>
+  ''' 現在表示されているDataGridViewを取得する。
+  ''' </summary>
+  Private Function GetShowingGridView() As DataGridView
+		Dim pageName = Me.tabRoot.SelectedTab.Text
+		If pageName = TABPAGE_NAME_PERSONAL Then
+			Return TabPageUtils.GetDataGridView(Me.tabInPersonalTab.SelectedTab)
+		ElseIf pageName = TABPAGE_NAME_DATE
+			Return TabPageUtils.GetDataGridView(Me.tabInDateTab.SelectedTab)
+		ElseIf pageName = TABPAGE_NAME_TOTAL
+		  Return TabPageUtils.GetDataGridView(Me.tabInTallyTab.SelectedTab)
+		Else
+		  Return Nothing
+		End If		
+  End Function
+  
+  ''' <summary>
+  ''' 現在表示されているDataGridViewを取得する。
+  ''' </summary>
+  Function GetShowingDataName() As String
+		Dim pageName = Me.tabRoot.SelectedTab.Text
+		If pageName = TABPAGE_NAME_PERSONAL Then
+			Return GetShowingDataNameInPersonalDataPage()
+		ElseIf pageName = TABPAGE_NAME_DATE
+			Return GetShowingDataNameInDateDataPage()
+		ElseIf pageName = TABPAGE_NAME_TOTAL
+		  Return GetShowingDataNameInTallyDatePage()
+		Else
+		  Return Nothing
+		End If		
+  End Function
+  
+  ''' <summary>
   ''' 最初の列を横スクロール時に移動しないよう固定する。
   ''' </summary>
   Public Sub HoldFirstColumn(view As DataGridView)
