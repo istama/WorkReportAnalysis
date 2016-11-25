@@ -12,14 +12,12 @@ Imports Common.IO
 ''' ユーザのExcelデータを読み込むクラス。
 ''' </summary>
 Public Class UserRecordReader
-
-  
   Private ReadOnly properties As ExcelProperties  
   Private ReadOnly excel As ExcelReaderByColumnTree
   
   Private _cancel As Boolean = False
   
-  Public Sub New(properties As ExcelProperties, excel As Excel3)
+  Public Sub New(properties As ExcelProperties, excel As Excel4)
     If properties Is Nothing Then Throw New ArgumentNullException("properties is null")
     If excel      Is Nothing Then Throw New ArgumentNullException("excel is null")
     
@@ -90,71 +88,4 @@ Public Class UserRecordReader
       Me.excel.Close(filepath)
     End Try
   End Sub
-  
-'  ''' <summary>
-'  ''' Excelプロパティの列設定から木構造の列コレクションを作成する。
-'  ''' </summary>
-'  Private Function CreateColumnNodeTree(properties As ExcelProperties) As ExcelColumnNode
-'    Dim rootNode As New ExcelColumnNode(properties.WorkDayCol(), WORKDAY_COL_NAME, True)
-'    
-'    ' 各作業項目の列ノードを追加する
-'    Dim idx As Integer = 1
-'    While True
-'      Dim param As ExcelProperties.WorkItemParams = properties.GetWorkItemParams(idx)
-'      If param.Name = String.Empty Then
-'        Exit While
-'      End If
-'      
-'      Dim cntColNode As Nullable(Of ExcelColumnNode)
-'      If param.WorkCountCol <> String.Empty Then
-'        cntColNode = New ExcelColumnNode(param.WorkCountCol, param.Name & WORKCOUNT_COL_NAME)
-'        rootNode.AddChild(cntColNode.Value)
-'      End If
-'      
-'      If param.WorkTimeCol <> String.Empty Then
-'        Dim timeColNode As New ExcelColumnNode(param.WorkTimeCol, param.Name & WORKTIME_COL_NAME)
-'        If cntColNode.HasValue Then
-'          cntColNode.Value.AddChild(timeColNode)
-'        Else
-'          rootNode.AddChild(timeColNode)          
-'        End If
-'      End If
-'      
-'      idx += 1
-'    End While
-'    
-'    ' 備考の列ノードを追加する
-'    rootNode.AddChild(New ExcelColumnNode(properties.NoteCol, properties.NoteName))
-'    
-'    Return rootNode
-'  End Function
-  
-'  ''' <summary>
-'  ''' 指定したExcelの列のコレクションからデータテーブルを定義し作成する。
-'  ''' 列コレクションの各列に列名がついている必要がある。
-'  ''' </summary>
-'  ''' <param name="columnNodes"></param>
-'  ''' <returns></returns>
-'  Private Function CreateDataTable(columnNodes As List(Of ExcelColumnNode)) As DataTable
-'    Dim table As New DataTable
-'    AddColumnsToTable(columnNodes, table)
-'    
-'    Return table
-'  End Function
-'  
-'  Private Sub AddColumnsToTable(nodes As List(Of ExcelColumnNode), table As DataTable)
-'    nodes.ForEach(
-'      Sub(n)
-'        table.Columns.Add(CreateColumn(n.GetName))
-'        AddColumnsToTable(n.GetChilds, table)
-'      End Sub)
-'  End Sub
-'  
-'  Public Function CreateColumn(name As String) As DataColumn
-'    Dim col As New DataColumn
-'    col.ColumnName = name
-'    col.AutoIncrement = False
-'		
-'		Return col
-'	End FUnction
 End Class
