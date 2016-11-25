@@ -76,7 +76,6 @@ Public Partial Class MainForm
 	''' 指定したページのGridViewを表示する。
 	''' </summary>
 	Private Sub ShowDateDataGridView()
-		Dim tabPage As TabPage = Me.tabInDateTab.SelectedTab
     Dim term As DateTerm = GetShowingDataDateTerm()
 		
 		Try
