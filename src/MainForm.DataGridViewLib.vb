@@ -17,7 +17,7 @@ Public Partial Class MainForm
   ''' <summary>
   ''' 現在表示されているDataGridViewを取得する。
   ''' </summary>
-  Private Function GetShowingGridView() As DataGridView
+  Function GetShowingDataGridView() As DataGridView
 		Dim pageName = Me.tabRoot.SelectedTab.Text
 		If pageName = TABPAGE_NAME_PERSONAL Then
 			Return Me.GetDataGridView(Me.tabInPersonalTab.SelectedTab)
@@ -134,10 +134,6 @@ Public Partial Class MainForm
     
     list.Sort(New DataRowCompare(table, e.ColumnIndex, True))
     grid.DataSource = list.CopyToDataTable()
-    
-'    Dim view As DataView = table.DefaultView
-'    
-'    view.Sort = table.Columns(e.ColumnIndex).ColumnName
   End Sub
   
 	Public Function GetDataGridView(tabPage As TabPage) As DataGridView
@@ -259,6 +255,4 @@ Public Class DataRowCompare
     ' 合計を返す
     Return nums.Sum
   End Function
-  
-
 End Class
