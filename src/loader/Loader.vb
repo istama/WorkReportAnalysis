@@ -47,9 +47,7 @@ Public Class Loader
         )
       End Sub)
     
-    'Log.out("Loader: wait")
     Me.userRecordLoader.Wait
-    'Log.out("Loader: end")
     Me.userRecordLoader.Quit
   End Sub
   
