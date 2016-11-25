@@ -35,7 +35,9 @@ Public Partial Class MainForm
 	Public Sub ShowTallyDataGridView()
 		Dim tabPage As TabPage = Me.tabInTallyTab.SelectedTab
 		Dim pageName As String = tabPage.Text
-		Dim grid As DataGridView = TabPageUtils.GetDataGridView(tabPage)
+		'Dim grid As DataGridView = TabPageUtils.GetDataGridView(tabPage)
+		
+		Dim grid As DataGridView = GetShowingDataGridViewInTallyDataPage()
 		
 '		Dim userDataList As List(Of UserData) = Me.userRecordManager.UserDataList
 '		Dim newTable As DataTable = userDataList(0).Record.CreateTable
@@ -89,6 +91,14 @@ Public Partial Class MainForm
 '		' セルの幅、高さを自動調整
 '		MyGridViewCellStyles.AutoResizeAllCell(grid)
 	End Sub
+		
+	''' <summary>
+	''' 現在表示されているページのDataGridViewを返す。
+	''' </summary>
+	Function GetShowingDataGridViewInTallyDataPage() As DataGridView
+	  Dim tabPage As TabPage = Me.tabInTallyTab.SelectedTab
+		Return TabPageUtils.GetDataGridView(tabPage)
+	End Function
 	
 	Private Sub LoadTallyTable()'(termList As List(Of DateTerm), userDataList As List(Of UserData), resultTable As DataTable, isDependent As Boolean)
 '		If termList     Is Nothing Then Throw New ArgumentNullException("termList is null")
