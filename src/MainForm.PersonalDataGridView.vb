@@ -91,13 +91,10 @@ Public Partial Class MainForm
 	Private Sub ShowPersonalDataGridView()
     ' 現在ページのDataGridViewを取得する。
     Dim grid As DataGridView = GetShowingDataGridViewInPersonalDataPage()
-
 		' 現在ページの月を取得する
 		Dim month As Integer = GetSelectedPageMonthInPersonalDataPage()
-'		
-'		Dim isDepending As Boolean = Me.chkBoxExcludeData.Checked
-'		
-    Try
+		
+		Try
   		' ComboBox.DataSourceで要素を格納した場合は、ComboBox.SelectedItemではなく、
   		' ComboBox.SelectedValueで値を取得する。
   		Dim userInfo As UserInfo = GetSelectedUserInfo()
@@ -105,12 +102,6 @@ Public Partial Class MainForm
   		  If month >= 1 AndAlso month <= 12 Then 
   		    Dim table As DataTable =
   		      Me.userRecordManager.GetDailyRecordLabelingDate(userInfo, Me.dateTerm.BeginDate.Year, month)
-'          Dim totalRow As DataRow = table.NewRow
-'          totalRow(UserRecord.DATE_COL_NAME) = "合計"
-'          For Each row As DataRow In table.Rows
-'            totalRow.PlusByDouble(row)
-'          Next
-'          table.Rows.Add(totalRow)
           
           grid.DataSource = table
           HoldFirstColumn(grid)
@@ -128,30 +119,6 @@ Public Partial Class MainForm
     Catch ex As Exception
       MsgBox.ShowError(ex)
     End Try
-		
-		
-'		Dim record As UserRecord = Me.userRecordManager.GetUserRecord(userInfo)
-'		Dim gridTable As GridTable = New GridTable(record, Me.dateTerm)
-'		
-'		If record.HasTable(pageName) Then
-'			' 月のレコードを表示する
-'			grid.DataSource = gridTable.GetMonthlyTable(pageName, isDepending)
-'			Dim lastRow As Integer = Me.gridViewCellStyles.SetDailyStyle(grid, 0, Me.pageNameAndTermDictionary(pageName))
-'			Me.gridViewCellStyles.SetMonthlyTotalStyle(grid, lastRow + 1, "合計")
-'		ElseIf pageName = PAGE_NAME_TOTAL
-'			' 集計レコードを表示する
-'			grid.DataSource = gridTable.GetTotalTable(isDepending)
-'			Dim lastRow As Integer = Me.gridViewCellStyles.SetWeeklyStyle(grid, 0, Me.dateTerm)
-'			lastRow = Me.gridViewCellStyles.SetMonthlyStyle(grid, lastRow + 2, Me.dateTerm)
-'			Me.gridViewCellStyles.SetAllTotalStyle(grid, lastRow + 2, "合計")
-'		Else
-'			Return
-'		End If
-'		'grid.Columns(0).SortMode = DataGridViewColumnSortMode.Automatic
-'		AddHandler grid.ColumnHeaderMouseClick, AddressOf DataGridView_ColumnHeaderMouseClick
-'		'AddHandler grid.SortCompare, AddressOf DataGridView1_SortCompare
-'		' セルの幅、高さを自動調整
-'		MyGridViewCellStyles.AutoResizeAllCell(grid)
 	End Sub
 	
 	''' <summary>
@@ -204,89 +171,4 @@ Public Partial Class MainForm
 	  Return DirectCast(Me.cboxUserName.SelectedValue, UserInfo)
 	End Function
 	
-	Private Sub DataGridView_ColumnHeaderMouseClick(sender As Object, e As EventArgs)
-'		Dim grid As DataGridView = DirectCast(sender, DataGridView)
-'		Dim args As DataGridViewCellMouseEventArgs = DirectCast(e, DataGridViewCellMouseEventArgs)
-'		
-'		Dim dt As DataTable = CType(grid.DataSource, DataTable)
-'		
-'		'DataViewを取得
-'		Dim dv As DataView = dt.DefaultView
-'		Dim colName As String = grid.Columns(args.ColumnIndex).Name
-'		
-'		dv.Sort = colName & " ASC"
-	End Sub
-	
-'	Private Sub DataGridView1_SortCompare(sender As Object, e As EventArgs)
-'		'Handles DataGridView1.SortCompare
-'		Dim args As DataGridViewSortCompareEventArgs = DirectCast(e, DataGridViewSortCompareEventArgs)
-'		
-'    '指定されたセルの値を文字列として取得する
-'    Dim v1 As Double = 0.0
-'    If args.CellValue1 IsNot Nothing Then
-'			Double.TryParse(args.CellValue1.ToString, v1) 
-'    End If
-'    
-'    Dim v2 As Double = 0.0
-'    If args.CellValue2 IsNot Nothing Then
-'    	Double.TryParse(args.CellValue2.ToString, v2)
-'    End If
-'
-'    '結果を代入
-'    args.SortResult = CType(v1 - v2, Integer)
-'    '処理したことを知らせる
-'    args.Handled = True
-'	End Sub
 End Class
-
-'Public Class CustomComparer
-'	Implements IComparer
-'	Private colIdx As Integer
-'	Private order As SortOrder
-'	'Private comparer As Comparer
-'	
-'	Public Sub New(ByVal order As SortOrder, colIdx As Integer)
-'		Me.order = order
-'		Me.colIdx = colIdx
-'		'Me.comparer = New Comparer(System.Globalization.CultureInfo.CurrentCulture)
-'	End Sub
-'	
-'	'並び替え方を定義する
-'	Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer _
-'		Implements System.Collections.IComparer.Compare
-'		
-'		Dim rowx As DataGridViewRow = CType(x, DataGridViewRow)
-'		Dim rowy As DataGridViewRow = CType(y, DataGridViewRow)
-'		
-'		Dim v1 As Double = 0.0
-'		If rowx.Cells(Me.colIdx).Value IsNot Nothing Then
-'			Double.TryParse(rowx.Cells(Me.colIdx).Value.ToString, v1)
-'		End If
-'		
-'		Dim v2 As Double = 0.0
-'		If rowy.Cells(Me.colIdx).Value IsNot Nothing Then
-'			Double.TryParse(rowy.Cells(Me.colIdx).Value.ToString, v2)
-'		End If		
-'		
-'		Dim result As Integer
-'		
-'		If v1 <> 0.0 Then
-'			If v2 <> 0.0 Then
-'				result = DirectCast(IIf(v1 < v2, -1, IIf(v1 = v2, 0, 1)), Integer)
-'				' 降順の場合
-'				If order = SortOrder.Descending Then
-'					result *= -1
-'				End If
-'			Else
-'				result = -1
-'			End If
-'		ElseIf v2 <> 0.0
-'			result = 1
-'		Else
-'			result = -1
-'		End If
-'		
-'		'結果を返す
-'		Return result
-'	End Function
-'End Class
