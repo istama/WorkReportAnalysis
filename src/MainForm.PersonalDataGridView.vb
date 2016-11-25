@@ -144,7 +144,7 @@ Public Partial Class MainForm
 	    pageName = PAGE_NAME_TOTAL
 	  End If
 	  
-	  Return userInfo.GetSimpleId & userInfo.GetName & "_" & pageName
+	  Return "個人データ_" & userInfo.GetSimpleId & "_" & userInfo.GetName & "_" & pageName
 	End Function
 	
 	''' <summary>
