@@ -70,6 +70,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="src\data\DataTableExtensions.vb" />
     <Compile Include="src\data\UserRecordBuffer.vb" />
     <Compile Include="src\data\UserRecordColumnsInfo.vb" />
     <Compile Include="src\data\UserRecordLoader.vb" />
@@ -77,9 +78,6 @@
     <Compile Include="src\data\UserRecord.vb" />
     <Compile Include="src\data\UserRecordReader.vb" />
     <Compile Include="src\ExcelProperties.vb" />
-    <Compile Include="src\gridview\GridTable.vb" />
-    <Compile Include="src\gridview\GridViewCellStyles.vb" />
-    <Compile Include="src\gridview\TabPageUtils.vb" />
     <Compile Include="src\loader\Loader.vb" />
     <Compile Include="src\loader\ProgressBarForm.Designer.vb">
       <DependentUpon>ProgressBarForm.vb</DependentUpon>
@@ -104,15 +102,8 @@
     <Compile Include="src\MainForm.vb" />
     <Compile Include="src\MsgBox.vb" />
     <Compile Include="src\MyProperties.vb" />
+    <Compile Include="src\MySaveFileDialog.vb" />
     <Compile Include="src\Program.vb" />
-    <Compile Include="src\_unneed\DateTerm.vb" />
-    <Compile Include="src\_unneed\_ColumnNode.vb" />
-    <Compile Include="src\_unneed\_ExcelReader.vb" />
-    <Compile Include="src\_unneed\_Loader.vb" />
-    <Compile Include="src\_unneed\_UserFileAccessor.vb" />
-    <Compile Include="src\_unneed\_UserRecord.vb" />
-    <Compile Include="src\_unneed\_UserRecordManager.vb" />
-    <Compile Include="src\_unneed\_UserRecordReader.vb" />
     <Compile Include="test\data\TestColumnNode.vb" />
     <Compile Include="test\data\TestExcelReader.vb" />
     <Compile Include="test\data\TestLoader.vb" />
@@ -121,6 +112,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="bin\Debug\application.properties" />
+    <None Include="bin\Debug\excel.properties" />
     <None Include="bin\Debug\userinfo.txt" />
     <None Include="bin\Release\excel.properties" />
     <None Include="bin\Release\userinfo.txt" />
@@ -136,9 +129,7 @@
     <Folder Include="bin\Release" />
     <Folder Include="src" />
     <Folder Include="src\data" />
-    <Folder Include="src\gridview" />
     <Folder Include="src\loader" />
-    <Folder Include="src\_unneed" />
     <Folder Include="test" />
     <Folder Include="test\data" />
   </ItemGroup>
