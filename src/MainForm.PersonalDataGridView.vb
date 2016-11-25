@@ -100,7 +100,7 @@ Public Partial Class MainForm
     Try
   		' ComboBox.DataSourceで要素を格納した場合は、ComboBox.SelectedItemではなく、
   		' ComboBox.SelectedValueで値を取得する。
-  		Dim userInfo As UserInfo = DirectCast(Me.cboxUserName.SelectedValue, UserInfo)
+  		Dim userInfo As UserInfo = GetSelectedUserInfo()
   		If userInfo IsNot Nothing Then
   		  If month >= 1 AndAlso month <= 12 Then 
   		    Dim table As DataTable =
@@ -163,6 +163,24 @@ Public Partial Class MainForm
 	End Function
 	
 	''' <summary>
+	''' 現在表示されているデータの名前を取得する
+	''' </summary>
+	''' <returns></returns>
+	Function GetShowingDataNameInPersonalDataPage() As String
+	  Dim userInfo As UserInfo = GetSelectedUserInfo()
+	  Dim month As Integer = GetSelectedPageMonthInPersonalDataPage()
+	  
+    Dim pageName As String
+	  If month > 0 Then
+	    pageName = Me.excelProperties.SheetName(month)
+	  Else
+	    pageName = PAGE_NAME_TOTAL
+	  End If
+	  
+	  Return userInfo.GetSimpleId & userInfo.GetName & "_" & pageName
+	End Function
+	
+	''' <summary>
 	''' 現在選択されているページの月を取得する。
 	''' 月データのページでない場合は-1を返す。
 	''' </summary>
@@ -177,6 +195,13 @@ Public Partial Class MainForm
 		End If
 		
 		Return month
+	End Function
+	
+	''' <summary>
+	''' 現在選択されているユーザ情報を取得する。
+	''' </summary>
+	Private Function GetSelectedUserInfo() As UserInfo
+	  Return DirectCast(Me.cboxUserName.SelectedValue, UserInfo)
 	End Function
 	
 	Private Sub DataGridView_ColumnHeaderMouseClick(sender As Object, e As EventArgs)
