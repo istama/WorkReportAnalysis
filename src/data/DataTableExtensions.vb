@@ -161,4 +161,29 @@ Public Module DataTableExtensions
           End Sub)
       End Sub)    
   End Sub
+  
+  ''' <summary>
+  ''' CSVに変換する。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Iterator Function ToCSV(table As DataTable) As IEnumerable(Of String)
+    Dim colNames = table.Columns.ToEnumerable().Select(Function(col) col.ColumnName)
+    
+    ' 列名のCSVを作成
+    Yield String.Join(","c, colNames)
+    
+    ' 各行の値のCSVを作成
+    For Each row As DataRow In table.Rows
+      Dim values = 
+        colNames.Select(
+          Function(name)
+            If row.IsNull(name) Then
+              Return String.Empty
+            Else
+              Return row(name).ToString
+            End If
+          End Function)
+      Yield String.Join(","c, values)
+    Next
+  End Function
 End Module
