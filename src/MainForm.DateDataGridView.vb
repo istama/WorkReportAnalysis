@@ -102,7 +102,7 @@ Public Partial Class MainForm
 		End If		
 		
 		Try
-  		Dim grid As DataGridView = TabPageUtils.GetDataGridView(tabPage)
+  		Dim grid As DataGridView = GetShowingDataGridViewInDateDataPage()
   		
 '  		If grid IsNot Nothing AndAlso term.EndDate <> #01/01/1900# Then
 '  		  Dim table As DataTable = Me.userRecordManager.GetTallyRecordOfEachUser(term)
@@ -139,6 +139,14 @@ Public Partial Class MainForm
 '			MyGridViewCellStyles.AutoResizeAllCell(grid)
 '		End If
 	End Sub
+	
+	''' <summary>
+	''' 現在表示されているページのDataGridViewを返す。
+	''' </summary>
+	Function GetShowingDataGridViewInDateDataPage() As DataGridView
+	  Dim tabPage As TabPage = Me.tabInDateTab.SelectedTab
+		Return TabPageUtils.GetDataGridView(tabPage)
+	End Function
 	
 	''' <summary>
 	''' グリッドの表示スタイルをセットする。
