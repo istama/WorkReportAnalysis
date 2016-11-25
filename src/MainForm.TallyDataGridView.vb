@@ -100,6 +100,23 @@ Public Partial Class MainForm
 		Return TabPageUtils.GetDataGridView(tabPage)
 	End Function
 	
+	''' <summary>
+	''' 現在表示されているデータの名前を返す。
+	''' </summary>
+	Function GetShowingDataNameInTallyDatePage() As String
+	  Dim pageName As String =  Me.tabInTallyTab.SelectedTab.Text
+	  If pageName = "日" Then
+	    Dim term As DateTerm = DirectCast(Me.cboxTallyMonthly.SelectedValue, DateTerm)
+	    Return "集計データ_" & term.BeginDate.Month.ToString & "月"
+	  ElseIf pageName = "週"
+	    Return "集計データ_" & "週"
+	  ElseIf pageName = "月"
+	    Return "集計データ_" & "月"
+	  Else
+	    Return String.Empty
+	  End If
+	End Function
+	
 	Private Sub LoadTallyTable()'(termList As List(Of DateTerm), userDataList As List(Of UserData), resultTable As DataTable, isDependent As Boolean)
 '		If termList     Is Nothing Then Throw New ArgumentNullException("termList is null")
 '		If userDataList Is Nothing Then Throw New ArgumentNullException("userDataList is null")
