@@ -35,6 +35,10 @@ Public Class UserRecordReader
   Public Sub Read(userRecord As UserRecord)
     If userRecord Is Nothing Then Throw New ArgumentNullException("userRecord is null")
     
+    If Me._cancel Then
+      Return
+    End If
+          
     Dim filepath As String = String.Format(Me.properties.ExcelFilePath(), userRecord.GetIdNumber)
     Dim colTree As ExcelColumnNode = userRecord.GetCulumnNodeTree
     
