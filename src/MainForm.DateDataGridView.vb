@@ -77,46 +77,15 @@ Public Partial Class MainForm
 	''' </summary>
 	Private Sub ShowDateDataGridView()
 		Dim tabPage As TabPage = Me.tabInDateTab.SelectedTab
-'		Dim isDepending As Boolean = Me.chkBoxExcludeData.Checked
-'		Dim userDataList As List(Of UserData) = Me.userRecordManager.UserDataList
-'		
-'		If userDataList.Count = 0 Then
-'			Return
-'		End If
-'		
     Dim term As DateTerm = GetShowingDataDateTerm()
-'		Dim term As New DateTerm(#01/01/1900#, #01/01/1900#)
-'		If tabPage.Text = "日" Then
-'			Dim datePicker As DateTimePicker = TabPageUtils.GetDateTimePicker(tabPage)
-'			If datePicker IsNot Nothing Then 
-'				term = New DateTerm(datePicker.Value, datePicker.Value, datePicker.Value.Day.ToString & "日")
-'			End If
-'			
-'			Log.out("picked date: " & term.ToString)
-'		ElseIf tabPage.Text = "週" OrElse tabPage.Text = "月"
-'			Dim cbox As ComboBox = TabPageUtils.GetComboBox(tabPage)
-'			If cbox IsNot Nothing Then
-'				term = DirectCast(cbox.SelectedValue, DateTerm)
-'			End If
-'		ElseIf tabPage.Text = "合計"
-'			term = Me.dateTerm
-'		End If		
 		
 		Try
   		Dim grid As DataGridView = GetShowingDataGridViewInDateDataPage()
   		
-'  		If grid IsNot Nothing AndAlso term.EndDate <> #01/01/1900# Then
-'  		  Dim table As DataTable = Me.userRecordManager.GetTallyRecordOfEachUser(term)
-'  		  grid.DataSource = table
-'  		End If
-      If grid IsNot Nothing AndAlso term.EndDate <> #01/01/1900# Then
-        Dim table As DataTable = Me.userRecordManager.GetTallyRecordOfEachUser(term, Me.chkBoxExcludeData.Checked)
-'        Dim totalRow As DataRow = table.NewRow
-'        totalRow(UserRecord.NAME_COL_NAME) = "合計"
-'        For Each row As DataRow In table.Rows
-'          totalRow.PlusByDouble(row)
-'        Next
-'        table.Rows.Add(totalRow)
+  		If grid IsNot Nothing AndAlso term.EndDate <> #01/01/1900# Then
+        Dim table As DataTable = 
+          Me.userRecordManager.GetTallyRecordOfEachUser(term, Me.chkBoxExcludeData.Checked)
+        
         grid.DataSource = table
         HoldFirstColumn(grid)
         SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
@@ -126,19 +95,6 @@ Public Partial Class MainForm
 		  MsgBox.ShowError(ex)
 		End Try
 		
-'			Dim newTable As DataTable = userDataList(0).Record.CreateTable
-'			' 各ユーザごとの行を取得
-'			userDataList.ForEach(Sub(data) data.Record.AddTotalRowToTable(term, isDepending, newTable))
-'			' 合計値を最後の行に追加
-'			userDataList(0).Record.AddTotalRowToTable(newTable, isDepending)
-'			
-'			grid.DataSource = newTable
-'			
-'			' グリッドの表示スタイルをセット
-'			SetGridStyleToDateDataGridView(grid, userDataList)
-'			' セルの幅、高さを自動調整
-'			MyGridViewCellStyles.AutoResizeAllCell(grid)
-'		End If
 	End Sub
 	
 	''' <summary>
@@ -184,17 +140,4 @@ Public Partial Class MainForm
 	  End If	  
 	End Function
 	
-	''' <summary>
-	''' グリッドの表示スタイルをセットする。
-	''' </summary>
-	Private Sub SetGridStyleToDateDataGridView(grid As DataGridView)', userDataList As List(Of UserData))
-'		For i = 0 To userDataList.Count - 1
-'			grid.Rows(i).HeaderCell.Value = userDataList(i).Name
-'		Next
-'		grid.Rows(grid.Rows.Count - 1).HeaderCell.Value = "合計"
-'		
-'		grid.Rows(grid.Rows.Count - 1).DefaultCellStyle = Me.gridViewCellStyles.MonthlyTotalRow
-	End Sub
-	
-
 End Class
