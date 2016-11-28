@@ -99,6 +99,11 @@ Public Partial Class MainForm
   		' ComboBox.SelectedValueで値を取得する。
   		Dim userInfo As UserInfo = GetSelectedUserInfo()
   		If userInfo IsNot Nothing Then
+  		  ' まだ登録されていない場合ユーザの場合、データをロードする
+        If Not Me.userRecordManager.Stored(userInfo) Then
+          Me.userRecordManager.Loader().Load(userInfo)
+        End If
+  		  
   		  If month >= 1 AndAlso month <= 12 Then 
   		    Dim table As DataTable =
   		      Me.userRecordManager.GetDailyRecordLabelingDate(userInfo, Me.dateTerm.BeginDate.Year, month)
