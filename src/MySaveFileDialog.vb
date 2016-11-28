@@ -76,7 +76,7 @@ Public Class SaveFileStream
   ''' </summary>
   Public Sub Open()
     If Not Me.opened Then
-      Me.writer = New StreamWriter(stream)
+      Me.writer = New StreamWriter(stream, System.Text.Encoding.GetEncoding("shift_jis"))
       Me.opened = True
     End If
   End Sub
