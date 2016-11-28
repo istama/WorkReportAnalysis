@@ -59,7 +59,7 @@ Public Module DataTableExtensions
               Where(Function(row) Not row.IsNull(timeColName)).
               Sum(Function(row) row.ToDouble(timeColName))
           
-          sumRow(timeColName) = sum
+          sumRow(timeColName) = Math.Round(sum, 2, MidpointRounding.AwayFromZero)
         End If
       End Sub)    
   End Sub
@@ -84,7 +84,7 @@ Public Module DataTableExtensions
           Where(Function(row) Not row.IsNull(colInfo.name)).
           Sum(Function(row) row.ToDouble(colInfo.name))
       
-      sumRow(colInfo.name) = sum      
+      sumRow(colInfo.name) = Math.Round(sum, 2, MidpointRounding.AwayFromZero)
     End If
   End Sub
   
@@ -119,7 +119,8 @@ Public Module DataTableExtensions
             End If
             
             If existsTimeCol Then
-              addedRow(timeColName) = addedRow.ToDoubleOrDefault(timeColName, 0) + row.ToDoubleOrDefault(timeColName, 0)
+              Dim sum As Double = addedRow.ToDoubleOrDefault(timeColName, 0) + row.ToDoubleOrDefault(timeColName, 0)
+              addedRow(timeColName) = Math.Round(sum, 2, MidpointRounding.AwayFromZero)
             End If
           End Sub)
       End Sub)
@@ -156,7 +157,8 @@ Public Module DataTableExtensions
             End If
             
             If existsTimeCol Then
-              addedRow(timeColName) = addedRow.ToDoubleOrDefault(timeColName, 0) + row.ToDoubleOrDefault(timeColName, 0)
+              Dim sum As Double = addedRow.ToDoubleOrDefault(timeColName, 0) + row.ToDoubleOrDefault(timeColName, 0)
+              addedRow(timeColName) = Math.Round(sum, 2, MidpointRounding.AwayFromZero)
             End If
           End Sub)
       End Sub)    
