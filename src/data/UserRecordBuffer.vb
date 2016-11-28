@@ -66,6 +66,15 @@ Public Class UserRecordBuffer
   End Function
   
   ''' <summary>
+  ''' 指定したユーザが登録されているか判定する。
+  ''' </summary>
+  Public Function Stored(userInfo As UserInfo) As Boolean
+    If userInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
+    
+    Return Me.userRecordDictionary.ContainsKey(userInfo.GetSimpleId)
+  End Function
+  
+  ''' <summary>
   ''' すべてのユーザのレコードを取得する。
   ''' </summary>
   ''' <returns></returns>
@@ -120,6 +129,7 @@ Public Class UserRecordBuffer
   Public Function MinusToTotalRecord(userInfo As UserInfo) As Boolean
     SyncLock Me.addedUserListToTotalRecord
       If Me.addedUserListToTotalRecord.Contains(userInfo.GetSimpleId) Then
+        ' TODO マイナスが行われていない
         UpdateTotalRecord(userInfo, Sub(totalRow, userRow) totalRow.MinusByDouble(userRow))
         Me.addedUserListToTotalRecord.Remove(userInfo.GetSimpleId)
         Return True
@@ -130,6 +140,7 @@ Public Class UserRecordBuffer
   End Function
   
   ''' <summary>
+  ''' TODO 見直す
   ''' 集計レコードを更新する。
   ''' </summary>
   Private Sub UpdateTotalRecord(userInfo As UserInfo, f As Action(Of DataRow, DataRow))
