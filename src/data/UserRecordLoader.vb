@@ -46,18 +46,24 @@ Public Class UserRecordLoader
     End While
   End Sub
   
-  Public Sub Load(loadedUserInfo As UserInfo, f As Action(Of UserRecord))
-    'tasks.Enqueue(Task.Factory.StartNew(Sub() LoadTask(loadedUserInfo, f)))
-    LoadTask(loadedUserInfo, f)
+  Public Sub Load(loadedUserInfo As UserInfo)
+    Load(loadedUserInfo, Nothing)
   End Sub
   
-  Private Sub LoadTask(loadedUserInfo As UserInfo, f As Action(Of UserRecord))
+  Public Sub Load(loadedUserInfo As UserInfo, callback As Action(Of UserRecord))
+    'tasks.Enqueue(Task.Factory.StartNew(Sub() LoadTask(loadedUserInfo, f)))
+    LoadTask(loadedUserInfo, callback)
+  End Sub
+  
+  Private Sub LoadTask(loadedUserInfo As UserInfo, callback As Action(Of UserRecord))
     Try
       Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(loadedUserInfo)
       Me.userRecordBuffer.MinusToTotalRecord(loadedUserInfo)
       Me.userRecordReader.Read(record)
       Me.userRecordBuffer.PlusToTotalRecord(loadedUserInfo)
-      f(record)
+      If callback IsNot Nothing Then
+        callback(record)
+      End If
     Catch ex As Exception
       Log.out(ex.Message)
     End Try
