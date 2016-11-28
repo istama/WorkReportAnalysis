@@ -44,22 +44,13 @@ Public Class UserRecordManager
   ''' </summary>
   Public Function GetDailyRecordLabelingDate(userInfo As UserInfo, year As Integer, month As Integer) As DataTable
     If userInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
+    
     Dim record As UserRecord = Me.userRecordBuffer.GetUserRecord(userInfo)
-    
     Dim table As DataTable = record.GetDailyDataTableForAMonth(year, month) 
-    
-'    For Each col As DataColumn In table.Columns
-'      Log.out("Manager : " & col.ColumnName & " " & col.DataType.ToString)
-'    Next
     
     AddTotalRowToTable(table, UserRecordColumnsInfo.DATE_COL_NAME)
     
-'    For Each col As DataColumn In table.Columns
-'      Log.out("Manager : " & col.ColumnName & " " & col.DataType.ToString)
-'    Next
-
     Return AddColumnOfProductivityToRecord(table)
-    'Return record.GetDailyDataTable(year, month)
   End Function
   
   ''' <summary>
