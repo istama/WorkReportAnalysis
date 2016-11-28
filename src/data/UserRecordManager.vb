@@ -35,6 +35,15 @@ Public Class UserRecordManager
     Return Me.userRecordLoader
   End Function
   
+  ''' <summary>
+  ''' 指定したユーザが登録されているか判定する。
+  ''' </summary>
+  Public Function Stored(userInfo As UserInfo) As Boolean
+    If userInfo Is Nothing Then Throw New ArgumentNullException("userInfo is null")
+    
+    Return Me.userRecordBuffer.Stored(userInfo)
+  End Function
+  
   Public Function GetUserRecordColumnsInfo() As UserRecordColumnsInfo
     Return Me.recordColumnsInfo
   End Function
