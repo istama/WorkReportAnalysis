@@ -24,6 +24,10 @@ Public Class UserRecordLoader
     Me.userRecordReader = New UserRecordReader(properties, Me.excel)
   End Sub
   
+  Public Function GetUserRecordBuffer() As UserRecordBuffer
+    Reutrn Me.userRecordBuffer
+  End Function
+  
   Public Sub Init()
     #If Debug = False Then
       Me.excel.init

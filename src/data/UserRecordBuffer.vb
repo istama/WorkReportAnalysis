@@ -159,7 +159,7 @@ Public Class UserRecordBuffer
           userTable.PlusExceptingWorkCountOfZerpWorkTimeIs(totalTableE, Me.recordColumnsInfo)
         End Sub)
     Else
-      Throw New ArithmeticException("指定したユーザのレコードは存在しません。 / userInfo: " & userInfo.GetName)
+      Throw New ArgumentException("指定したユーザのレコードは存在しません。 / userInfo: " & userInfo.GetName)
     End If    
   End Sub
 End Class
