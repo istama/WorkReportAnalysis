@@ -95,7 +95,7 @@ Public Partial Class MainForm
   Private Sub InitCBoxUserNames()
     InitComboBox(
       Me.cboxUserName,
-      Me.userInfoManager.UserInfoList,
+      Me.userInfoManager.UserInfos,
       GetType(UserInfo),
       Function(ui) ui.GetSimpleId.ToString() & " " & ui.GetName.ToString()) ' コンボボックスの要素として表示される文字列
 	End Sub
@@ -233,6 +233,13 @@ Public Partial Class MainForm
 	End Sub
 	
 	''' <summary>
+	''' 再読み込みボタンがクリックされた場合に発生するイベント。
+	''' </summary>
+	Sub BtnReloadClick(sender As Object, e As EventArgs)
+    LoadExcel()	  
+	End Sub
+	
+	''' <summary>
 	''' 閉じるボタンがクリックされた場合に発生するイベント。
 	''' </summary>
 	Sub BtnCloseClick(sender As Object, e As EventArgs)
@@ -245,6 +252,6 @@ Public Partial Class MainForm
   ''' </summary>
   Sub MainFormClosing(sender As Object, e As System.ComponentModel.CancelEventArgs)
   End Sub
-  
+
 End Class
 
