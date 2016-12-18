@@ -111,7 +111,7 @@ Public Class ExcelProperties
     Dim params As WorkItemParams
     With params
       .Id           = index
-      .Name         = GetValue(KEY_ITEM_NAME     + index.ToString).GetOrDefault(String.Empty)
+      .Name         = GetOrDefault(KEY_ITEM_NAME     + index.ToString, String.Empty)
       .WorkCountCol = GetAndCheckCol(KEY_WORKCOUNT_COL + index.ToString)
       .WorkTimeCol  = GetAndCheckCol(KEY_WORKTIME_COL  + index.ToString)
     End With
@@ -124,8 +124,8 @@ Public Class ExcelProperties
   ''' </summary>
   ''' <returns></returns>
   Public Function ExcelFilePath() As String
-    Dim dir As String  = GetValue(KEY_EXCEL_FILEDIR).GetOrDefault(String.Empty)
-    Dim file As String = GetValue(KEY_EXCEL_FILENAME).GetOrDefault(String.Empty)
+    Dim dir As String  = GetOrDefault(KEY_EXCEL_FILEDIR, String.Empty)
+    Dim file As String = GetOrDefault(KEY_EXCEL_FILENAME, String.Empty)
     Return Path.Combine(dir, file)
   End Function
   
@@ -134,7 +134,7 @@ Public Class ExcelProperties
   ''' </summary>
   ''' <returns></returns>
   Public Function SheetName(month As Integer) As String
-    Dim sheet As String = GetValue(KEY_EXCEL_SHEETNAME).GetOrDefault(String.Empty)
+    Dim sheet As String = GetOrDefault(KEY_EXCEL_SHEETNAME, String.Empty)
     Return String.Format(sheet, month.ToString)
   End Function
   
@@ -143,7 +143,7 @@ Public Class ExcelProperties
   ''' </summary>
   ''' <returns></returns>
   Public Function FirstRow() As Integer
-    Dim v As String = GetValue(KEY_FIRST_ROW).GetOrDefault(String.Empty)
+    Dim v As String = GetOrDefault(KEY_FIRST_ROW, String.Empty)
     Dim row As Integer
     If Not Integer.TryParse(v, row) Then
       Throw New InvalidDataException("プロパティ" & KEY_FIRST_ROW & "の値が不正です。 / " & v)
@@ -157,7 +157,7 @@ Public Class ExcelProperties
   ''' </summary>
   ''' <returns></returns>
   Public Function BeginDate() As DateTime
-    Dim v As String = GetValue(KEY_BEGIN_DATE).GetOrDefault(String.Empty)
+    Dim v As String = GetOrDefault(KEY_BEGIN_DATE, String.Empty)
     Dim d As DateTime
     If Not DateTime.TryParse(v, d) Then
       Throw New InvalidDataException("プロパティ" & KEY_BEGIN_DATE & "の値が不正です。 / " & v)
@@ -171,7 +171,7 @@ Public Class ExcelProperties
   ''' </summary>
   ''' <returns></returns>
   Public Function EndDate() As DateTime
-    Dim v As String = GetValue(KEY_END_DATE).GetOrDefault(String.Empty)
+    Dim v As String = GetOrDefault(KEY_END_DATE, String.Empty)
     Dim d As DateTime
     If Not DateTime.TryParse(v, d) Then
       Throw New InvalidDataException("プロパティ" & KEY_END_DATE & "の値が不正です。 / " & v)
@@ -185,7 +185,7 @@ Public Class ExcelProperties
   ''' </summary>
   ''' <returns></returns>
   Public Function NoteName() As String
-    Return GetValue(KEY_NOTE_NAME).GetOrDefault(String.Empty)
+    Return GetOrDefault(KEY_NOTE_NAME, String.Empty)
   End Function
   
   ''' <summary>
@@ -211,7 +211,7 @@ Public Class ExcelProperties
   ''' <param name="key"></param>
   ''' <returns></returns>
   Private Function GetAndCheckCol(key As String) As String
-    Dim col As String = GetValue(key).GetOrDefault(String.Empty)
+    Dim col As String = GetOrDefault(key, String.Empty)
     If Not Cell.ValidColumn(col) Then
       col = String.Empty
     End If
