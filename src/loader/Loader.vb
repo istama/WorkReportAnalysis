@@ -41,17 +41,16 @@ Public Class Loader
     Me.userRecordLoader.Init
     
     ' 全ユーザのレコードを読み込む
-    Me.userInfoManager.UserInfoList.ForEach(
-      Sub(ui)
-        If Me._cancel Then
-          Return
-        End If
-        
-        Me.userRecordLoader.Load(
-          ui,
-          Sub(record) observer.ReportProgress(record.GetIdNumber & " " & record.GetName)
-        )
-      End Sub)
+    For Each ui As UserInfo In Me.userInfoManager.UserInfos
+      If Me._cancel Then
+        Return
+      End If
+      
+      ' 指定したユーザの情報を読み込み、読み込んだユーザの情報をオブザーバーに通知する
+      Me.userRecordLoader.Load(
+        ui,
+        Sub(record) observer.ReportProgress(record.GetIdNumber & " " & record.GetName))     
+    Next
     
     Me.userRecordLoader.Wait
     Me.userRecordLoader.Quit
