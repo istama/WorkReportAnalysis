@@ -16,12 +16,11 @@ Public Class UserRecordLoader
   
   Private ReadOnly tasks As New ConcurrentQueue(Of Task)
   
-  Public Sub New(properties As ExcelProperties, userRecordBuffer As UserRecordBuffer)
+  Public Sub New(properties As ExcelProperties)
     If properties Is Nothing Then Throw New ArgumentNullException("properties is null")
-    If userRecordBuffer Is Nothing Then Throw New ArgumentNullException("userRecordBuffer is null ")
     
     Me.excel = New Excel4()
-    Me.userRecordBuffer = userRecordBuffer
+    Me.userRecordBuffer = New UserRecordBuffer(properties)
     Me.userRecordReader = New UserRecordReader(properties, Me.excel)
   End Sub
   
