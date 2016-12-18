@@ -25,7 +25,7 @@ Public Class Loader
   ''' 読み込むデータ件数を返す。
   ''' </summary>
   Public Function LoadedCount As Integer
-    Return Me.UserInfoManager.UserInfoList.Count
+    Return Me.UserInfoManager.UserInfoCount
   End Function
   
   Public Sub Quit
