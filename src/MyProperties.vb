@@ -49,7 +49,7 @@ Public Class MyProperties
   End Function
   
   Public Function UserFilePath As String
-    Return Me.GetValue(KEY_USERS_FILEPATH).GetOrDefault("")
+    Return Me.GetOrDefault(KEY_USERS_FILEPATH, String.Empty)
   End Function
   
 End Class
