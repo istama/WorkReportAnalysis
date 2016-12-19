@@ -12,7 +12,7 @@ Public Module DataTableExtensions
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Sub Sum(table As DataTable, sumRow As DataRow, columnsInfo As UserRecordColumnsInfo)
-    columnsInfo.WorkItemList.ForEach(
+    columnsInfo.WorkItems.ForEach(
       Sub(item)
         calcTotal(table, sumRow, item.WorkCountColInfo)
         calcTotal(table, sumRow, item.WorkTimeColInfo)
@@ -25,7 +25,7 @@ Public Module DataTableExtensions
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Sub SumExceptWorkCountOfZeroWorkTimeIs(table As DataTable, sumRow As DataRow, columnsInfo As UserRecordColumnsInfo)
-    columnsInfo.WorkItemList.ForEach(
+    columnsInfo.WorkItems.ForEach(
       Sub(item)
         Dim cntColName As String = item.WorkCountColInfo.Name
         Dim timeColName As String = item.WorkTimeColInfo.Name
@@ -90,7 +90,7 @@ Public Module DataTableExtensions
   
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Sub Plus(table As DataTable, addedTable As DataTable, columnsInfo As UserRecordColumnsInfo)
-    columnsInfo.WorkItemList.ForEach(
+    columnsInfo.WorkItems.ForEach(
       Sub(item)
         Dim cntColName As String = item.WorkCountColInfo.Name
         Dim timeColName As String = item.WorkTimeColInfo.Name
@@ -128,7 +128,7 @@ Public Module DataTableExtensions
   
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Sub PlusExceptingWorkCountOfZerpWorkTimeIs(table As DataTable, addedTable As DataTable, columnsInfo As UserRecordColumnsInfo)
-    columnsInfo.WorkItemList.ForEach(
+    columnsInfo.WorkItems.ForEach(
       Sub(item)
         Dim cntColName As String = item.WorkCountColInfo.Name
         Dim timeColName As String = item.WorkTimeColInfo.Name

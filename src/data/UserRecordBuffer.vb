@@ -24,7 +24,7 @@ Public Class UserRecordBuffer
   Private ReadOnly totalRecord As UserRecord
   ''' 全ユーザのレコードの値を日付ごとに集計したテーブルを月ごとに格納したテーブル
   ''' ただし作業時間が０の作業件数は集計に含めない
-  Private ReadOnly totalRecordExceptedWorkCountOfZeroWorkTimeIs As UserRecord
+  Private ReadOnly totalRecordExceptedUnfilled As UserRecord
   
   ''' 集計テーブルに加算したユーザのリスト
   Private ReadOnly addedUserListToTotalRecord As New List(Of String)
@@ -36,7 +36,7 @@ Public Class UserRecordBuffer
     Me.recordColumnsInfo = New UserRecordColumnsInfo(properties)
     
     Me.totalRecord = New UserRecord(New UserInfo("total", "999", "xxx"), Me.recordColumnsInfo, properties)
-    Me.totalRecordExceptedWorkCountOfZeroWorkTimeIs = New UserRecord(New UserInfo("total", "999", "xxx"), Me.recordColumnsInfo, properties)
+    Me.totalRecordExceptedUnfilled = New UserRecord(New UserInfo("total", "999", "xxx"), Me.recordColumnsInfo, properties)
   End Sub
   
   ''' <summary>
@@ -101,7 +101,7 @@ Public Class UserRecordBuffer
   ''' 作業時間が０の作業件数が除かれた集計レコードを取得する。
   ''' </summary>
   Public Function GetTotalRecordExceptedWorkCountOfZeroWorkTimeIs() As UserRecord
-    Return Me.totalRecordExceptedWorkCountOfZeroWorkTimeIs
+    Return Me.totalRecordExceptedUnfilled
   End Function
   
   ''' <summary>
@@ -153,7 +153,7 @@ Public Class UserRecordBuffer
           Dim d As DateTime = term.BeginDate
           Dim userTable  As DataTable = record.GetDailyDataTableForAMonth(d.Year, d.Month)
           Dim totalTable As DataTable = Me.totalRecord.GetRecord(d.Month)
-          Dim totalTableE As DataTable = Me.totalRecordExceptedWorkCountOfZeroWorkTimeIs.GetRecord(d.Month)
+          Dim totalTableE As DataTable = Me.totalRecordExceptedUnfilled.GetRecord(d.Month)
           
           userTable.Plus(totalTable, Me.recordColumnsInfo)
           userTable.PlusExceptingWorkCountOfZerpWorkTimeIs(totalTableE, Me.recordColumnsInfo)

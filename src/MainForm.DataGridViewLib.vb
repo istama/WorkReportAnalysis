@@ -64,7 +64,7 @@ Public Partial Class MainForm
     ' 各列のサイズが要素に合わせて自動に設定されるようにする
     view.Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
     
-    For Each item In recordColumnsInfo.WorkItemList
+    For Each item In recordColumnsInfo.WorkItems
       If Not String.IsNullOrWhiteSpace(item.WorkCountColInfo.name) Then
         view.Columns(item.WorkCountColInfo.name).Width = WORKITEM_COLUMN_SIZE
       End If

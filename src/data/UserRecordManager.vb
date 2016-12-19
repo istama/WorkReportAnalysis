@@ -202,7 +202,7 @@ Public Class UserRecordManager
       Next
       
       ' 生産性を計算
-      For Each item As WorkItemColumnsInfo In Me.recordColumnsInfo.WorkItemList
+      For Each item As WorkItemColumnsInfo In Me.recordColumnsInfo.WorkItems
         Dim cntColName As String  = item.WorkCountColInfo.Name
         Dim timeColName As String = item.WorkTimeColInfo.Name
         If cntColName <> String.Empty AndAlso timeColName <> String.Empty Then
