@@ -1,13 +1,12 @@
 ﻿'
 ' 日付: 2016/10/18
 '
+Imports System.Data
 Imports System.Linq
+
+Imports Common.Account
 Imports Common.COM
 Imports Common.Util
-Imports Common.Account
-Imports System.Data
-Imports Common.Extensions
-Imports Common.IO
 
 ''' <summary>
 ''' ユーザのExcelデータを読み込むクラス。
