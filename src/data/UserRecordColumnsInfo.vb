@@ -119,20 +119,19 @@ Public Structure UserRecordColumnsInfo
     End If
     
     ' 作業項目の列を追加する
-    WorkItemList().ForEach(
-      Sub(item)
-        If Not String.IsNullOrWhiteSpace(item.WorkCountColInfo.Name) Then
-          table.Columns.Add(item.WorkCountColInfo.CreateDataColumn())
-        End If
-        
-        If Not String.IsNullOrWhiteSpace(item.WorkTimeColInfo.name) Then
-          table.Columns.Add(item.WorkTimeColInfo.CreateDataColumn())
-        End If
-        
-        If Not String.IsNullOrWhiteSpace(item.WorkProductivityColInfo.name) Then
-          table.Columns.Add(item.WorkProductivityColInfo.CreateDataColumn)
-        End If
-      End Sub)
+    For Each item As WorkItemColumnsInfo In WorkItemList()
+      If Not String.IsNullOrWhiteSpace(item.WorkCountColInfo.Name) Then
+        table.Columns.Add(item.WorkCountColInfo.CreateDataColumn())
+      End If
+      
+      If Not String.IsNullOrWhiteSpace(item.WorkTimeColInfo.name) Then
+        table.Columns.Add(item.WorkTimeColInfo.CreateDataColumn())
+      End If
+      
+      If Not String.IsNullOrWhiteSpace(item.WorkProductivityColInfo.name) Then
+        table.Columns.Add(item.WorkProductivityColInfo.CreateDataColumn)
+      End If      
+    Next
     
     ' 備考の列を追加する
     table.Columns.Add(Me.noteColInfo.CreateDataColumn)
