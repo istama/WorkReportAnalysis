@@ -240,9 +240,12 @@ Public Structure WorkItemColumnsInfo
   ''' <summary>
   ''' Excelの列ノードのツリーを作成する。
   ''' </summary>
-  Public Function CreateExcelColumnNodeTree() As ExcelColumnNode?
-    Dim cntNode As ExcelColumnNode? = Me.WorkCountColInfo.CreateExcelColumnNode()
-    Dim timeNode As ExcelColumnNode? = Me.WorkTimeColInfo.CreateExcelColumnNode()
+  Public Function CreateExcelColumnNodeTree() As Nullable(Of ExcelColumnNode)
+    ' 作業件数と作業時間の列情報を生成
+    Dim cntNode  As Nullable(Of ExcelColumnNode) = Me.WorkCountColInfo.CreateExcelColumnNode()
+    Dim timeNode As Nullable(Of ExcelColumnNode) = Me.WorkTimeColInfo.CreateExcelColumnNode()
+    
+    ' 列情報が有効な場合、親子関係に接続して返す。
     If cntNode.HasValue Then
       If timeNode.HasValue Then
         cntNode.Value.AddChild(timeNode.Value)
@@ -252,7 +255,7 @@ Public Structure WorkItemColumnsInfo
     ElseIf timeNode.HasValue
       Return timeNode
     Else
-      Return NOthing  
+      Return Nothing  
     End If
   End Function
 End Structure
