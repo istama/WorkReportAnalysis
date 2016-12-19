@@ -90,13 +90,12 @@ Public Structure UserRecordColumnsInfo
   ''' <summary>
   ''' 作業項目のコレクションを返す。
   ''' </summary>
-  Public Iterator Function WorkItemList() As IEnumerable(Of WorkItemColumnsInfo)
-    For Each col As WorkItemColumnsInfo? In _
+  Public Function WorkItemList() As IEnumerable(Of WorkItemColumnsInfo)
+    Return _
       Me.properties.GetWorkItemParamsEnumerable().
       Select(Function(params) WorkItemColumnsInfo.Create(params)).
-      Where(Function(colInfo) colInfo.HasValue)
-      Yield col.Value
-    Next
+      Where(Function(colInfo) colInfo.HasValue).
+      Select(Function(colInfo) colInfo.Value)
   End Function
   
   ''' <summary>
