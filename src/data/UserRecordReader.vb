@@ -1,6 +1,7 @@
 ﻿'
 ' 日付: 2016/10/18
 '
+Imports System.Linq
 Imports Common.COM
 Imports Common.Util
 Imports Common.Account
@@ -38,54 +39,49 @@ Public Class UserRecordReader
     If Me._cancel Then
       Return
     End If
-          
+    
+    ' Excelファイルのパスを作成
     Dim filepath As String = String.Format(Me.properties.ExcelFilePath(), userRecord.GetIdNumber)
+    ' 読み込む列
     Dim colTree As ExcelColumnNode = userRecord.GetCulumnNodeTree
     
     Try
+      ' Excelファイルを開く
       Me.excel.Open(filepath, True)
       
       ' 各月のレコードを読み込む
-      userRecord.GetRecordDateTerm.MonthlyTerms.ForEach(
-        Sub(m)
-          Dim table As DataTable = userRecord.GetRecord(m.BeginDate.Month)
+      For Each terms As DateTerm In userRecord.GetRecordDateTerm.MonthlyTerms
+        Dim table As DataTable = userRecord.GetRecord(m.BeginDate.Month)
         
-          If Me._cancel Then
-            Return
-          End If
-          
-          Dim sheetName As String = Me.properties.SheetName(m.BeginDate.Month)
-          
-          For day As Integer = m.BeginDate.Day To m.EndDate.Day
-            ' 行を指定してデータを読み込む
-            Dim row As Integer = day + Me.properties.FirstRow - 1
-            Dim dict As IDictionary(Of String, String) = Me.excel.Read(row, filepath, sheetName, colTree)
+        Dim sheetName As String = Me.properties.SheetName(m.BeginDate.Month)
+        
+        ' 日にちごとにデータを読み込む
+        For day As Integer = m.BeginDate.Day To m.EndDate.Day
+          ' 行を指定してデータを読み込む
+          Dim row As Integer = day + Me.properties.FirstRow - 1
+          Dim dict As IDictionary(Of String, String) = Me.excel.Read(row, filepath, sheetName, colTree)
             
-            ' 読み込んだデータをDataTableの行にセットする
-            Dim dataRow As DataRow = table.Rows(day - m.BeginDate.Day)
-            dict.Keys.ForEach(
-              Sub(k)
-                If String.IsNullOrWhiteSpace(dict(k)) Then
-                  Return
-                End If
-              
-                'Log.out(userRecord.GetName & " " & m.BeginDate.Month.ToString & "/" & day.ToString & " " & k & ":" & dict(k)) 
-                If table.Columns(k).DataType = GetType(Integer) Then
-                  Dim v As Integer
-                  If Integer.TryParse(dict(k), v) Then
-                    dataRow(k) = v
-                  End If
-                ElseIf table.Columns(k).DataType = GetType(Double) Then
-                  Dim v As Double
-                  If Double.TryParse(dict(k), v) Then
-                    dataRow(k) = v
-                  End If
-                Else
-                  dataRow(k) = dict(k)
-                End If
-              End Sub)
+          ' 読み込んだデータをDataTableの行にセットする
+          Dim dataRow As DataRow = table.Rows(day - m.BeginDate.Day)
+          For Each k In dict.Keys.Where(Function(k) Not String.IsNullOrWhiteSpace(dict(k)))
+            ' 取得したデータをその列の値のデータ型に変換してセットする
+            Dim t As Type = table.Columns(k).DataType
+            If t = GetType(Integer) Then
+              Dim v As Integer
+              If Integer.TryParse(dict(k), v) Then
+                dataRow(k) = v
+              End If
+            ElseIf t = GetType(Double) Then
+              Dim v As Double
+              If Double.TryParse(dict(k), v) Then
+                dataRow(k) = v
+              End If
+            ElseIf t = GetType(String) Then
+              dataRow(k) = dict(k)
+            End If            
           Next
-        End Sub)
+        Next
+      Next
     Catch ex As Exception
       Throw ex
     Finally
