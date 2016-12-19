@@ -69,7 +69,7 @@ Public NotInheritable Class UserRecord
     Return name
   End Function
   
-  Public Function GetCulumnNodeTree As ExcelColumnNode
+  Public Function GetExcelCulumnNodeTree As ExcelColumnNode
     Return Me.columnsInfo.CreateExcelColumnNodeTree
   End Function
   
