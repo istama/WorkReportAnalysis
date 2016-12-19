@@ -27,8 +27,8 @@ Public Class UserRecordManager
     
     Me.properties = properties
     Me.recordColumnsInfo = New UserRecordColumnsInfo(properties)
-    Me.userRecordBuffer = New UserRecordBuffer(properties)
-    Me.userRecordLoader = New UserRecordLoader(properties, Me.userRecordBuffer)
+    Me.userRecordLoader = New UserRecordLoader(properties)
+    Me.userRecordBuffer = Me.userRecordLoader.GetUserRecordBuffer()
   End Sub
   
   Public Function Loader() As UserRecordLoader
