@@ -144,21 +144,26 @@ Public Structure UserRecordColumnsInfo
   ''' Excelを読み込むための列ノードのツリーを作成する。
   ''' </summary>
   Public Function CreateExcelColumnNodeTree() As ExcelColumnNode
-    Dim rootNode As ExcelColumnNode? = Me.workDayColInfo.CreateExcelColumnNode()
+    ' 出勤日の列を作成
+    Dim rootNode As Nullable(Of ExcelColumnNode) = Me.workDayColInfo.CreateExcelColumnNode()
     
     If Not rootNode.HasValue Then
-      Throw New InvalidOperationException("excel.propertiesにWorkDayColの値が設定されていません。")  
+      Throw New InvalidOperationException(
+        "excel.propertiesファイル の WorkDayCol に 出勤日の列　の値を設定してください。" & vbCrLf &
+        "これを設定することでExcelファイルの読み込みが速くなります。")
     End If
     
-    WorkItemList().ForEach(
-      Sub(item)
-        Dim node As ExcelColumnNode? = item.CreateExcelColumnNodeTree()
-        If node.HasValue Then
-          rootNode.Value.AddChild(node.Value)
-        End If
-      End Sub)
+    ' 各作業項目の列を１つずつ返し、出勤日の列の子要素とする
+    For Each item As WorkItemColumnsInfo In WorkItemList()
+      Dim node As Nullable(Of ExcelColumnNode) = item.CreateExcelColumnNodeTree()
+      
+      If node.HasValue Then
+        rootNode.Value.AddChild(node.Value)
+      End If      
+    Next
     
-    Dim noteNode As ExcelColumnNode? = Me.noteColInfo.CreateExcelColumnNode()
+    ' 備考列を生成し、出勤日の列の子要素とする
+    Dim noteNode As Nullable(Of ExcelColumnNode) = Me.noteColInfo.CreateExcelColumnNode()
     If noteNode.HasValue Then
       rootNode.Value.AddChild(noteNode.Value)
     End If
