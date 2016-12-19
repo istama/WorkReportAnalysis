@@ -39,23 +39,24 @@ Public NotInheritable Class UserRecord
   End Sub
   
   ''' <summary>
-  ''' 指定した期間内の空のレコードを作成する。
+  ''' 指定した期間内の空のレコードを月単位で作成する。
   ''' </summary>
   Private Function CreateDataTables(dateTerm As DateTerm) As ConcurrentDictionary(Of Integer, DataTable)
     Dim dict As New ConcurrentDictionary(Of Integer, DataTable)
     
-    dateTerm.MonthlyTerms.ForEach(
-      Sub(m)
-        Dim table As DataTable = Me.columnsInfo.CreateDataTable(Nothing)
-        Dim d As DateTime = m.BeginDate
-        Enumerable.Range(1, DateTime.DaysInMonth(d.Year, d.Month)).ForEach(
-          Sub(day)
-            Dim newRow As DataRow = table.NewRow
-            table.Rows.Add(newRow)
-        End Sub)
-        
-        dict.TryAdd(d.Month, table)
-      End Sub)
+    ' 月単位でテーブルを作成する
+    For Each m As DateTerm In dateTerm.MonthlyTerms
+      Dim table As DataTable = Me.columnsInfo.CreateDataTable(Nothing)
+      Dim d As DateTime = m.BeginDate
+      
+      ' 日付の数だけテーブルの行を作成する
+      For Each day As Integer In Enumerable.Range(1, DateTime.DaysInMonth(d.Year, d.Month))
+        table.Rows.Add(table.NewRow)
+      Next
+      
+      ' 月とテーブルをセットにして格納する
+      dict.TryAdd(d.Month, table)
+    Next
     
     Return dict
   End Function
