@@ -12,7 +12,7 @@ Imports Common.IO
 ''' ユーザレコードを読み込んでバッファに格納するクラス。
 ''' </summary>
 Public Class UserRecordLoader
-  Private ReadOnly excel As Excel4
+  Private ReadOnly excel As IExcel
   
   ''' 読み込んだユーザレコードを格納しておくクラス
   Private ReadOnly userRecordBuffer As UserRecordBuffer
