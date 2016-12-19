@@ -16,8 +16,6 @@ Public Class UserRecordReader
   Private ReadOnly properties As ExcelProperties  
   Private ReadOnly excel As ExcelReaderByColumnTree
   
-  Private _cancel As Boolean = False
-  
   Public Sub New(properties As ExcelProperties, excel As IExcel)
     If properties Is Nothing Then Throw New ArgumentNullException("properties is null")
     If excel      Is Nothing Then Throw New ArgumentNullException("excel is null")
@@ -26,19 +24,11 @@ Public Class UserRecordReader
     Me.excel          = New ExcelReaderByColumnTree(excel)
   End Sub
   
-  Public Sub Cancel
-    Me._cancel = True
-  End Sub
-  
   ''' <summary>
   ''' 指定したユーザのレコードを読み込む。
   ''' </summary>
   Public Sub Read(userRecord As UserRecord)
     If userRecord Is Nothing Then Throw New ArgumentNullException("userRecord is null")
-    
-    If Me._cancel Then
-      Return
-    End If
     
     ' Excelファイルのパスを作成
     Dim filepath As String = String.Format(Me.properties.ExcelFilePath(), userRecord.GetIdNumber)
@@ -50,7 +40,7 @@ Public Class UserRecordReader
       Me.excel.Open(filepath, True)
       
       ' 各月のレコードを読み込む
-      For Each terms As DateTerm In userRecord.GetRecordDateTerm.MonthlyTerms
+      For Each m As DateTerm In userRecord.GetRecordDateTerm.MonthlyTerms
         Dim table As DataTable = userRecord.GetRecord(m.BeginDate.Month)
         
         Dim sheetName As String = Me.properties.SheetName(m.BeginDate.Month)
@@ -63,7 +53,7 @@ Public Class UserRecordReader
             
           ' 読み込んだデータをDataTableの行にセットする
           Dim dataRow As DataRow = table.Rows(day - m.BeginDate.Day)
-          For Each k In dict.Keys.Where(Function(k) Not String.IsNullOrWhiteSpace(dict(k)))
+          For Each k In dict.Keys.Where(Function(key) Not String.IsNullOrWhiteSpace(dict(key)))
             ' 取得したデータをその列の値のデータ型に変換してセットする
             Dim t As Type = table.Columns(k).DataType
             If t = GetType(Integer) Then
