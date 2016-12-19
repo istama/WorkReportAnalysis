@@ -78,6 +78,9 @@ Public Structure UserRecordColumnsInfo
   ''' 出勤日の列情報 
   Public ReadOnly workDayColInfo As ColumnInfo
   
+  ''' 作業項目の列情報のリスト
+  Private workItemList As List(Of WorkItemColumnsInfo)
+  
   Public Sub New(properties As ExcelProperties)
     If properties Is Nothing Then Throw New NullReferenceException("properties is null")
     
@@ -90,12 +93,19 @@ Public Structure UserRecordColumnsInfo
   ''' <summary>
   ''' 作業項目のコレクションを返す。
   ''' </summary>
-  Public Function WorkItemList() As IEnumerable(Of WorkItemColumnsInfo)
-    Return _
-      Me.properties.GetWorkItemParamsEnumerable().
-      Select(Function(params) WorkItemColumnsInfo.Create(params)).
-      Where(Function(colInfo) colInfo.HasValue).
-      Select(Function(colInfo) colInfo.Value)
+  Public Function WorkItems() As IEnumerable(Of WorkItemColumnsInfo)
+    ' 列情報のリストがまだ作成されていない場合
+    If Me.workItemList Is Nothing Then
+      Dim items As IEnumerable(Of WorkItemColumnsInfo) =
+        Me.properties.GetWorkItemParamsEnumerable().
+        Select(Function(params) WorkItemColumnsInfo.Create(params)).
+        Where(Function(colInfo) colInfo.HasValue).
+        Select(Function(colInfo) colInfo.Value)
+      
+      Me.workItemList = New List(Of WorkItemColumnsInfo)(items)
+    End If
+    
+    Return Me.workItemList
   End Function
   
   ''' <summary>
@@ -118,7 +128,7 @@ Public Structure UserRecordColumnsInfo
     End If
     
     ' 作業項目の列を追加する
-    For Each item As WorkItemColumnsInfo In WorkItemList()
+    For Each item As WorkItemColumnsInfo In WorkItems()
       If Not String.IsNullOrWhiteSpace(item.WorkCountColInfo.Name) Then
         table.Columns.Add(item.WorkCountColInfo.CreateDataColumn())
       End If
@@ -152,7 +162,7 @@ Public Structure UserRecordColumnsInfo
     End If
     
     ' 各作業項目の列を１つずつ返し、出勤日の列の子要素とする
-    For Each item As WorkItemColumnsInfo In WorkItemList()
+    For Each item As WorkItemColumnsInfo In WorkItems()
       Dim node As Nullable(Of ExcelColumnNode) = item.CreateExcelColumnNodeTree()
       
       If node.HasValue Then
