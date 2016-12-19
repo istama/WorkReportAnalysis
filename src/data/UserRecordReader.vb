@@ -17,7 +17,7 @@ Public Class UserRecordReader
   
   Private _cancel As Boolean = False
   
-  Public Sub New(properties As ExcelProperties, excel As Excel4)
+  Public Sub New(properties As ExcelProperties, excel As IExcel)
     If properties Is Nothing Then Throw New ArgumentNullException("properties is null")
     If excel      Is Nothing Then Throw New ArgumentNullException("excel is null")
     
