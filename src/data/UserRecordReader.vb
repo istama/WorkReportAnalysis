@@ -43,16 +43,13 @@ Public Class UserRecordReader
       For Each m As DateTerm In userRecord.GetRecordDateTerm.MonthlyTerms
         Dim table As DataTable = userRecord.GetRecord(m.BeginDate.Month)
         
-        Dim sheetName As String = Me.properties.SheetName(m.BeginDate.Month)
+        Dim rowIdx As Integer = m.BeginDate.Day - 1
         
-        ' 日にちごとにデータを読み込む
-        For day As Integer = m.BeginDate.Day To m.EndDate.Day
-          ' 行を指定してデータを読み込む
-          Dim row As Integer = day + Me.properties.FirstRow - 1
-          Dim dict As IDictionary(Of String, String) = Me.excel.Read(row, filepath, sheetName, colTree)
-            
+        ' 1行ずつ読み込む
+        For Each dict In ReadRecord(filepath, m, colTree)
           ' 読み込んだデータをDataTableの行にセットする
-          Dim dataRow As DataRow = table.Rows(day - m.BeginDate.Day)
+          Dim dataRow As DataRow = table.Rows(rowIdx)
+          
           For Each k In dict.Keys.Where(Function(key) Not String.IsNullOrWhiteSpace(dict(key)))
             ' 取得したデータをその列の値のデータ型に変換してセットする
             Dim t As Type = table.Columns(k).DataType
@@ -70,6 +67,8 @@ Public Class UserRecordReader
               dataRow(k) = dict(k)
             End If            
           Next
+          
+          rowIdx += 1
         Next
       Next
     Catch ex As Exception
@@ -78,4 +77,19 @@ Public Class UserRecordReader
       Me.excel.Close(filepath)
     End Try
   End Sub
+  
+  ''' <summary>
+  ''' 指定した月のレコードを１行ずつ読み込む。
+  ''' </summary>
+  Private Iterator Function ReadRecord(filepath As String, monthlyTerm As DateTerm, colTree As ExcelColumnNode) As IEnumerable(Of IDictionary(Of String, String))
+    ' シート名を作成
+    Dim sheetName As String = Me.properties.SheetName(monthlyTerm.BeginDate.Month)
+    
+    ' 日にちごとにデータを読み込む
+    Dim first As Integer = monthlyTerm.BeginDate.Day + Me.properties.FirstRow - 1
+    Dim _end  As Integer = monthlyTerm.EndDate.Day   + Me.properties.FirstRow - 1
+    For row As Integer = first To _end
+      Yield Me.excel.Read(row, filepath, sheetName, colTree)
+    Next
+  End Function
 End Class
