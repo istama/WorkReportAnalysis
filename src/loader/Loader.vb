@@ -60,7 +60,6 @@ Public Class Loader
   ''' 処理をキャンセルする。
   ''' </summary>
   Public Sub Cancel()
-    Me.userRecordLoader.Cancel
     Me._cancel = True
   End Sub
   

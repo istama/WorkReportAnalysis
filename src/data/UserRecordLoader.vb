@@ -115,10 +115,4 @@ Public Class UserRecordLoader
     End Try
   End Sub
   
-  ''' <summary>
-  ''' 読み込みをキャンセルする。
-  ''' </summary>
-  Public Sub Cancel()
-    Me.userRecordReader.Cancel
-  End Sub
 End Class
