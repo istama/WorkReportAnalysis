@@ -229,7 +229,7 @@ Public Structure WorkItemColumnsInfo
     End If
   End Sub
   
-  Public Shared Function Create(params As ExcelProperties.WorkItemParams) As WorkItemColumnsInfo?
+  Public Shared Function Create(params As ExcelProperties.WorkItemParams) As Nullable(Of WorkItemColumnsInfo)
     If params.Name Is Nothing OrElse params.Name = String.Empty Then
       Return Nothing
     Else
