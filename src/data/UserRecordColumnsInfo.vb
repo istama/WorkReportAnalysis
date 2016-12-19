@@ -52,8 +52,9 @@ Public Structure ColumnInfo
   
   ''' <summary>
   ''' Excelを読み込むための列ノードを作成する。
+  ''' ただし、コンストラクタに渡した列か列名が空文字の場合はnullを返す。
   ''' </summary> 
-  Public Function CreateExcelColumnNode() As ExcelColumnNode?
+  Public Function CreateExcelColumnNode() As Nullable(Of ExcelColumnNode)
     If col <> String.Empty AndAlso name <> String.Empty Then
       Return New ExcelColumnNode(col, name, containedToDataTable)
     Else
