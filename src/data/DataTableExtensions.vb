@@ -90,11 +90,39 @@ Public Module DataTableExtensions
   End Function
   
   ''' <summary>
+  ''' 指定した列の合計値をDouble型で求める。
+  ''' ただし条件に当てはまらなかった列の値合計に含めない。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Function SumByDouble(table As DataTable, colName As String, predicate As Func(Of DataRow, Boolean)) As Double
+    Return table.AsEnumerable().Where(Function(row) predicate(row)).Select(Function(row) row.Field(Of Double)(colName)).Sum()    
+  End Function
+  
+  ''' <summary>
   ''' 指定した列の合計値をInt型で求める。
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Function SumByInteger(table As DataTable, colName As String) As Integer
     Return table.AsEnumerable().Select(Function(row) row.Field(Of Integer)(colName)).Sum()    
+  End Function
+  
+  ''' <summary>
+  ''' 各列の合計値をおさめたDataRowを返す。
+  ''' ただし、IntegerとDouble型以外の列の合計は求めない。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Function SumRow(table As DataTable) As DataRow
+    Dim sum As DataRow = table.NewRow
+    
+    For Each col As DataColumn In table.Columns
+      If col.DataType = GetType(Integer) Then
+        sum(col.ColumnName) = table.SumByInteger(col.ColumnName)
+      ElseIf col.DataType = GetType(Double)
+        sum(col.ColumnName) = table.SumByDouble(col.ColumnName)
+      End If
+    Next
+    
+    Return sum
   End Function
   
   ''' <summary>

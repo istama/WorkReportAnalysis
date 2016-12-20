@@ -57,6 +57,13 @@ Public Class TestDataTableExtensions
     ' 指定した列の合計を求める
     '
     Assert.AreEqual(259.0, table.SumByDouble("weight"))
+    
+    '
+    ' ageが30以上のみの合計を求める
+    '
+    Assert.AreEqual(
+      139.9,
+      Math.Round(table.SumByDouble("weight", Function(row) row.Field(Of Integer)("age") > 30)), 1)
   End Sub
   
   <Test> _
