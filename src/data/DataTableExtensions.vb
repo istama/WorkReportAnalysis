@@ -53,11 +53,14 @@ Public Module DataTableExtensions
     Next
   End Sub
   
+  ''' <summary>
+  ''' 指定した行数以降のデータのみを新たなテーブルにセットして返す。
+  ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
-  Public Function Skip(_from As DataTable, cnt As Integer) As DataTable
+  Public Function Skip(_from As DataTable, row As Integer) As DataTable
     Dim newTable As DataTable = _from.Clone
     
-    For Each row As DataRow In _from.AsEnumerable().Skip(cnt)
+    For Each row As DataRow In _from.AsEnumerable().Skip(row)
       newTable.ImportRow(row)
     Next
     
