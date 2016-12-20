@@ -74,6 +74,23 @@ Public Class TestDataTableExtensions
     Assert.AreEqual(126, table.SumByInteger("age"))
   End Sub
   
+  <Test> _
+  Public Sub TestSumRow
+    Dim table As DataTable = CreateDefaultTable()
+    
+    AddData("john",   30, "England", 58.4, table)
+    AddData("george", 38, "America", 71.6, table)
+    AddData("gustav", 26, "Germen",  60.7, table)
+    AddData("taro",   32, "Japan",   68.3, table)
+    
+    '
+    ' 各列の合計値を収めた列を返しているかテスト
+    '
+    Dim sumRow As DataRow = table.SumRow()
+    Assert.AreEqual(126,   sumRow("age"),    "sum of age")
+    Assert.AreEqual(259.0, sumRow("weight"), "sum of weight")
+  End Sub
+  
   ''' <summary>
   ''' 行の値を判定する。
   ''' </summary>
