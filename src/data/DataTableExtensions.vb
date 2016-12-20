@@ -8,6 +8,63 @@ Imports Common.Extensions
 Public Module DataTableExtensions
   
   ''' <summary>
+  ''' データテーブルの値をコピーする。
+  ''' ただし、コピーされるのは２つのテーブルが共通して持っている名前と型の列の値のみ。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Sub CopyTo(_from As DataTable, _to As DataTable)
+    ' ２つのテーブルのうち少ないほうの行数を取得
+    Dim minRowCount As Integer = Math.Min(_from.Rows.Count, _to.Rows.Count)
+    
+    If minRowCount = 0 Then
+      Return
+    End If
+    
+    ' ２つのテーブルが共通して持っている列を取得
+    Dim commonCols = _from.Rows(0).CommonColumns(_to.Rows(0))
+    
+    ' コピーする
+    For idx As Integer = 0 To minRowCount - 1
+      Dim fromRow As DataRow = _from.Rows(idx)
+      Dim toRow   As DataRow = _to.Rows(idx)
+      For Each col As DataColumn In commonCols
+        toRow(col.ColumnName) = fromRow(col.ColumnName)
+      Next
+    Next
+  End Sub
+  
+  ''' <summary>
+  ''' データテーブルの行をコピーし、追加する。
+  ''' ただし、コピーされるのは２つのテーブルが共通して持っている名前と型の列の値のみ。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Sub WriteTo(_from As DataTable, _to As DataTable)
+    ' ２つのテーブルが共通して持っている列を取得
+    Dim commonCols = _from.Rows(0).CommonColumns(_to.Rows(0))
+    
+    ' コピーする
+    For idx As Integer = 0 To _from.Rows.Count - 1
+      Dim fromRow As DataRow = _from.Rows(idx)
+      Dim toRow   As DataRow = _to.NewRow
+      For Each col As DataColumn In commonCols
+        toRow(col.ColumnName) = fromRow(col.ColumnName)
+      Next
+      _to.Rows.Add(toRow)
+    Next
+  End Sub
+  
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Function Skip(_from As DataTable, cnt As Integer) As DataTable
+    Dim newTable As DataTable = _from.Clone
+    
+    For Each row As DataRow In _from.AsEnumerable().Skip(cnt)
+      newTable.ImportRow(row)
+    Next
+    
+    Return newTable
+  End Function
+  
+  ''' <summary>
   ''' 引数のテーブルの各列の値の合計を、引数の行オブジェクトにセットする。
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
