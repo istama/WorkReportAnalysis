@@ -123,16 +123,18 @@ Public NotInheritable Class UserRecord
     If newTable Is Nothing Then Throw New ArgumentNullException("newTable is Null")    
     
     For Each m As DateTerm In dateTerm.MonthlyTerms
-      Dim monthlyTable As DataTable = GetRecord(m.BeginDate.Month)
-      
+      Dim firstRow As Integer = m.BeginDate.Day - 1
+      Dim endRow   As Integer = m.EndDate.Day - 1
+      GetRecord(m.BeginDate.Month).
+        Take(endRow).Skip(firstRow).WriteTo(newTable)
       ' 各行のデータを新しいテーブルの行にコピーする
-      For Each d As DateTerm In m.DailyTerms
-        Dim row As Integer = d.BeginDate.Day - 1
-        Dim newRow As DataRow = newTable.NewRow
-        
-        monthlyTable.Rows(row).CopyTo(newRow)
-        newTable.Rows.Add(newRow)
-      Next      
+'      For Each d As DateTerm In m.DailyTerms
+'        Dim row As Integer = d.BeginDate.Day - 1
+'        Dim newRow As DataRow = newTable.NewRow
+'        
+'        monthlyTable.Rows(row).CopyTo(newRow)
+'        newTable.Rows.Add(newRow)
+'      Next      
     Next
   End Sub
   
