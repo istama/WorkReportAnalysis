@@ -53,7 +53,25 @@ Public Class TestDataTableExtensions
     AddData("gustav", 26, "Germen",  60.7, table)
     AddData("taro",   32, "Japan",   68.3, table)
     
+    '
+    ' 指定した列の合計を求める
+    '
     Assert.AreEqual(259.0, table.SumByDouble("weight"))
+  End Sub
+  
+  <Test> _
+  Public Sub TestSumByInteger
+    Dim table As DataTable = CreateDefaultTable()
+    
+    AddData("john",   30, "England", 58.4, table)
+    AddData("george", 38, "America", 71.6, table)
+    AddData("gustav", 26, "Germen",  60.7, table)
+    AddData("taro",   32, "Japan",   68.3, table)
+    
+    '
+    ' 指定した列の合計を求める
+    '
+    Assert.AreEqual(126, table.SumByInteger("age"))
   End Sub
   
   ''' <summary>

@@ -90,6 +90,14 @@ Public Module DataTableExtensions
   End Function
   
   ''' <summary>
+  ''' 指定した列の合計値をInt型で求める。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Function SumByInteger(table As DataTable, colName As String) As Integer
+    Return table.AsEnumerable().Select(Function(row) row.Field(Of Integer)(colName)).Sum()    
+  End Function
+  
+  ''' <summary>
   ''' 引数のテーブルの各列の値の合計を、引数の行オブジェクトにセットする。
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
