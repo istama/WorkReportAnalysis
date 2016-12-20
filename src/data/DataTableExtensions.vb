@@ -54,17 +54,39 @@ Public Module DataTableExtensions
   End Sub
   
   ''' <summary>
-  ''' 指定した行数以降のデータのみを新たなテーブルにセットして返す。
+  ''' 指定した行数までのデータを新たなテーブルにセットして返す。
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
-  Public Function Skip(_from As DataTable, row As Integer) As DataTable
+  Public Function Take(_from As DataTable, rowcnt As Integer) As DataTable
     Dim newTable As DataTable = _from.Clone
     
-    For Each row As DataRow In _from.AsEnumerable().Skip(row)
+    For Each row As DataRow In _from.AsEnumerable().Take(rowcnt)
       newTable.ImportRow(row)
     Next
     
     Return newTable
+  End Function
+  
+  ''' <summary>
+  ''' 指定した行数以降のデータのみを新たなテーブルにセットして返す。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Function Skip(_from As DataTable, rowcnt As Integer) As DataTable
+    Dim newTable As DataTable = _from.Clone
+    
+    For Each row As DataRow In _from.AsEnumerable().Skip(rowcnt)
+      newTable.ImportRow(row)
+    Next
+    
+    Return newTable
+  End Function
+  
+  ''' <summary>
+  ''' 指定した列の合計値をDouble型で求める。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Function SumByDouble(table As DataTable, colName As String) As Double
+    Return table.AsEnumerable().Select(Function(row) row.Field(Of Double)(colName)).Sum()    
   End Function
   
   ''' <summary>
