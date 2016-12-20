@@ -10,6 +10,24 @@ Imports System.Linq
 Public Class TestDataTableExtensions
   
   <Test> _
+  Public Sub TestTake
+    Dim table As DataTable = CreateDefaultTable()
+    
+    AddData("john",   30, "England", table)
+    AddData("george", 38, "America", table)
+    AddData("gustav", 26, "Germen",  table)
+    AddData("taro",   32, "Japan",   table)
+    
+    '
+    ' 元のテーブルの２行目までを抜き出しているかテスト
+    '
+    Dim subTable As DataTable = table.Take(2)
+    Assert.AreEqual(2, subTable.Rows.Count, "row size")
+    AssertEqualDataRow("john",   30, "England", subTable.Rows(0), "first row in subTable")
+    AssertEqualDataRow("george", 38, "America", subTable.Rows(1), "second row in subTable")    
+  End Sub
+  
+  <Test> _
   Public Sub TestSkip
     Dim table As DataTable = CreateDefaultTable()
     
