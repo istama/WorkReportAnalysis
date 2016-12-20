@@ -79,6 +79,12 @@ Public Class TestDataTableExtensions
     ' 指定した列の合計を求める
     '
     Assert.AreEqual(126, table.SumByInteger("age"))
+    
+    '
+    ' weightが65.0以上のみの合計を求める
+    '
+    Assert.AreEqual(
+      70, table.SumByInteger("age", Function(row) row.Field(Of Double)("weight") > 65.0), 1)
   End Sub
   
   <Test> _

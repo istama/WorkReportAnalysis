@@ -107,6 +107,15 @@ Public Module DataTableExtensions
   End Function
   
   ''' <summary>
+  ''' 指定した列の合計値をInt型で求める。
+  ''' ただし条件に当てはまらなかった列の値合計に含めない。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Function SumByInteger(table As DataTable, colName As String, predicate As Func(Of DataRow, Boolean)) As Integer
+    Return table.AsEnumerable().Where(Function(row) predicate(row)).Select(Function(row) row.Field(Of Integer)(colName)).Sum()    
+  End Function
+  
+  ''' <summary>
   ''' 各列の合計値をおさめたDataRowを返す。
   ''' ただし、IntegerとDouble型以外の列の合計は求めない。
   ''' </summary>
