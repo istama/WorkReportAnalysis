@@ -39,8 +39,16 @@ Public Module DataTableExtensions
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Sub WriteTo(_from As DataTable, _to As DataTable)
+    If _from.Rows.Count() = 0 Then Return
+    
     ' ２つのテーブルが共通して持っている列を取得
-    Dim commonCols = _from.Rows(0).CommonColumns(_to.Rows(0))
+    Dim r As DataRow
+    If _to.Rows.Count > 0 Then
+      r = _to.Rows(0)
+    Else
+      r = _to.NewRow
+    End If
+    Dim commonCols = _from.Rows(0).CommonColumns(r)
     
     ' コピーする
     For idx As Integer = 0 To _from.Rows.Count - 1
