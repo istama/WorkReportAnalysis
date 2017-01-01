@@ -157,6 +157,24 @@ Public Module DataTableExtensions
   End Function
   
   ''' <summary>
+  ''' 各列の合計値を引数のDataRowにセットする。
+  ''' ただし、渡したテーブルと行が共通して持っている列以外の列はスルーする。
+  ''' また、IntegerとDouble型以外の列の合計は求めない。
+  ''' </summary>
+  <System.Runtime.CompilerServices.ExtensionAttribute()>
+  Public Sub SumRow(table As DataTable, resultRow As DataRow)
+    Dim row As DataRow = table.NewRow
+    
+    For Each col As DataColumn In row.CommonColumns(resultRow)
+      If col.DataType = GetType(Integer) Then
+        resultRow(col.ColumnName) = table.SumByInteger(col.ColumnName)
+      ElseIf col.DataType = GetType(Double)
+        resultRow(col.ColumnName) = table.SumByDouble(col.ColumnName)
+      End If
+    Next
+  End Sub
+  
+  ''' <summary>
   ''' 引数のテーブルの各列の値の合計を、引数の行オブジェクトにセットする。
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
