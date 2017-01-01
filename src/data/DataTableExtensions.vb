@@ -94,7 +94,10 @@ Public Module DataTableExtensions
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Function SumByDouble(table As DataTable, colName As String) As Double
-    Return table.AsEnumerable().Select(Function(row) row.Field(Of Double)(colName)).Sum()    
+    Return _
+      table.AsEnumerable().
+        Where(Function(row) row.IsNull(colName) = False).
+        Select(Function(row) row.Field(Of Double)(colName)).Sum()
   End Function
   
   ''' <summary>
@@ -103,7 +106,11 @@ Public Module DataTableExtensions
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Function SumByDouble(table As DataTable, colName As String, predicate As Func(Of DataRow, Boolean)) As Double
-    Return table.AsEnumerable().Where(Function(row) predicate(row)).Select(Function(row) row.Field(Of Double)(colName)).Sum()    
+    Return _
+      table.AsEnumerable().
+        Where(Function(row) row.IsNull(colName) = False).
+        Where(Function(row) predicate(row)).
+        Select(Function(row) row.Field(Of Double)(colName)).Sum()
   End Function
   
   ''' <summary>
@@ -111,7 +118,10 @@ Public Module DataTableExtensions
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Function SumByInteger(table As DataTable, colName As String) As Integer
-    Return table.AsEnumerable().Select(Function(row) row.Field(Of Integer)(colName)).Sum()    
+    Return _
+      table.AsEnumerable().
+        Where(Function(row) row.IsNull(colName) = False).
+        Select(Function(row) row.Field(Of Integer)(colName)).Sum()
   End Function
   
   ''' <summary>
@@ -120,7 +130,11 @@ Public Module DataTableExtensions
   ''' </summary>
   <System.Runtime.CompilerServices.ExtensionAttribute()>
   Public Function SumByInteger(table As DataTable, colName As String, predicate As Func(Of DataRow, Boolean)) As Integer
-    Return table.AsEnumerable().Where(Function(row) predicate(row)).Select(Function(row) row.Field(Of Integer)(colName)).Sum()    
+    Return _
+      table.AsEnumerable().
+        Where(Function(row) row.IsNull(colName) = False).
+        Where(Function(row) predicate(row)).
+        Select(Function(row) row.Field(Of Integer)(colName)).Sum()
   End Function
   
   ''' <summary>
