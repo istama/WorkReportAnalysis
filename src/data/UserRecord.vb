@@ -28,13 +28,23 @@ Public NotInheritable Class UserRecord
   ''' 各月ごとに分割されたデータを持つオブジェクト
   Private ReadOnly record As New ConcurrentDictionary(Of Integer, DataTable)
   
-  Public Sub New(userinfo As UserInfo, recordColumnsInfo As UserRecordColumnsInfo, properties As ExcelProperties)
+  Public Sub New(userinfo As UserInfo, recordColumnsInfo As UserRecordColumnsInfo, dataDateTerm As DateTerm)
     If userinfo   Is Nothing Then Throw New ArgumentNullException("userinfo is null")
+    
+    Dim begin As DateTime = dataDateTerm.BeginDate
+    Dim _end  As DateTime = dataDateTerm.EndDate
+    Dim year  As Integer  = _end.Year - begin.Year
+    If year > 1 OrElse (year = 1 AndAlso begin.Month <= _end.Month) Then
+      Throw New ArgumentException(
+        "データ期間は１年以内にしてください。" & vbCrLf &
+        "BeginDate: " & begin.ToString("yyyy/MM/dd") & " EndDate: " & _end.ToString("yyyy/MM/dd"))
+    End If
+    
     
     Me.idNumber       = userinfo.GetSimpleId
     Me.name           = userinfo.GetName
     Me.columnsInfo    = recordColumnsInfo
-    Me.dateTerm       = New DateTerm(properties.BeginDate, properties.EndDate)
+    Me.dateTerm       = dataDateTerm
     Me.record         = CreateDataTables(Me.dateTerm)
   End Sub
   
@@ -46,7 +56,7 @@ Public NotInheritable Class UserRecord
     
     ' 月単位でテーブルを作成する
     For Each m As DateTerm In dateTerm.MonthlyTerms
-      Dim table As DataTable = Me.columnsInfo.CreateDataTable(Nothing)
+      Dim table As DataTable = Me.columnsInfo.CreateDataTable()
       Dim d As DateTime = m.BeginDate
       
       ' 日付の数だけテーブルの行を作成する
@@ -73,6 +83,9 @@ Public NotInheritable Class UserRecord
     Return Me.columnsInfo.CreateExcelColumnNodeTree
   End Function
   
+  ''' <summary>
+  ''' データの期間を取得する。
+  ''' </summary>
   Public Function GetRecordDateTerm() As DateTerm
     Return Me.dateTerm 
   End Function
@@ -91,169 +104,86 @@ Public NotInheritable Class UserRecord
   
   ''' <summary>
   ''' 指定した月の１日単位のデータを取得する。
+  ''' データ期間内に収まらない日のデータは含まれない。
   ''' </summary>
-  Public Function GetDailyDataTableForAMonth(year As Integer, month As Integer) As DataTable
-    Dim first As New DateTime(year, month, 1)
-    Dim _end As New DateTime(year, month, Date.DaysInMonth(year, month))
+  Public Function GetDailyDataTable(year As Integer, month As Integer) As DataTable
+    Dim min As New DateTime(year, month, 1)
+    Dim max As New DateTime(year, month, DateTime.DaysInMonth(year, month))
     
-    Return GetDailyDataTableLabelingDate(New DateTerm(first, _end), Function(term) term.BeginDate.Day & "日")
-  End Function
-  
-  ''' <summary>
-  ''' １列目に日付をつけて指定した期間の１日単位のデータを取得する。
-  ''' </summary>
-  Public Function GetDailyDataTableLabelingDate(dateTerm As DateTerm, f As Func(Of dateTerm, String)) As DataTable
-    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
-    Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetDailyDataTable(term, table)
-    
-    Dim idx As Integer = 0
-    For Each t As DateTerm In term.DailyTerms
-      table.Rows(idx)(UserRecordColumnsInfo.DATE_COL_NAME) = f(t)
-      idx += 1
-    Next
-    
-    Return table
+    Return GetDailyDataTable(New DateTerm(min, max))
   End Function
   
   ''' <summary>
   ''' 指定した期間の１日単位のデータを取得する。
+  ''' データ期間内に収まらない日のデータは含まれない。
   ''' </summary>
-  Private Sub GetDailyDataTable(dateTerm As DateTerm, newTable As DataTable)
-    If newTable Is Nothing Then Throw New ArgumentNullException("newTable is Null")    
-    
-    For Each m As DateTerm In dateTerm.MonthlyTerms
-      Dim firstRow As Integer = m.BeginDate.Day - 1
-      Dim endRow   As Integer = m.EndDate.Day - 1
-      GetRecord(m.BeginDate.Month).
-        Take(endRow).Skip(firstRow).WriteTo(newTable)
-      ' 各行のデータを新しいテーブルの行にコピーする
-'      For Each d As DateTerm In m.DailyTerms
-'        Dim row As Integer = d.BeginDate.Day - 1
-'        Dim newRow As DataRow = newTable.NewRow
-'        
-'        monthlyTable.Rows(row).CopyTo(newRow)
-'        newTable.Rows.Add(newRow)
-'      Next      
-    Next
-  End Sub
-  
-  ''' <summary>
-  ''' １列目に日付をつけて指定した期間の１週間単位のデータを取得する。
-  ''' </summary>
-  Public Function GetWeeklyDataTableLabelingDate(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
-    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
+  Public Function GetDailyDataTable(dateTerm As DateTerm) As DataTable
+    ' 新しいテーブルを作成する    
+    Dim newTable As DataTable = Me.columnsInfo.CreateDataTable()
+    ' 日付の範囲がこのデータの日付の範囲を越えていた場合、範囲内に収めるよう調整する
     Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetWeeklyDataTable(term, table, exceptsWorkCountOfZeroWorkTimeIs)
     
-    Dim weekCountInMonth = DateUtils.GetWeekCountInMonth(term.BeginDate, DayOfWeek.Saturday)
-    Dim f As Func(Of DateTime, DateTime, String) =
-      Function(b, e)
-        Dim str As String
-        If b.Month = e.Month Then
-          str = String.Format("{0}月第{1}週", b.Month, weekCountInMonth)
-          weekCountInMonth += 1
-        Else
-          str = String.Format("{0}月第{1}週/{2}月第1週", b.Month, weekCountInMonth, e.Month)
-          weekCountInMonth = 2
-        End If
-        Return str
-      End Function      
-    
-    Dim idx As Integer = 0
-    For Each t As DateTerm In term.WeeklyTerms(DayOfWeek.Saturday, f)
-      table.Rows(idx)(UserRecordColumnsInfo.DATE_COL_NAME) = t.Label
-      idx += 1
+    ' 各月のデータを新しいテーブルに書き込む
+    For Each m As DateTerm In term.MonthlyTerms
+      GetRecord(m.BeginDate.Month).
+        Take(m.EndDate.Day).
+        Skip(m.BeginDate.Day - 1).WriteTo(newTable)
     Next
     
-    Return table
+    Return newTable
   End Function
   
   ''' <summary>
   ''' 指定した期間の１週間単位のデータを取得する。
   ''' </summary>
-  Private Sub GetWeeklyDataTable(dateTerm As DateTerm, newTable As DataTable, exceptsWorkCountOfZeroWorkTimeIs As Boolean)
-    If newTable Is Nothing Then Throw New ArgumentNullException("newTable is Null") 
+  Public Function GetWeeklyDataTable(dateTerm As DateTerm, exceptsRowUnfilled As Boolean) As DataTable
+    ' 新しいテーブルを作成する
+    Dim newTable As DataTable = Me.columnsInfo.CreateDataTable()
     
-    dateTerm.WeeklyTerms.ForEach(
-      Sub(w)
-        Dim tmpTable As DataTable = Me.columnsInfo.CreateDataTable(String.Empty)
-        GetDailyDataTable(w, tmpTable)
-      
-        Dim newRow As DataRow = newTable.NewRow
-        If exceptsWorkCountOfZeroWorkTimeIs Then
-          tmpTable.SumExceptWorkCountOfZeroWorkTimeIs(newRow, columnsInfo)          
-        Else
-          tmpTable.Sum(newRow, Me.columnsInfo)  
-        End If
-        
-        newTable.Rows.Add(newRow)
-      ENd Sub)
-  End Sub
-
-  ''' <summary>
-  ''' １列目に日付をつけて指定した期間の１ヶ月単位のデータを取得する。
-  ''' </summary>
-  Public Function GetMonthlyDataTableLabelingDate(dateTerm As DateTerm, exceptsWorkCountOfZeroWorkTimeIs As Boolean) As DataTable
-    Dim table As DataTable = Me.columnsInfo.CreateDataTable(UserRecordColumnsInfo.DATE_COL_NAME)
-    Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetMonthlyDataTable(term, table, exceptsWorkCountOfZeroWorkTimeIs)
-    
-    Dim idx As Integer = 0
-    For Each t As DateTerm In term.MonthlyTerms(Function(b, e) b.Month & "月")
-      table.Rows(idx)(UserRecordColumnsInfo.DATE_COL_NAME) = t.Label
-      idx += 1
+    ' 各週の合計値を新しいテーブルにセットする
+    For Each w As DateTerm In ModifyDateTerm(dateTerm).WeeklyTerms()
+      Dim newRow As DataRow = newTable.NewRow
+      GetSumDataRow(w, exceptsRowUnfilled).CopyTo(newRow)
+      newTable.Rows.Add(newRow)
     Next
     
-    Return table
+    Return newTable
   End Function
   
   ''' <summary>
   ''' 指定した期間の１ヶ月単位のデータを取得する。
   ''' </summary>
-  Public Sub GetMonthlyDataTable(dateTerm As DateTerm, newTable As DataTable, exceptsWorkCountOfZeroWorkTimeIs As Boolean)
-    If newTable Is Nothing Then Throw New ArgumentNullException("newTable is Null") 
+  Public Function GetMonthlyDataTable(dateTerm As DateTerm, exceptsRowUnfilled As Boolean) As DataTable
+    ' 新しいテーブルを作成する
+    Dim newTable As DataTable = Me.columnsInfo.CreateDataTable()
     
-     dateTerm.MonthlyTerms.ForEach(
-      Sub(m)
-        Dim tmpTable As DataTable = Me.columnsInfo.CreateDataTable(String.Empty)
-        GetDailyDataTable(m, tmpTable)
-      
-        Dim newRow As DataRow = newTable.NewRow
-        If exceptsWorkCountOfZeroWorkTimeIs Then
-          tmpTable.SumExceptWorkCountOfZeroWorkTimeIs(newRow, Me.columnsInfo)
-        Else
-          tmpTable.Sum(newRow, Me.columnsInfo)  
-        End If
-        
-        newTable.Rows.Add(newRow)
-      ENd Sub)   
-  End Sub
-
-  ''' <summary>
-  ''' 指定した期間の行の集計を返す。
-  ''' </summary>
-  Public Sub GetTotalDataRow(dateTerm As DateTerm, resultRow As DataRow, exceptsWorkCountOfZeroWorkTimeIs As Boolean)
-    Dim table As DataTable = Me.columnsInfo.CreateDataTable(String.Empty)
-    Dim term As DateTerm = ModifyDateTerm(dateTerm)
-    GetDailyDataTable(term, table)
+    ' 各月の合計値を新しいテーブルにセットする
+    For Each m As DateTerm In ModifyDateTerm(dateTerm).MonthlyTerms()
+      Dim newRow As DataRow = newTable.NewRow
+      GetSumDataRow(m, exceptsRowUnfilled).CopyTo(newRow)        
+      newTable.Rows.Add(newRow)
+    Next
     
-    If exceptsWorkCountOfZeroWorkTimeIs Then
-      table.SumExceptWorkCountOfZeroWorkTimeIs(resultRow, Me.columnsInfo)
-    Else
-      table.Sum(resultRow, Me.columnsInfo)
-    End If
-  End Sub
+    Return newTable
+  End Function
   
   ''' <summary>
-  ''' 指定したテーブルの指定した行のデータを、別の行コレクションにセットする。
+  ''' 指定した期間のデータの各列の合計値をセットした行データを返す。
+  ''' 作業時間が０の作業件数を合計値から外すこともできる。
   ''' </summary>
-  Private Sub CopyRow(table As DataTable, row As Integer, toRow As DataRow)
-    Dim dataRow As DataRow = table.Rows(row)
-    For Each column As DataColumn In table.Columns
-      toRow(column.ColumnName) = dataRow(column.ColumnName)
-    Next
-  End Sub
+  Public Function GetSumDataRow(dateTerm As DateTerm, exceptsRowUnfilled As Boolean) As DataRow
+    ' 日付の範囲がこのデータの日付の範囲を越えていた場合、範囲内に収めるよう調整する
+    Dim term As DateTerm = ModifyDateTerm(dateTerm)
+    ' 指定した期間のデータをすべて取得する
+    Dim table As DataTable = GetDailyDataTable(term)
+    
+    ' 作業時間が０の作業件数を合計値に含めるかどうか
+    If exceptsRowUnfilled Then
+      Return UserRecordCalculation.SumRowExceptedUnfilled(table, Me.columnsInfo)    
+    Else
+      Return table.SumRow()  
+    End If
+  End Function
   
   ''' <summary>
   ''' 日付の範囲がこのレコードの期間の範囲外だった場合、その範囲内におさめて返す。
@@ -276,20 +206,4 @@ Public NotInheritable Class UserRecord
     Return New DateTerm(beginDate, endDate)
   End Function
   
-  Private Function ToStringFromFirstColumnItemType(type As UserRecordFirstColumnItemType) As String
-    If type = UserRecordFirstColumnItemType.UserName Then
-      Return UserRecordColumnsInfo.NAME_COL_NAME
-    ElseIf type = UserRecordFirstColumnItemType.DataDate
-      Return UserRecordColumnsInfo.DATE_COL_NAME
-    Else
-      Return String.Empty
-    End If
-  End Function
-  
 End Class
-
-Public Enum UserRecordFirstColumnItemType
-  UserName
-  DataDate
-  None
-End Enum
