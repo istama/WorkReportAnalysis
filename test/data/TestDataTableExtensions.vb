@@ -102,6 +102,14 @@ Public Class TestDataTableExtensions
     Dim sumRow As DataRow = table.SumRow()
     Assert.AreEqual(126,   sumRow("age"),    "sum of age")
     Assert.AreEqual(259.0, sumRow("weight"), "sum of weight")
+    
+    '
+    ' 引数の行に合計値がセットされているかテスト
+    '
+    Dim sumRow2 As DataRow = table.NewRow
+    table.SumRow(sumRow2)
+    Assert.AreEqual(126,   sumRow2("age"),    "sum of age")
+    Assert.AreEqual(259.0, sumRow2("weight"), "sum of weight")
   End Sub
   
   ''' <summary>
