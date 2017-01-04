@@ -212,10 +212,20 @@ Public Class UserRecordManager
   Public Function GetAllUserSumRecord(dateTerm As DateTerm, exceptsRowUnfilled As Boolean) As DataTable
     Dim allUserTable As DataTable = Me.GetUserRecordColumnsInfo.CreateDataTable(UserRecordColumnsInfo.NAME_COL_NAME)
     
+    ' 指定した期間のデータを集計した行を取得する関数
+    Dim funcToGetDataRow As Func(Of UserRecord, DataRow) = Nothing
+    If dateTerm.BeginDate = dateTerm.EndDate Then
+      ' 期間が１日の場合、備考欄も取得したいため、集計行ではなくその日の行で取得する
+      funcToGetDataRow = Function(record) record.GetDailyDataTable(dateTerm).Rows(0)
+    Else
+      ' 期間が２日以上の場合、その期間のデータの集計行を取得する
+      funcToGetDataRow = Function(record) record.GetSumDataRow(dateTerm, exceptsRowUnfilled)
+    End If
+    
     ' 各ユーザのレコードの集計値を計算し、新しいテーブルを作成する
     For Each record As UserRecord In Me.userRecordBuffer.GetUserRecordAll
       ' 指定した期間の値を集計した行を取得
-      Dim sumRow As DataRow = record.GetSumDataRow(dateTerm, exceptsRowUnfilled)
+      Dim sumRow As DataRow = funcToGetDataRow(record)
       ' 集計テーブルの行に集計値をコピー      
       Dim newRow As DataRow = allUserTable.NewRow
       sumRow.CopyTo(newRow)
