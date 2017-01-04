@@ -15,6 +15,9 @@ Public Partial Class MainForm
 	
 	Private pageNameAndTermDictionary As IDictionary(Of String, DateTerm)
 	
+	''' <summary>
+	''' タブページを初期化する。
+	''' </summary>
 	Private Sub InitPersonalDataGridView()
 		Me.pageNameAndTermDictionary = New Dictionary(Of String, dateTerm)
 		Me.InitTabPageInPersonalTab()
@@ -24,30 +27,26 @@ Public Partial Class MainForm
 	''' タブに月ごとのページが用意されるよう初期化する。
 	''' </summary>
 	Private Sub InitTabPageInPersonalTab()
-		Dim isPageOne As Boolean = True ' 1ページ目かどうか
-
-    Dim monthly As List(Of dateTerm) = 
-      Me.dateTerm.MonthlyTerms(Function(b, e) String.Format("{0}月分", b.Month.ToString))
-
-	 	  ' 期間を月単位で区切ってタブページを設定
-		  monthly.ForEach(
-  		  Sub(term)
-    			Dim pageName As String = Me.excelProperties.SheetName(term.BeginDate.Month)
-    			
-    			' １ページ目は既に用意されているのでページを作成しない
-    			If isPageOne Then
-    			  'AddHandler Me.gridMonth10InPersonal.ColumnHeaderMouseClick, AddressOf SortDataGridView
-    			  
-    				Me.tabInPersonalTab.TabPages.Item(0).Text = pageName
-    				isPageOne = False				
-    			Else
-    				Me.tabInPersonalTab.TabPages.Add(CreateTabPage(pageName))
-    			End If
-    			
-    			' ページ名と日付をひもつける
-    			Me.pageNameAndTermDictionary.Add(pageName, term)
-        End Sub)
-  		
+		Dim isFirstPage As Boolean = True ' 1ページ目かどうか
+		
+		' １ヶ月ごとにタブページを追加する
+    For Each m As DateTerm In Me.dateTerm.MonthlyTerms(Function(b, e) String.Format("{0}月分", b.Month.ToString))
+      Dim pageName As String = Me.excelProperties.SheetName(m.BeginDate.Month)
+      
+      ' １ページ目は既に用意されているのでページを作成しない
+      If isFirstPage Then
+        'AddHandler Me.gridMonth10InPersonal.ColumnHeaderMouseClick, AddressOf SortDataGridView
+        Me.tabInPersonalTab.TabPages.Item(0).Text = pageName
+        isFirstPage = False
+      Else
+        Me.tabInPersonalTab.TabPages.Add(CreateTabPage(pageName))
+      End If
+      
+      ' ページ名とデータ期間をひもつけて格納する
+      Me.pageNameAndTermDictionary.Add(pageName, m)  
+    Next
+    
+    ' 集計ページを追加する
     Me.tabInPersonalTab.TabPages.Add(CreateTabPage(PAGE_NAME_TOTAL))
 	End Sub
 	
@@ -105,18 +104,16 @@ Public Partial Class MainForm
         End If
   		  
   		  If month >= 1 AndAlso month <= 12 Then 
-  		    Dim table As DataTable =
-  		      Me.userRecordManager.GetDailyRecordLabelingDate(userInfo, Me.dateTerm.BeginDate.Year, month)
+  		    grid.DataSource = Me.userRecordManager.GetDailyRecord(userInfo, Me.dateTerm.BeginDate.Year, month, Me.chkBoxExcludeData.Checked)
           
-          grid.DataSource = table
-          HoldFirstColumn(grid)
+          HoldFirstColumn(grid) ' ビューの横スクロール時に１列目を固定して表示するようにする
           SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
           SetColor(grid, Me.dateTerm.BeginDate.Year, month)
   		  Else
   		    ' 集計ページを表示する
-  		    Dim table As DataTable = Me.userRecordManager.GetSumRecord(userInfo, Me.chkBoxExcludeData.Checked)
-  		    grid.DataSource = table
-  		    HoldFirstColumn(grid)
+  		    grid.DataSource = Me.userRecordManager.GetSumRecord(userInfo, Me.chkBoxExcludeData.Checked)
+  		    
+  		    HoldFirstColumn(grid) ' ビューの横スクロール時に１列目を固定して表示するようにする
   		    SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
   		    SetColorToOnlyTotalRow(grid)
   		  End If
