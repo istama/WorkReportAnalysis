@@ -32,7 +32,7 @@ Public Class UserRecordReader
     ' Excelファイルのパスを作成
     Dim filepath As String = String.Format(Me.properties.ExcelFilePath(), userRecord.GetIdNumber)
     ' 読み込む列
-    Dim colTree As ExcelColumnNode = userRecord.GetCulumnNodeTree
+    Dim colTree As ExcelColumnNode = userRecord.GetExcelCulumnNodeTree
     
     Try
       ' Excelファイルを開く
