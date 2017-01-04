@@ -326,7 +326,7 @@ Public Class UserRecordManager
           Dim time As Double  = dataRow.Field(Of Double)(timeColName)
           ' 0以上なら計算する
           If cnt > 0 AndAlso time > 0.0 Then
-            dataRow(productColName) = cnt / time
+            dataRow(productColName) = Math.Round(cnt / time, 2)
           End If
         End If
       End If
