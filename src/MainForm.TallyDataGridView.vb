@@ -11,6 +11,9 @@ Imports Common.Threading
 
 Public Partial Class MainForm
   
+  ''' <summary>
+  ''' タブページを初期化する。
+  ''' </summary>
   Private Sub InitTallyDataGridView()
     InitCboxTallyMonthly()
   End Sub
@@ -19,7 +22,11 @@ Public Partial Class MainForm
   ''' 集計データの月のコンボボックスの要素を初期化する。
   ''' </summary>
   Sub InitCboxTallyMonthly()
-    Dim monthly As List(Of DateTerm) = Me.dateTerm.MonthlyTerms()
+    ' 期間を月単位で区切ったリストを取得する
+    Dim monthly As IEnumerable(Of DateTerm) =
+      Me.dateTerm.MonthlyTerms(Function(begin, _end) begin.Month.ToString & "月")
+    
+    ' 月単位でコンボボックスにセットする
     InitComboBox(
       Me.cboxTallyMonthly,
       monthly,
@@ -33,26 +40,21 @@ Public Partial Class MainForm
 	End Sub
 	
 	Public Sub ShowTallyDataGridView()
-		Dim tabPage As TabPage = Me.tabInTallyTab.SelectedTab
-		Dim pageName As String = tabPage.Text
-		
-		Dim grid As DataGridView = GetShowingDataGridViewInTallyDataPage()
+		Dim pageName As String       = Me.tabInTallyTab.SelectedTab.Text
+		Dim grid     As DataGridView = GetShowingDataGridViewInTallyDataPage()
 		
     Try
       If pageName = "日" Then
         Dim term As DateTerm = DirectCast(Me.cboxTallyMonthly.SelectedValue, DateTerm)
-        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserDailyRecord(term, Me.chkBoxExcludeData.Checked)
-        grid.DataSource = table
+        grid.DataSource = Me.userRecordManager.GetDailyTotalRecord(term, Me.chkBoxExcludeData.Checked)
         
         SetColor(grid, term.BeginDate.Year, term.BeginDate.Month)
   		ElseIf pageName = "週"
-        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserWeeklyRecord(Me.dateTerm, Me.chkBoxExcludeData.Checked)
-        grid.DataSource = table
+        grid.DataSource = Me.userRecordManager.GetWeeklyTotalRecord(Me.dateTerm, Me.chkBoxExcludeData.Checked)
         
         SetColorToOnlyTotalRow(grid)
   		ElseIf pageName = "月"
-        Dim table As DataTable = Me.userRecordManager.GetTotalOfAllUserMonthlyRecord(Me.dateTerm, Me.chkBoxExcludeData.Checked)
-        grid.DataSource = table
+        grid.DataSource = Me.userRecordManager.GetMonthlyTotalRecord(Me.dateTerm, Me.chkBoxExcludeData.Checked)
         
         SetColorToOnlyTotalRow(grid)
   		Else
