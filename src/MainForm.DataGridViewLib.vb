@@ -3,6 +3,7 @@
 '
 Imports System.Linq
 Imports System.Data
+Imports Common.Extensions
 Imports Common.Util
 Imports Common.IO
 
@@ -124,15 +125,18 @@ Public Partial Class MainForm
   ''' DataGridViewをソートする。
   ''' </summary>
   Public Sub SortDataGridView(sender As Object, e As DataGridViewCellMouseEventArgs)
-    Dim grid As DataGridView = DirectCast(sender, DataGridView)
-    Dim table As DataTable = DirectCast(grid.DataSource, DataTable)
+    Dim grid  As DataGridView = DirectCast(sender, DataGridView)
+    Dim table As DataTable    = DirectCast(grid.DataSource, DataTable)
     
     Dim list As New List(Of DataRow)
     For Each dataRow As DataRow In table.Rows
       list.Add(dataRow)
     Next
     
-    list.Sort(New DataRowCompare(table, e.ColumnIndex, True))
+    ' 指定した列で行をソートする
+    Dim idx As Integer = e.ColumnIndex
+    list.Sort(New DataRowCompare(idx, table.Columns(idx).DataType, True))
+    
     grid.DataSource = list.CopyToDataTable()
   End Sub
   
@@ -173,52 +177,53 @@ Public Partial Class MainForm
 	End Function	
 End Class
 
+''' <summary>
+''' 行と行を指定した列で比較するためのクラス。
+''' </summary>
 Public Class DataRowCompare
   Implements IComparer(Of DataRow)
   
-  Private ReadOnly table As DataTable
+  ''' 比較する列のインデックス。
   Private ReadOnly index As Integer
+  ''' 比較する列の型。
+  Private ReadOnly type  As Type
+  ''' 昇順か降順か。 trueなら昇順。
   Private ReadOnly isAsc As Boolean
   
-  
-  Public Sub New(table As DataTable, index As Integer, isAsc As Boolean)
-    Me.table = table
+  Public Sub New(index As Integer, type As Type, isAsc As Boolean)
     Me.index = index
+    Me.type  = type
     Me.isAsc = isAsc
   End Sub
   
   Public Function Compare(x As DataRow, y As DataRow) As Integer Implements IComparer(Of DataRow).Compare
-    ' 値がない行はソートの後方へ
-    If System.Convert.IsDBNull(x(Me.index)) Then
-      Return BackValue()
-    ElseIf System.Convert.IsDBNull(y(Me.index))
-      Return BackValue()
-    End If
-    
-    Dim type As Type = Me.table.Columns(Me.index).DataType
-    If type = GetType(String) Then
-      If Me.index = 0 Then
-        Dim xv As Integer = HeadNumber(DirectCast(x(Me.index), String))
-        Dim yv As Integer = HeadNumber(DirectCast(y(Me.index), String))
-        
-        If yv = -1 Then
-          Return BackValue()
-        ElseIf xv = -1 
-          Return BackValue()
-        End If
-        
-        Return xv - yv
-      Else
-        Return DirectCast(x(Me.index), String).CompareTo(DirectCast(y(Me.index), String))
-      End If
+    If Me.type = GetType(String) Then
+      Return Cmp(Of String)(x, y, String.Empty)      
     ElseIf type = GetType(Integer)
-      'Return DirectCast(x(Me.index), Integer) - DirectCast(y(Me.index), Integer)
-      Return DirectCast(x(Me.index), Integer).CompareTo(DirectCast(y(Me.index), Integer))
+      Return Cmp(Of Integer)(x, y, -1)      
     ElseIf type = GetType(Double)
-      Return DirectCast(x(Me.index), Double).CompareTo(DirectCast(y(Me.index), Double))
+      Return Cmp(Of Double)(x, y, 1.0)      
     Else
       Throw New InvalidCastException("DataTableに無効な型の値があります。")
     End If
+  End Function
+  
+  ''' <summary>
+  ''' ２つの行を比較する
+  ''' </summary>
+  Private Function Cmp(Of T As IComparable)(xRow As DataRow, yRow As DataRow, def As T) As Integer
+    Dim xv As T = xRow.GetOrDefault(Of T)(Me.index, def)
+    Dim yv As T = yRow.GetOrDefault(Of T)(Me.index, def)
+    
+    If xv.Equals(yv) Then
+      Return 0
+    ElseIf xv.Equals(def)
+      Return BackValue()
+    ElseIf yv.Equals(def)
+      Return FrontValue()
+    End If
+    
+    Return xv.CompareTo(yv)    
   End Function
   
   ''' <summary>
@@ -229,6 +234,17 @@ Public Class DataRowCompare
       Return 1
     Else
       Return -1
+    End If
+  End Function
+  
+  ''' <summary>
+  ''' 昇順でも降順でも前にソートするための値。
+  ''' </summary>
+  Private Function FrontValue() As Integer
+    If Me.isAsc Then
+      Return -1
+    Else
+      Return 1
     End If
   End Function
   
