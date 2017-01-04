@@ -9,6 +9,9 @@ Imports Common.Extensions
 
 Public Partial Class MainForm
   
+  ''' <summary>
+  ''' タブページを初期化する。
+  ''' </summary>
   Private Sub InitDateDataGridView()
     InitDateTimePicker()
     InitCboxWeekly()
@@ -27,24 +30,23 @@ Public Partial Class MainForm
 	''' 日付データの週のコンボボックスの要素を初期化する。
 	''' </summary>
 	Private Sub InitCboxWeekly()
-	  ' 開始日がその月の中で何週目か取得する
-	  Dim weekCountInMonth As Integer = DateUtils.GetWeekCountInMonth(Me.dateTerm.BeginDate, DayOfWeek.Saturday)
+	  ' 週はじめと週末の日付を取得して、月の第何週かを表す文字列を返す関数
+	  Dim funcToGetWeekCount As Func(Of DateTime, DateTime, String) =
+	    Function(weekStart, weekEnd)
+	      Dim cnt As Integer = DateUtils.GetWeekCountInMonth(weekStart, DayOfWeek.Saturday)
+	      Dim str As String  = String.Format("{0}月第{1}週", weekStart.Month, cnt)
+	      
+        If weekStart.Month <> weekEnd.Month Then
+          str = str & String.Format("/{0}月第1週", weekEnd.Month)
+        End If
+        
+        Return str
+      End Function
+	  
+	  
 	  ' 期間を週単位で区切ったリストを取得する
-    Dim weeklys As List(Of DateTerm) = _
-      Me.dateTerm.WeeklyTerms(
-        DayOfWeek.Saturday,
-        Function(b, e)
-          Dim str As String
-          If b.Month = e.Month Then
-            str = String.Format("{0}月第{1}週", b.Month, weekCountInMonth)
-            weekCountInMonth += 1
-          Else
-            str = String.Format("{0}月第{1}週/{2}月第1週", b.Month, weekCountInMonth, e.Month)
-            weekCountInMonth = 2
-          End If
-          
-          Return str
-        End Function)
+    Dim weeklys As IEnumerable(Of DateTerm) = _
+      Me.dateTerm.WeeklyTerms(DayOfWeek.Saturday, funcToGetWeekCount)
     
     ' 週単位でコンボボックスにセットする
     InitComboBox(
@@ -58,7 +60,11 @@ Public Partial Class MainForm
   ''' 日付データの月のコンボボックスの要素を初期化する。
   ''' </summary>
   Sub InitCboxMonthly()
-    Dim monthly As List(Of DateTerm) = Me.dateTerm.MonthlyTerms()
+    ' 期間を月単位で区切ったリストを取得する
+    Dim monthly As IEnumerable(Of DateTerm) =
+      Me.dateTerm.MonthlyTerms(Function(begin, _end) begin.Month.ToString & "月")
+    
+    ' 月単位でコンボボックスにセットする
     InitComboBox(
       Me.cboxMonthly,
       monthly,
@@ -82,11 +88,9 @@ Public Partial Class MainForm
   		Dim grid As DataGridView = GetShowingDataGridViewInDateDataPage()
   		
   		If grid IsNot Nothing AndAlso term.EndDate <> #01/01/1900# Then
-        Dim table As DataTable = 
-          Me.userRecordManager.GetTallyRecordOfEachUser(term, Me.chkBoxExcludeData.Checked)
+        grid.DataSource = Me.userRecordManager.GetAllUserSumRecord(term, Me.chkBoxExcludeData.Checked)
         
-        grid.DataSource = table
-        HoldFirstColumn(grid)
+        HoldFirstColumn(grid) ' ビューの横スクロール時に１列目を固定して表示するようにする
         SetViewSize(grid, Me.userRecordManager.GetUserRecordColumnsInfo)
         SetColorToOnlyTotalRow(grid)
       End If
