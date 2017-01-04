@@ -30,28 +30,10 @@ Public Partial Class MainForm
 	''' 日付データの週のコンボボックスの要素を初期化する。
 	''' </summary>
 	Private Sub InitCboxWeekly()
-	  ' 週はじめと週末の日付を取得して、月の第何週かを表す文字列を返す関数
-	  Dim funcToGetWeekCount As Func(Of DateTime, DateTime, String) =
-	    Function(weekStart, weekEnd)
-	      Dim cnt As Integer = DateUtils.GetWeekCountInMonth(weekStart, DayOfWeek.Saturday)
-	      Dim str As String  = String.Format("{0}月第{1}週", weekStart.Month, cnt)
-	      
-        If weekStart.Month <> weekEnd.Month Then
-          str = str & String.Format("/{0}月第1週", weekEnd.Month)
-        End If
-        
-        Return str
-      End Function
-	  
-	  
-	  ' 期間を週単位で区切ったリストを取得する
-    Dim weeklys As IEnumerable(Of DateTerm) = _
-      Me.dateTerm.WeeklyTerms(DayOfWeek.Saturday, funcToGetWeekCount)
-    
     ' 週単位でコンボボックスにセットする
     InitComboBox(
       Me.cboxWeekly,
-      weeklys,
+      Me.dateTerm.LabelingWeeklyTerms(),
       GetType(DateTerm),
       Function(w) w.Label)
   End Sub
@@ -60,14 +42,10 @@ Public Partial Class MainForm
   ''' 日付データの月のコンボボックスの要素を初期化する。
   ''' </summary>
   Sub InitCboxMonthly()
-    ' 期間を月単位で区切ったリストを取得する
-    Dim monthly As IEnumerable(Of DateTerm) =
-      Me.dateTerm.MonthlyTerms(Function(begin, _end) begin.Month.ToString & "月")
-    
     ' 月単位でコンボボックスにセットする
     InitComboBox(
       Me.cboxMonthly,
-      monthly,
+      Me.dateTerm.LabelingMonthlyTerms(),
       GetType(DateTerm),
       Function(m) m.Label)
   End Sub
