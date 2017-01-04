@@ -134,31 +134,12 @@ Public Class UserRecordManager
     If record Is Nothing Then Throw New ArgumentNullException("record is null")
     
     Dim table         As DataTable  = record.GetWeeklyDataTable(dateTerm, exceptsRowUnfilled)
-    Dim labelingTable As DataTable  = CreateDataTableLabelingDate(table, dateTerm.WeeklyTerms(DayOfWeek.Saturday, GetFuncForLabelingWeeklyTerms(dateTerm)))
+    Dim labelingTable As DataTable  = CreateDataTableLabelingDate(table, dateTerm.LabelingWeeklyTerms())
     
     ' 生産性を計算し列にセットする
     CalcProductivity(labelingTable)
     
     Return labelingTable
-  End Function
-  
-  ''' <summary>
-  ''' DateTerm.WeeklyTerms()のラベルを生成する関数を返す。
-  ''' </summary>
-  Private Function GetFuncForLabelingWeeklyTerms(dateTerm As DateTerm) As Func(Of DateTime, DateTime, String)
-    Dim weekCountInMonth = DateUtils.GetWeekCountInMonth(dateTerm.BeginDate, DayOfWeek.Saturday)
-    Return _
-      Function(b, e)
-        Dim str As String
-        If b.Month = e.Month Then
-          str = String.Format("{0}月第{1}週", b.Month, weekCountInMonth)
-          weekCountInMonth += 1
-        Else
-          str = String.Format("{0}月第{1}週/{2}月第1週", b.Month, weekCountInMonth, e.Month)
-          weekCountInMonth = 2
-        End If
-        Return str
-      End Function      
   End Function
   
   ''' <summary>
@@ -195,8 +176,8 @@ Public Class UserRecordManager
   Private Function GetMonthlyRecordNotContainedSumRow(record As UserRecord, dateTerm As DateTerm, exceptsRowUnfilled As Boolean) As DataTable
     If record Is Nothing Then Throw New ArgumentNullException("record is null")
     
-    Dim table         As DataTable  = record.GetMonthlyDataTable(dateTerm, exceptsRowUnfilled)
-    Dim labelingTable As DataTable  = CreateDataTableLabelingDate(table, dateTerm.MonthlyTerms(Function(b, e) b.Month & "月"))
+    Dim table         As DataTable = record.GetMonthlyDataTable(dateTerm, exceptsRowUnfilled)
+    Dim labelingTable As DataTable = CreateDataTableLabelingDate(table, dateTerm.LabelingMonthlyTerms())
     
     ' 生産性を計算し列にセットする
     CalcProductivity(labelingTable)
