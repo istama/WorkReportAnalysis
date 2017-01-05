@@ -16,6 +16,7 @@ Public Partial Class MainForm
   ''' </summary>
   Private Sub InitTallyDataGridView()
     InitCboxTallyMonthly()
+    InitTabPageInTallyTab()
   End Sub
   
   ''' <summary>
@@ -32,6 +33,16 @@ Public Partial Class MainForm
       monthly,
       GetType(DateTerm),
       Function(m) m.Label)
+  End Sub
+  
+  ''' <summary>
+  ''' タブページの要素を初期化する。
+  ''' </summary>
+  Sub InitTabPageInTallyTab()
+    ' GridViewの列名をクリックされたときに実行されるハンドラを登録する
+    AddHandler Me.gridDailyInTally.ColumnHeaderMouseClick, AddressOf SortDataGridView
+    AddHandler Me.gridWeeklyInTally.ColumnHeaderMouseClick, AddressOf SortDataGridView
+    AddHandler Me.gridMonthlyInTally.ColumnHeaderMouseClick, AddressOf SortDataGridView
   End Sub
   
 	Sub TabInTallyTab_SelectedIndexChanged(sender As Object, e As EventArgs)
