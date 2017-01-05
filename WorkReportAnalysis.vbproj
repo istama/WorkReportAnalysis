@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="src\data\DataTableExtensions.vb" />
     <Compile Include="src\data\UserRecordBuffer.vb" />
+    <Compile Include="src\data\UserRecordCalculation.vb" />
     <Compile Include="src\data\UserRecordColumnsInfo.vb" />
     <Compile Include="src\data\UserRecordLoader.vb" />
     <Compile Include="src\data\UserRecordManager.vb" />
@@ -104,16 +105,23 @@
     <Compile Include="src\MyProperties.vb" />
     <Compile Include="src\MySaveFileDialog.vb" />
     <Compile Include="src\Program.vb" />
+    <Compile Include="src\util\DataTableCompare.vb" />
+    <Compile Include="src\util\DateTermExtensions.vb" />
     <Compile Include="test\data\TestColumnNode.vb" />
+    <Compile Include="test\data\TestDataTableExtensions.vb" />
     <Compile Include="test\data\TestExcelReader.vb" />
     <Compile Include="test\data\TestLoader.vb" />
     <Compile Include="test\data\TestUserRecord.vb" />
+    <Compile Include="test\data\TestUserRecordBuffer.vb" />
+    <Compile Include="test\data\TestUserRecordColumnsInfo.vb" />
+    <Compile Include="test\data\TestUserRecordManager.vb" />
     <Compile Include="test\data\TestUserRecordReader.vb" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="bin\Debug\application.properties" />
     <None Include="bin\Debug\excel.properties" />
+    <None Include="bin\Debug\test\ExcelForTest.properties" />
     <None Include="bin\Debug\userinfo.txt" />
     <None Include="bin\Release\excel.properties" />
     <None Include="bin\Release\userinfo.txt" />
@@ -126,10 +134,12 @@
   <ItemGroup>
     <Folder Include="bin" />
     <Folder Include="bin\Debug" />
+    <Folder Include="bin\Debug\test" />
     <Folder Include="bin\Release" />
     <Folder Include="src" />
     <Folder Include="src\data" />
     <Folder Include="src\loader" />
+    <Folder Include="src\util" />
     <Folder Include="test" />
     <Folder Include="test\data" />
   </ItemGroup>
