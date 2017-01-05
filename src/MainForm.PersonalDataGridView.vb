@@ -35,7 +35,7 @@ Public Partial Class MainForm
       
       ' １ページ目は既に用意されているのでページを作成しない
       If isFirstPage Then
-        'AddHandler Me.gridMonth10InPersonal.ColumnHeaderMouseClick, AddressOf SortDataGridView
+        AddHandler Me.gridMonth10InPersonal.ColumnHeaderMouseClick, AddressOf SortDataGridView
         Me.tabInPersonalTab.TabPages.Item(0).Text = pageName
         isFirstPage = False
       Else
@@ -63,13 +63,14 @@ Public Partial Class MainForm
 		
 		' 作成したタブページ内にDataGridViewのコントロールを追加する
 		Dim grid As New DataGridView
+		grid.Name     = pageName & "GridView"
 		grid.Location = New Point(3, 3)
 		grid.Margin   = New Padding(3)
 		grid.Dock     = DockStyle.Fill
 		grid.ScrollBars = ScrollBars.Both
 		grid.AllowUserToAddRows = False
 		
-		'AddHandler grid.ColumnHeaderMouseClick, AddressOf SortDataGridView
+		AddHandler grid.ColumnHeaderMouseClick, AddressOf SortDataGridView
 		
 		page.Controls.Add(grid)
 		
