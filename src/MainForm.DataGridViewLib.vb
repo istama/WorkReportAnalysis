@@ -137,7 +137,7 @@ Public Partial Class MainForm
     Next
     
     ' 指定した列で行をソートする
-    list.Sort(Me.dataTableCompare.GetDataRowCompare(table, e.ColumnIndex))
+    list.Sort(Me.dataTableCompare.GetDataRowCompare(grid.Name, table, e.ColumnIndex))
     
     grid.DataSource = list.CopyToDataTable()
   End Sub
