@@ -50,12 +50,12 @@ Partial Class MainForm
 	  Me.tPageTally = New System.Windows.Forms.TabPage()
 	  Me.tabInTallyTab = New System.Windows.Forms.TabControl()
 	  Me.tPageDailyInTally = New System.Windows.Forms.TabPage()
-	  Me.dataGridView1 = New System.Windows.Forms.DataGridView()
+	  Me.gridDailyInTally = New System.Windows.Forms.DataGridView()
 	  Me.cboxTallyMonthly = New System.Windows.Forms.ComboBox()
 	  Me.tPageWeeklyInTally = New System.Windows.Forms.TabPage()
-	  Me.dataGridView2 = New System.Windows.Forms.DataGridView()
+	  Me.gridWeeklyInTally = New System.Windows.Forms.DataGridView()
 	  Me.tPageMonthlyInTally = New System.Windows.Forms.TabPage()
-	  Me.dataGridView3 = New System.Windows.Forms.DataGridView()
+	  Me.gridMonthlyInTally = New System.Windows.Forms.DataGridView()
 	  Me.btnClose = New System.Windows.Forms.Button()
 	  Me.btnReload = New System.Windows.Forms.Button()
 	  Me.btnOutputCsv = New System.Windows.Forms.Button()
@@ -78,11 +78,11 @@ Partial Class MainForm
 	  Me.tPageTally.SuspendLayout
 	  Me.tabInTallyTab.SuspendLayout
 	  Me.tPageDailyInTally.SuspendLayout
-	  CType(Me.dataGridView1,System.ComponentModel.ISupportInitialize).BeginInit
+	  CType(Me.gridDailyInTally,System.ComponentModel.ISupportInitialize).BeginInit
 	  Me.tPageWeeklyInTally.SuspendLayout
-	  CType(Me.dataGridView2,System.ComponentModel.ISupportInitialize).BeginInit
+	  CType(Me.gridWeeklyInTally,System.ComponentModel.ISupportInitialize).BeginInit
 	  Me.tPageMonthlyInTally.SuspendLayout
-	  CType(Me.dataGridView3,System.ComponentModel.ISupportInitialize).BeginInit
+	  CType(Me.gridMonthlyInTally,System.ComponentModel.ISupportInitialize).BeginInit
 	  Me.SuspendLayout
 	  '
 	  'tabRoot
@@ -356,7 +356,7 @@ Partial Class MainForm
 	  'tPageDailyInTally
 	  '
 	  Me.tPageDailyInTally.BackColor = System.Drawing.SystemColors.Control
-	  Me.tPageDailyInTally.Controls.Add(Me.dataGridView1)
+	  Me.tPageDailyInTally.Controls.Add(Me.gridDailyInTally)
 	  Me.tPageDailyInTally.Controls.Add(Me.cboxTallyMonthly)
 	  Me.tPageDailyInTally.Location = New System.Drawing.Point(4, 22)
 	  Me.tPageDailyInTally.Name = "tPageDailyInTally"
@@ -365,20 +365,20 @@ Partial Class MainForm
 	  Me.tPageDailyInTally.TabIndex = 0
 	  Me.tPageDailyInTally.Text = "日"
 	  '
-	  'dataGridView1
+	  'gridDailyInTally
 	  '
-	  Me.dataGridView1.AllowUserToAddRows = false
-	  Me.dataGridView1.AllowUserToDeleteRows = false
-	  Me.dataGridView1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
+	  Me.gridDailyInTally.AllowUserToAddRows = false
+	  Me.gridDailyInTally.AllowUserToDeleteRows = false
+	  Me.gridDailyInTally.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
 	  	  	  Or System.Windows.Forms.AnchorStyles.Left)  _
 	  	  	  Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
-	  Me.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-	  Me.dataGridView1.Location = New System.Drawing.Point(3, 31)
-	  Me.dataGridView1.Name = "dataGridView1"
-	  Me.dataGridView1.ReadOnly = true
-	  Me.dataGridView1.RowTemplate.Height = 21
-	  Me.dataGridView1.Size = New System.Drawing.Size(735, 234)
-	  Me.dataGridView1.TabIndex = 4
+	  Me.gridDailyInTally.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+	  Me.gridDailyInTally.Location = New System.Drawing.Point(3, 31)
+	  Me.gridDailyInTally.Name = "gridDailyInTally"
+	  Me.gridDailyInTally.ReadOnly = true
+	  Me.gridDailyInTally.RowTemplate.Height = 21
+	  Me.gridDailyInTally.Size = New System.Drawing.Size(735, 234)
+	  Me.gridDailyInTally.TabIndex = 4
 	  '
 	  'cboxTallyMonthly
 	  '
@@ -394,7 +394,7 @@ Partial Class MainForm
 	  'tPageWeeklyInTally
 	  '
 	  Me.tPageWeeklyInTally.BackColor = System.Drawing.SystemColors.Control
-	  Me.tPageWeeklyInTally.Controls.Add(Me.dataGridView2)
+	  Me.tPageWeeklyInTally.Controls.Add(Me.gridWeeklyInTally)
 	  Me.tPageWeeklyInTally.Location = New System.Drawing.Point(4, 22)
 	  Me.tPageWeeklyInTally.Name = "tPageWeeklyInTally"
 	  Me.tPageWeeklyInTally.Padding = New System.Windows.Forms.Padding(3)
@@ -402,25 +402,25 @@ Partial Class MainForm
 	  Me.tPageWeeklyInTally.TabIndex = 1
 	  Me.tPageWeeklyInTally.Text = "週"
 	  '
-	  'dataGridView2
+	  'gridWeeklyInTally
 	  '
-	  Me.dataGridView2.AllowUserToAddRows = false
-	  Me.dataGridView2.AllowUserToDeleteRows = false
-	  Me.dataGridView2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
+	  Me.gridWeeklyInTally.AllowUserToAddRows = false
+	  Me.gridWeeklyInTally.AllowUserToDeleteRows = false
+	  Me.gridWeeklyInTally.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
 	  	  	  Or System.Windows.Forms.AnchorStyles.Left)  _
 	  	  	  Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
-	  Me.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-	  Me.dataGridView2.Location = New System.Drawing.Point(3, 31)
-	  Me.dataGridView2.Name = "dataGridView2"
-	  Me.dataGridView2.ReadOnly = true
-	  Me.dataGridView2.RowTemplate.Height = 21
-	  Me.dataGridView2.Size = New System.Drawing.Size(735, 234)
-	  Me.dataGridView2.TabIndex = 5
+	  Me.gridWeeklyInTally.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+	  Me.gridWeeklyInTally.Location = New System.Drawing.Point(3, 31)
+	  Me.gridWeeklyInTally.Name = "gridWeeklyInTally"
+	  Me.gridWeeklyInTally.ReadOnly = true
+	  Me.gridWeeklyInTally.RowTemplate.Height = 21
+	  Me.gridWeeklyInTally.Size = New System.Drawing.Size(735, 234)
+	  Me.gridWeeklyInTally.TabIndex = 5
 	  '
 	  'tPageMonthlyInTally
 	  '
 	  Me.tPageMonthlyInTally.BackColor = System.Drawing.SystemColors.Control
-	  Me.tPageMonthlyInTally.Controls.Add(Me.dataGridView3)
+	  Me.tPageMonthlyInTally.Controls.Add(Me.gridMonthlyInTally)
 	  Me.tPageMonthlyInTally.Location = New System.Drawing.Point(4, 22)
 	  Me.tPageMonthlyInTally.Name = "tPageMonthlyInTally"
 	  Me.tPageMonthlyInTally.Padding = New System.Windows.Forms.Padding(3)
@@ -428,20 +428,20 @@ Partial Class MainForm
 	  Me.tPageMonthlyInTally.TabIndex = 2
 	  Me.tPageMonthlyInTally.Text = "月"
 	  '
-	  'dataGridView3
+	  'gridMonthlyInTally
 	  '
-	  Me.dataGridView3.AllowUserToAddRows = false
-	  Me.dataGridView3.AllowUserToDeleteRows = false
-	  Me.dataGridView3.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
+	  Me.gridMonthlyInTally.AllowUserToAddRows = false
+	  Me.gridMonthlyInTally.AllowUserToDeleteRows = false
+	  Me.gridMonthlyInTally.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom)  _
 	  	  	  Or System.Windows.Forms.AnchorStyles.Left)  _
 	  	  	  Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
-	  Me.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-	  Me.dataGridView3.Location = New System.Drawing.Point(3, 31)
-	  Me.dataGridView3.Name = "dataGridView3"
-	  Me.dataGridView3.ReadOnly = true
-	  Me.dataGridView3.RowTemplate.Height = 21
-	  Me.dataGridView3.Size = New System.Drawing.Size(735, 234)
-	  Me.dataGridView3.TabIndex = 5
+	  Me.gridMonthlyInTally.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+	  Me.gridMonthlyInTally.Location = New System.Drawing.Point(3, 31)
+	  Me.gridMonthlyInTally.Name = "gridMonthlyInTally"
+	  Me.gridMonthlyInTally.ReadOnly = true
+	  Me.gridMonthlyInTally.RowTemplate.Height = 21
+	  Me.gridMonthlyInTally.Size = New System.Drawing.Size(735, 234)
+	  Me.gridMonthlyInTally.TabIndex = 5
 	  '
 	  'btnClose
 	  '
@@ -463,6 +463,7 @@ Partial Class MainForm
 	  Me.btnReload.TabIndex = 2
 	  Me.btnReload.Text = "全ファイル読み込み"
 	  Me.btnReload.UseVisualStyleBackColor = true
+	  AddHandler Me.btnReload.Click, AddressOf Me.BtnReloadClick
 	  '
 	  'btnOutputCsv
 	  '
@@ -521,17 +522,17 @@ Partial Class MainForm
 	  Me.tPageTally.ResumeLayout(false)
 	  Me.tabInTallyTab.ResumeLayout(false)
 	  Me.tPageDailyInTally.ResumeLayout(false)
-	  CType(Me.dataGridView1,System.ComponentModel.ISupportInitialize).EndInit
+	  CType(Me.gridDailyInTally,System.ComponentModel.ISupportInitialize).EndInit
 	  Me.tPageWeeklyInTally.ResumeLayout(false)
-	  CType(Me.dataGridView2,System.ComponentModel.ISupportInitialize).EndInit
+	  CType(Me.gridWeeklyInTally,System.ComponentModel.ISupportInitialize).EndInit
 	  Me.tPageMonthlyInTally.ResumeLayout(false)
-	  CType(Me.dataGridView3,System.ComponentModel.ISupportInitialize).EndInit
+	  CType(Me.gridMonthlyInTally,System.ComponentModel.ISupportInitialize).EndInit
 	  Me.ResumeLayout(false)
 	  Me.PerformLayout
 	End Sub
-	Private dataGridView3 As System.Windows.Forms.DataGridView
-	Private dataGridView2 As System.Windows.Forms.DataGridView
-	Private dataGridView1 As System.Windows.Forms.DataGridView
+	Private gridMonthlyInTally As System.Windows.Forms.DataGridView
+	Private gridWeeklyInTally As System.Windows.Forms.DataGridView
+	Private gridDailyInTally As System.Windows.Forms.DataGridView
 	Private gridTallyInDate As System.Windows.Forms.DataGridView
 	Private gridMonthlyInDate As System.Windows.Forms.DataGridView
 	Private gridWeeklyInDate As System.Windows.Forms.DataGridView
