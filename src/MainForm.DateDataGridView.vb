@@ -16,6 +16,7 @@ Public Partial Class MainForm
     InitDateTimePicker()
     InitCboxWeekly()
     InitCboxMonthly()
+    InitTabPageInDateTab()
   End Sub
   
 	''' <summary>
@@ -50,6 +51,16 @@ Public Partial Class MainForm
       Function(m) m.Label)
   End Sub
   
+  ''' <summary>
+  ''' タブページの要素を初期化する。
+  ''' </summary>
+  Sub InitTabPageInDateTab()
+    ' GridViewの列名をクリックされたときに実行されるハンドラを登録する
+    AddHandler Me.gridDailyInDate.ColumnHeaderMouseClick, AddressOf SortDataGridView
+    AddHandler Me.gridWeeklyInDate.ColumnHeaderMouseClick, AddressOf SortDataGridView
+    AddHandler Me.gridMonthlyInDate.ColumnHeaderMouseClick, AddressOf SortDataGridView
+    AddHandler Me.gridTallyInDate.ColumnHeaderMouseClick, AddressOf SortDataGridView
+  End Sub
   
 	Sub TabInDateTab_SelectedIndexChanged(sender As Object, e As EventArgs)
 		If initialized = False Then Return
