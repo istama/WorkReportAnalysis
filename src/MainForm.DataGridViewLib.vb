@@ -15,6 +15,9 @@ Public Partial Class MainForm
   ''' DataGridViewにおける合計行の色
   Private ReadOnly TOTAL_ROW_COLOR   As Color = Color.LightGreen
   
+  ''' DataTableをソートするために使用する。
+  Private ReadOnly dataTableCompare As New DataTableCompare()
+  
   ''' <summary>
   ''' 現在表示されているDataGridViewを取得する。
   ''' </summary>
@@ -134,8 +137,7 @@ Public Partial Class MainForm
     Next
     
     ' 指定した列で行をソートする
-    Dim idx As Integer = e.ColumnIndex
-    list.Sort(New DataRowCompare(idx, table.Columns(idx).DataType, True))
+    list.Sort(Me.dataTableCompare.GetDataRowCompare(table, e.ColumnIndex))
     
     grid.DataSource = list.CopyToDataTable()
   End Sub
@@ -177,98 +179,3 @@ Public Partial Class MainForm
 	End Function	
 End Class
 
-''' <summary>
-''' 行と行を指定した列で比較するためのクラス。
-''' </summary>
-Public Class DataRowCompare
-  Implements IComparer(Of DataRow)
-  
-  ''' 比較する列のインデックス。
-  Private ReadOnly index As Integer
-  ''' 比較する列の型。
-  Private ReadOnly type  As Type
-  ''' 昇順か降順か。 trueなら昇順。
-  Private ReadOnly isAsc As Boolean
-  
-  Public Sub New(index As Integer, type As Type, isAsc As Boolean)
-    Me.index = index
-    Me.type  = type
-    Me.isAsc = isAsc
-  End Sub
-  
-  Public Function Compare(x As DataRow, y As DataRow) As Integer Implements IComparer(Of DataRow).Compare
-    If Me.type = GetType(String) Then
-      Return Cmp(Of String)(x, y, String.Empty)      
-    ElseIf type = GetType(Integer)
-      Return Cmp(Of Integer)(x, y, -1)      
-    ElseIf type = GetType(Double)
-      Return Cmp(Of Double)(x, y, 1.0)      
-    Else
-      Throw New InvalidCastException("DataTableに無効な型の値があります。")
-    End If
-  End Function
-  
-  ''' <summary>
-  ''' ２つの行を比較する
-  ''' </summary>
-  Private Function Cmp(Of T As IComparable)(xRow As DataRow, yRow As DataRow, def As T) As Integer
-    Dim xv As T = xRow.GetOrDefault(Of T)(Me.index, def)
-    Dim yv As T = yRow.GetOrDefault(Of T)(Me.index, def)
-    
-    If xv.Equals(yv) Then
-      Return 0
-    ElseIf xv.Equals(def)
-      Return BackValue()
-    ElseIf yv.Equals(def)
-      Return FrontValue()
-    End If
-    
-    Return xv.CompareTo(yv)    
-  End Function
-  
-  ''' <summary>
-  ''' 昇順でも降順でも後ろにソートするための値。
-  ''' </summary>
-  Private Function BackValue() As Integer
-    If Me.isAsc Then
-      Return 1
-    Else
-      Return -1
-    End If
-  End Function
-  
-  ''' <summary>
-  ''' 昇順でも降順でも前にソートするための値。
-  ''' </summary>
-  Private Function FrontValue() As Integer
-    If Me.isAsc Then
-      Return -1
-    Else
-      Return 1
-    End If
-  End Function
-  
-  ''' <summary>
-  ''' 文字列の先頭に数字があれば、それを数値に変換して返す。
-  ''' </summary>
-  Private Function HeadNumber(text As String) As Integer
-    If String.IsNullOrWhiteSpace(text) Then 
-      Return -1
-    End If
-    
-    ' 先頭から数字の文字列のみを取り出す
-    Dim chars As IEnumerable(Of Char) =
-      text.TakeWhile(Function(c) Asc(c) >= Asc("0"c) AndAlso Asc(c) <= Asc("9"c))
-    
-    If chars.Count = 0 Then 
-      Return -1
-    End If
-    
-    ' 数値に変換し、桁数をかける
-    Dim nums As IEnumerable(Of Integer) =
-      chars.Select(Function(c, idx) Integer.Parse(c) * CType(Math.Pow(10, chars.Count - idx - 1), Integer))
-    
-    ' 合計を返す
-    Return nums.Sum
-  End Function
-End Class
