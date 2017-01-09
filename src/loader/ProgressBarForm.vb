@@ -68,8 +68,6 @@ Public Partial Class ProgressBarForm
           End Sub))
     Catch ex As Exception
     	MsgBox.ShowError(ex)
-    Finally
-      loader.Quit
     End Try
 	End Sub
   

@@ -28,10 +28,6 @@ Public Class Loader
     Return Me.UserInfoManager.UserInfoCount
   End Function
   
-  Public Sub Quit
-    Me.userRecordLoader.Quit
-  End Sub
-  
   ''' <summary>
   ''' 読み込み処理を開始する。
   ''' </summary>
