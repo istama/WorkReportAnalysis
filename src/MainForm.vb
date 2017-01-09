@@ -212,7 +212,9 @@ Public Partial Class MainForm
 	  If initialized = False Then Return
 	  
 	  ' 現在表示されているDataGridViewを取得する
-	  Dim grid As DataGridView = GetShowingDataGridView()
+	  Dim showingTab As TabControl   = GetChildControl(Of TabControl)(Me.tabRoot.SelectedTab)
+	  Dim grid       As DataGridView = GetChildControl(Of DataGridView)(showingTab.SelectedTab)
+	  
 	  If grid IsNot Nothing Then
 	    Dim table As DataTable = DirectCast(grid.DataSource, DataTable)
 	    

@@ -21,22 +21,6 @@ Public Partial Class MainForm
   ''' <summary>
   ''' 現在表示されているDataGridViewを取得する。
   ''' </summary>
-  Function GetShowingDataGridView() As DataGridView
-		Dim pageName = Me.tabRoot.SelectedTab.Text
-		If pageName = TABPAGE_NAME_PERSONAL Then
-			Return Me.GetChildControl(Of DataGridView)(Me.tabInPersonalTab.SelectedTab)
-		ElseIf pageName = TABPAGE_NAME_DATE
-			Return Me.GetChildControl(Of DataGridView)(Me.tabInDateTab.SelectedTab)
-		ElseIf pageName = TABPAGE_NAME_TOTAL
-		  Return Me.GetChildControl(Of DataGridView)(Me.tabInTallyTab.SelectedTab)
-		Else
-		  Return Nothing
-		End If		
-  End Function
-  
-  ''' <summary>
-  ''' 現在表示されているDataGridViewを取得する。
-  ''' </summary>
   Function GetShowingDataName() As String
 		Dim pageName = Me.tabRoot.SelectedTab.Text
 		If pageName = TABPAGE_NAME_PERSONAL Then
