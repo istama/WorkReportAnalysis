@@ -143,15 +143,7 @@ Public Partial Class MainForm
   End Sub
   
 	Public Function GetDataGridView(tabPage As TabPage) As DataGridView
-		Dim grid As DataGridView = Nothing
-		For i = 0 To tabPage.Controls.Count
-			grid = TryCast(tabPage.Controls.Item(i), DataGridView)
-			If grid IsNot Nothing Then
-				Exit For
-			End If
-		Next
-		
-		Return grid
+		Return tabPage.Controls.OfType(Of DataGridView)().First()
 	End Function
 	
 	Public Function GetComboBox(tabPage As TabPage) As ComboBox
@@ -167,6 +159,7 @@ Public Partial Class MainForm
 	End Function
 	
 	Public Function GetDateTimePicker(tabPage As TabPage) As DateTimePicker
+	  
 		Dim dPicker As DateTimePicker = Nothing
 		For i = 0 To tabPage.Controls.Count
 			dPicker = TryCast(tabPage.Controls.Item(i), DateTimePicker)
