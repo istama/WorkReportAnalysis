@@ -24,11 +24,11 @@ Public Partial Class MainForm
   Function GetShowingDataGridView() As DataGridView
 		Dim pageName = Me.tabRoot.SelectedTab.Text
 		If pageName = TABPAGE_NAME_PERSONAL Then
-			Return Me.GetDataGridView(Me.tabInPersonalTab.SelectedTab)
+			Return Me.GetChildControl(Of DataGridView)(Me.tabInPersonalTab.SelectedTab)
 		ElseIf pageName = TABPAGE_NAME_DATE
-			Return Me.GetDataGridView(Me.tabInDateTab.SelectedTab)
+			Return Me.GetChildControl(Of DataGridView)(Me.tabInDateTab.SelectedTab)
 		ElseIf pageName = TABPAGE_NAME_TOTAL
-		  Return Me.GetDataGridView(Me.tabInTallyTab.SelectedTab)
+		  Return Me.GetChildControl(Of DataGridView)(Me.tabInTallyTab.SelectedTab)
 		Else
 		  Return Nothing
 		End If		
@@ -142,16 +142,12 @@ Public Partial Class MainForm
     grid.DataSource = list.CopyToDataTable()
   End Sub
   
-	Public Function GetDataGridView(tabPage As TabPage) As DataGridView
-		Return tabPage.Controls.OfType(Of DataGridView)().First()
-	End Function
-	
-	Public Function GetComboBox(tabPage As TabPage) As ComboBox
-	  Return tabPage.Controls.OfType(Of ComboBox)().First()
-	End Function
-	
-	Public Function GetDateTimePicker(tabPage As TabPage) As DateTimePicker
-	  Return tabPage.Controls.OfType(Of DateTimePicker)().First()
-	End Function	
+  ''' <summary>
+  ''' 指定した型のコントロールを取得する。
+  ''' </summary>
+  Public Function GetChildControl(Of T As Control)(tabPage As TabPage) As T
+    Return tabPage.Controls.OfType(Of T)().First()
+  End Function
+  
 End Class
 
