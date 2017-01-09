@@ -19,7 +19,7 @@ Public Partial Class MainForm
   Private ReadOnly dataTableCompare As New DataTableCompare()
   
   ''' <summary>
-  ''' 現在表示されているDataGridViewを取得する。
+  ''' 現在表示されているDataGridViewの名前を取得する。
   ''' </summary>
   Function GetShowingDataName() As String
 		Dim pageName = Me.tabRoot.SelectedTab.Text
