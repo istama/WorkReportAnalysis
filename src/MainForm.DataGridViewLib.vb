@@ -147,15 +147,7 @@ Public Partial Class MainForm
 	End Function
 	
 	Public Function GetComboBox(tabPage As TabPage) As ComboBox
-		Dim cbox As ComboBox = Nothing
-		For i = 0 To tabPage.Controls.Count
-			cbox = TryCast(tabPage.Controls.Item(i), ComboBox)
-			If cbox IsNot Nothing Then
-				Exit For
-			End If
-		Next
-		
-		Return cbox		
+	  Return tabPage.Controls.OfType(Of ComboBox)().First()
 	End Function
 	
 	Public Function GetDateTimePicker(tabPage As TabPage) As DateTimePicker
