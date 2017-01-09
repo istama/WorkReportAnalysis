@@ -151,16 +151,7 @@ Public Partial Class MainForm
 	End Function
 	
 	Public Function GetDateTimePicker(tabPage As TabPage) As DateTimePicker
-	  
-		Dim dPicker As DateTimePicker = Nothing
-		For i = 0 To tabPage.Controls.Count
-			dPicker = TryCast(tabPage.Controls.Item(i), DateTimePicker)
-			If dPicker IsNot Nothing Then
-				Exit For
-			End If
-		Next
-		
-		Return dPicker		
+	  Return tabPage.Controls.OfType(Of DateTimePicker)().First()
 	End Function	
 End Class
 
